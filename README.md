@@ -1,4 +1,4 @@
-# 🇪🇹 EthioUni Portal  
+# 🇪🇹 Ethio University Portal  
 ### MERN Stack + MongoDB Vector Search + RAG + Gemini AI
 
 EthioUni Portal is a full-stack MERN application that provides a modern university listing platform integrated with an AI-powered chatbot.
