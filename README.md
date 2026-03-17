@@ -11,7 +11,7 @@ CSEC ASTU Dev Division - Project
 
 #  Tech Stack
 
-## 🖥 Frontend
+##  Frontend
 - React (Vite + TypeScript)
 - Tailwind CSS
 - Axios
@@ -218,7 +218,7 @@ DELETE /api/admin/knowledge/:id
 
 ---
 
-# 🛡 Security
+#  Security
 
 - JWT authentication middleware
 - Role-based access control (admin)
@@ -251,7 +251,7 @@ npm run dev
 
 ---
 
-# 🧪 Testing the RAG System
+#  Testing the RAG System
 
 1. Login
 2. Upload university-related knowledge via Admin
@@ -262,7 +262,7 @@ npm run dev
 
 ---
 
-# 📈 Architecture Highlights
+# Architecture Highlights
 
 - Proper separation of concerns
 - Scalable folder structure
@@ -276,4 +276,4 @@ npm run dev
 #  Repository
 
 ethio_university_full-satck-MERN-_with-AI-chat_bot,
-author:yeabsra andnet for 3rd year CSEC ASTU Dev Division - Project 
+author:yeabsra andnet, 3rd year software engineer student
