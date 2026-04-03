@@ -6,7 +6,6 @@ EthioUni Portal is a full-stack MERN application that provides a modern universi
 The chatbot uses **Retrieval-Augmented Generation (RAG)** with **MongoDB Atlas Vector Search** to provide context-aware answers based strictly on uploaded knowledge documents.
 
 This project demonstrates secure authentication, AI integration, vector databases, document processing, and real-world backend architecture.
-CSEC ASTU Dev Division - Project 
 ---
 
 #  Tech Stack
