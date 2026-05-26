@@ -271,8 +271,3 @@ npm run dev
 - Conversation persistence
 
 ---
-
-#  Repository
-
-ethio_university_full-satck-MERN-_with-AI-chat_bot,
-author:yeabsra andnet, 3rd year software engineer student
