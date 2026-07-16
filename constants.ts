@@ -47,7 +47,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Kennedy Library', 'Ethnological Museum', 'ICT Innovation Hub', 'Olympic Swimming Pool', 'Main Stadium'],
-    image: '../assets/aau6.png'
+    image: '/assets/aau6.png'
   },
   {
     id: 'u17',
@@ -91,7 +91,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Center of Excellence in ICT', 'Material Science Lab', 'Business Incubation Center', 'Standard Sports Fields', 'Modern Research Center'],
-    image: '../assets/aastu.jpg'
+    image: '/assets/aastu.jpg'
   },
   {
     id: 'u2',
@@ -133,7 +133,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Robotics Center', 'Advanced Nanotechnology Lab', 'Digital Resource Center', 'Research Farm'],
-    image: '../assets/Astu.png'
+    image: '/assets/Astu.png'
   },
   {
     id: 'u3',
@@ -168,7 +168,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Jimma Specialized Hospital', 'Coffee Research Center', 'Community Radio Station'],
-    image: '../assets/jimma4.png'
+    image: '/assets/jimma4.png'
   },
   {
     id: 'u4',
@@ -202,7 +202,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Maritime Simulator', 'Lake Tana Research Center', 'Modern Sports Complex'],
-    image: '../assets/bahirdar1.png'
+    image: '/assets/bahirdar1.png'
   },
   {
     id: 'u5',
@@ -236,7 +236,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Referral Hospital', 'Botanical Garden (Wondo Genet)', 'Lakeside Recreation Area'],
-    image: '../assets/hawasau.png'
+    image: '/assets/hawasau.png'
   },
   {
     id: 'u6',
@@ -270,7 +270,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Gondar Referral Hospital', 'Specialized Eye Clinic', 'Community Service Center'],
-    image: '../assets/gonder.png'
+    image: '/assets/gonder.png'
   },
   {
     id: 'u7',
@@ -302,7 +302,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Ayder Referral Hospital', 'MIT Campus Research Center', 'Dryland Research Site'],
-    image: '../assets/mekelle.jpg'
+    image: '/assets/mekelle.jpg'
   },
   {
     id: 'u8',
@@ -329,7 +329,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Hydraulic Research Lab', 'Student Guest House', 'University Museum'],
-    image: '../assets/arbaminch.png'
+    image: '/assets/arbaminch.png'
   },
   {
     id: 'u9',
@@ -362,7 +362,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Research Farm', 'Harar Hiwot Fana Hospital', 'Central Library'],
-    image: '../assets/haremeya1.png'
+    image: '/assets/haremeya1.png'
   },
   {
     id: 'u12',
@@ -396,7 +396,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Eastern ICT Hub', 'Modern Student Plaza', 'Language Lab'],
-    image: '../assets/diredewa.png'
+    image: '/assets/diredewa.png'
   },
   {
     id: 'u13',
@@ -438,7 +438,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Asella Teaching and Referral Hospital', 'Agricultural Research Center', 'Modern Digital Library', 'Student Innovation Lab'],
-    image: '../assets/arsi.jpg'
+    image: '/assets/arsi.jpg'
   },
   {
     id: 'u14',
@@ -471,7 +471,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Pastoralist Research Center', 'Community Radio', 'Modern Cafeteria'],
-    image: '../assets/jijga1.png'
+    image: '/assets/jijga1.png'
   },
   {
     id: 'u15',
@@ -504,7 +504,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Modern Labs', 'Student Lounge', 'Legal Clinic'],
-    image: '../assets/unity1.jpg'
+    image: '/assets/unity1.jpg'
   },
   {
     id: 'u16',
@@ -537,7 +537,7 @@ export const UNIVERSITIES: University[] = [
       }
     ],
     facilities: ['Modern Architecture Studios', 'Leadership Center', 'Lush Green Campus'],
-    image: '../assets/hope.jpg'
+    image: '/assets/hope.jpg'
   }
 ];
 

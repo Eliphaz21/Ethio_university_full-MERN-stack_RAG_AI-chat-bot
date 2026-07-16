@@ -13,7 +13,7 @@ interface AIAssistantProps {
 const AIAssistant: React.FC<AIAssistantProps> = ({ knowledgeDocs, universities, user }) => {
   const welcomeMessage: ChatMessage = {
     role: 'assistant',
-    content: "Selam! I'm your EthioUni Assistant. How can I help you navigate Ethiopian universities today?",
+    content: "Selam! 👋 I'm your EthioUni Portal AI Assistant. Ask me about universities information, admission requirements, or specific programs.",
     timestamp: new Date().toISOString()
   };
 

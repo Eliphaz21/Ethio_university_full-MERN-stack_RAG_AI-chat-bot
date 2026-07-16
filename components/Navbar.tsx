@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { User } from '../types';
 import {
-  GraduationCap,
   LayoutDashboard,
   User as UserIcon,
   ChevronDown,
@@ -11,6 +10,10 @@ import {
   LogOut,
   Shield
 } from 'lucide-react';
+
+const LOGO_URL = encodeURI(
+  'https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Professional Ethiopian university education AI logo: stylized Ethiopia map colored with the Ethiopian flag green yellow red horizontal stripes with blue circle and yellow star of David in the center, black graduation cap mortarboard on top of the map, open book below with pages colored in green yellow red and Ethiopian flag rainbow curve arc, friendly smiling AI robot head to the right with blue digital network nodes connecting lines, historical Ethiopian obelisk obelisks and university building dome towers to the left, white background, vibrant modern flat illustration style, academic excellence theme, clean vector logo quality, symmetrical composition'
+);
 
 interface NavbarProps {
   user: User | null;
@@ -35,20 +38,45 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#f8fafc]/90 backdrop-blur-md border-b border-slate-200 py-2">
+    <nav className="sticky top-0 z-50 bg-[#f8fafc]/95 backdrop-blur-xl border-b border-slate-200/80 py-2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          <div className="flex items-center gap-2">
-            <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-[#2d6a4f] tracking-tight group">
-              <div className="bg-[#2d6a4f] p-1.5 rounded-lg text-white group-hover:scale-110 transition-transform">
-                <GraduationCap className="w-7 h-7" />
+          <div className="flex items-center">
+            <Link
+              to="/"
+              className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-xl pr-2"
+              aria-label="EthioUni Portal Home"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-amber-400/20 to-rose-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 scale-110"></div>
+                <img
+                  src={LOGO_URL + '&image_size=square_hd'}
+                  alt="EthioUni Portal Logo"
+                  loading="eager"
+                  decoding="async"
+                  className="h-14 w-auto object-contain drop-shadow-[0_8px_20px_rgba(45,106,79,0.25)] group-hover:scale-[1.03] group-hover:drop-shadow-[0_10px_28px_rgba(45,106,79,0.35)] transition-all duration-300 ease-out"
+                  draggable={false}
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    el.onerror = null;
+                    el.style.display = 'none';
+                    const sib = el.nextElementSibling as HTMLElement | null;
+                    if (sib) sib.style.display = 'flex';
+                  }}
+                />
+                <div
+                  style={{ display: 'none' }}
+                  className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-600 via-amber-500 to-rose-600 items-center justify-center p-1 shadow-lg"
+                >
+                  <div className="w-full h-full rounded-xl bg-white flex items-center justify-center">
+                    <span className="bg-gradient-to-br from-emerald-700 to-amber-600 bg-clip-text text-transparent text-lg font-black tracking-tight">EU</span>
+                  </div>
+                </div>
               </div>
-              <span className="bg-gradient-to-r from-[#2d6a4f] to-[#1b4332] bg-clip-text text-transparent">EthioUni</span>
             </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-10 text-sm font-bold text-slate-600">
-            {/* Fix: Dashboard link only visible when user is logged in */}
             {user && (
               <Link to="/" className={`flex items-center gap-2 hover:text-[#2d6a4f] transition ${isActive('/') ? 'text-[#2d6a4f]' : ''}`}>
                 <LayoutDashboard className="w-4 h-4" /> Dashboard

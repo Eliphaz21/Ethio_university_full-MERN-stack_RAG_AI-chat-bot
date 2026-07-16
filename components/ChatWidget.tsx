@@ -76,7 +76,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
 
   const welcomeMessage: ChatMessage = {
     role: 'assistant',
-    content: "Selam! 👋 I'm your EthioUni assistant. Ask me about universities information, admission requirements, or specific programs.",
+    content: "Selam! 👋 I'm your EthioUni Portal AI assistant. Ask me about universities information, admission requirements, or specific programs.",
     timestamp: new Date().toISOString()
   };
 
@@ -182,7 +182,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
       setMessages(finalMessages);
       saveCurrentSession(finalMessages);
     } catch (error: any) {
-      const fallback = "Sorry, I couldn't reach the EthioUni AI. Please check your connection and try again.";
+      const fallback = "Sorry, I couldn't reach the EthioUni Portal AI. Please check your connection and try again.";
       const assistantMsg: ChatMessage = { role: 'assistant', content: error?.message || fallback, timestamp: new Date().toISOString() };
       setMessages([...newMessages, assistantMsg]);
     } finally {
@@ -285,7 +285,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
 
                   <EthioUniBotAvatar size={52} />
                   <div className="flex flex-col">
-                    <h3 className="text-white font-black text-lg leading-tight">EthioUni Bot</h3>
+                    <h3 className="text-white font-black text-lg leading-tight">EthioUni AI Assistant</h3>
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Assistant Online</span>

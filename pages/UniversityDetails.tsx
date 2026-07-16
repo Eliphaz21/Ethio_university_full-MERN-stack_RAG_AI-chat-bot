@@ -30,9 +30,9 @@ const UniversityDetails: React.FC = () => {
 
   const galleryImages = [
     uni.image,
-    `../assets/forall.jpg`,
-    `../assets/forall.jpg`,
-    `../assets/forall.jpg`,
+    `/assets/forall.jpg`,
+    `/assets/forall.jpg`,
+    `/assets/forall.jpg`,
   ];
 
   const nextImg = (e: React.MouseEvent) => {
