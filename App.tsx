@@ -38,7 +38,7 @@ const App: React.FC = () => {
       try {
         const docs = await api.getKnowledge();
         if (!mounted) return;
-        // backend returns uploadedAt as string; normalize to ISO string
+        // backend returns uploadedAt as ISO string; keep as ISO string (matches KnowledgeDoc type + api response shape)
         setKnowledgeDocs(docs.map((d: any) => ({ id: d.id, title: d.title, content: d.content, type: d.type, uploadedAt: typeof d.uploadedAt === 'string' ? d.uploadedAt : new Date(d.uploadedAt).toISOString() })));
       } catch (err) {
         // silently ignore; admin UI will handle errors when open

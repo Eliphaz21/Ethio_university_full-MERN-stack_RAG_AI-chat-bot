@@ -5,7 +5,10 @@ export interface User {
   role: UserRole;
 }
 
-export type UserRole = 'user' | 'admin';
+export interface UserRole {
+  user: 'user';
+  admin: 'admin';
+}
 
 export interface KnowledgeDoc {
   id: string;
@@ -48,6 +51,22 @@ export interface University {
   }[];
   coordinates?: { lat: number; lng: number };
   image?: string;
+}
+
+export interface Program {
+  id: string;
+  name: string;
+  duration: string;
+  description?: string;
+  requirements?: string[];
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  description: string;
+  head?: string;
+  programs?: string[];
 }
 
 export interface Program {
