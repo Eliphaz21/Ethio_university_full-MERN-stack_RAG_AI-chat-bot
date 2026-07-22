@@ -112,36 +112,10 @@ router.post('/knowledge/url', requireAuth, requireAdmin, async (req: Request, re
   try {
     const { url, title: customTitle } = req.body as { url?: string; title?: string };
     if (!url || typeof url !== 'string') return res.status(400).json({ error: 'URL is required' });
-
-    // SSRF / input-hardening: validate URL, parse BEFORE fetching.
-    // Only http/https allowed; block private/loopback/link-local IPs; max 2048 chars.
-    let parsed: URL;
-    try {
-      const normalizedUrl = url.startsWith('http') ? url : `https://${url.trim()}`;
-      if (normalizedUrl.length > 2048) throw new Error('URL too long');
-      parsed = new URL(normalizedUrl);
-      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-        throw new Error('Only http/https URLs are allowed');
-      }
-      const host = parsed.hostname.toLowerCase();
-      if (host === 'localhost' || host.endsWith('.localhost')) {
-        throw new Error('Localhost URLs are not allowed');
-      }
-      if (host === '0' || host === '127.0.0.1' || host.endsWith('.local') || host.endsWith('.internal')) {
-        throw new Error('Private/local hosts are not allowed');
-      }
-      // Block private IPv4 ranges
-      const IPv4PrivateRe = /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.)/;
-      if (/^\d+\.\d+\.\d+\.\d+$/.test(host) && IPv4PrivateRe.test(host)) {
-        throw new Error('Private IPv4 addresses are not allowed');
-      }
-    } catch (e: any) {
-      return res.status(400).json({ error: e?.message || 'Invalid URL' });
-    }
-
+    const normalizedUrl = url.startsWith('http') ? url : `https://${url}`;
     const https = await import('https');
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-    const response = await axios.get(parsed.toString(), {
+    const response = await axios.get(normalizedUrl, {
       timeout: 15000,
       maxContentLength: 5 * 1024 * 1024,
       responseType: 'text',
@@ -152,19 +126,18 @@ router.post('/knowledge/url', requireAuth, requireAdmin, async (req: Request, re
     const html = typeof response.data === 'string' ? response.data : '';
     const content = stripHtml(html).trim();
     if (!content || content.length < 50) return res.status(400).json({ error: 'Could not extract enough text from URL' });
-    const safeTitle = (customTitle && customTitle.trim().slice(0, 200)) || parsed.hostname || 'Website';
-    const { count, totalLength } = await indexContent(safeTitle, content, 'website');
+    const title = (customTitle && customTitle.trim()) || new URL(normalizedUrl).hostname || 'Website';
+    const { count, totalLength } = await indexContent(title, content, 'website');
     if (count === 0) return res.status(400).json({ error: 'No content to index' });
     res.status(201).json({
       message: count > 1 ? `Website indexed (${count} chunks)` : 'Website indexed successfully',
-      title: safeTitle,
+      title,
       chunks: count,
       contentLength: totalLength
     });
   } catch (err: any) {
     if (err.response?.status === 404) return res.status(404).json({ error: 'URL not found' });
     if (err.code === 'ENOTFOUND') return res.status(400).json({ error: 'Invalid or unreachable URL' });
-    if (err.code === 'ERR_INVALID_URL') return res.status(400).json({ error: 'Invalid URL' });
     console.error('❌ Error adding URL knowledge:', err);
     res.status(500).json({ error: err.message || 'Failed to fetch or index URL' });
   }
@@ -198,15 +171,7 @@ router.post('/knowledge/pdf', requireAuth, requireAdmin, multerSingleFile, async
   try {
     const file = (req as any).file;
     if (!file?.buffer) return res.status(400).json({ error: 'No PDF file uploaded' });
-    if (!file.mimetype || !/pdf/i.test(file.mimetype)) {
-      return res.status(400).json({ error: 'Only PDF files are allowed' });
-    }
-    // 20 MB cap
-    if (file.size > 20 * 1024 * 1024) {
-      return res.status(400).json({ error: 'PDF file too large (max 20MB)' });
-    }
-    const rawTitle = (req.body?.title as string)?.trim() || file.originalname?.trim() || 'Uploaded PDF';
-    const title = rawTitle.slice(0, 200);
+    const title = (req.body?.title as string) || file.originalname || 'Uploaded PDF';
 
     let content: string;
     try {
@@ -217,9 +182,6 @@ router.post('/knowledge/pdf', requireAuth, requireAdmin, multerSingleFile, async
     }
 
     if (!content) return res.status(400).json({ error: 'Could not extract text from PDF' });
-    if (content.length > 1_000_000) {
-      return res.status(400).json({ error: 'Extracted PDF text is too large (> 1M chars). Split the PDF first.' });
-    }
 
     const { count, totalLength } = await indexContent(title, content, 'pdf');
     if (count === 0) return res.status(400).json({ error: 'No content to index' });
