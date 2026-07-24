@@ -34,13 +34,30 @@ export function asyncHandler(
   };
 }
 
-/** Strip dangerous characters and enforce length limits on user-provided text fields. */
+/** HTML special character escape map to prevent XSS injection in user content. */
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+/** Strip control characters, escape HTML special characters, and enforce length limits. */
 export function sanitizeText(value: unknown, maxLength = 500): string {
   if (typeof value !== 'string') return '';
-  return value
+  const cleaned = value
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
     .trim()
     .slice(0, maxLength);
+  return escapeHtml(cleaned);
+}
+
+/** Ensure route/query parameters are primitive strings to prevent NoSQL object parameter injection. */
+export function sanitizeQueryParam(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  return value.trim();
 }
 
 export function isValidHttpUrl(value: string): boolean {
@@ -53,6 +70,7 @@ export function isValidHttpUrl(value: string): boolean {
 }
 
 export function validatePassword(password: string): string | null {
+  if (typeof password !== 'string') return 'Password must be a text string';
   if (password.length < 8) return 'Password must be at least 8 characters';
   if (password.length > 128) return 'Password is too long';
   if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
@@ -60,3 +78,4 @@ export function validatePassword(password: string): string | null {
   }
   return null;
 }
+
