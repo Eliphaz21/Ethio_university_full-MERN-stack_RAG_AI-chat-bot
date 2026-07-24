@@ -11,7 +11,10 @@ interface AuditEvent {
   details?: Record<string, unknown>;
 }
 
+import mongoose from 'mongoose';
+
 export async function recordAudit(req: Request, event: AuditEvent): Promise<void> {
+  if (mongoose.connection.readyState !== 1) return;
   try {
     const actor = req.user?.id
       ? await User.findById(req.user.id).select('email').lean()
