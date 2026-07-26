@@ -27,8 +27,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
       setError('Passwords do not match!');
       return;
     }
-    if (formData.password.length < 6) {
-      setError('Security requirement: Password must be at least 6 characters long.');
+    if (formData.password.length < 8) {
+      setError('Security requirement: Password must be at least 8 characters long.');
       return;
     }
 
@@ -37,11 +37,24 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
     try {
       const email = formData.email.trim().toLowerCase();
-      await api.postRegister({
+      const res = await api.postRegister({
         username: formData.username.trim(),
         email,
         password: formData.password,
       });
+      if (res && (res as any).token && (res as any).user) {
+        const { token, user: backendUser } = res as any;
+        const role = backendUser.role === 'admin' ? 'admin' : 'user';
+        onRegister({
+          id: String(backendUser.id),
+          username: backendUser.username,
+          email: backendUser.email,
+          role,
+          token,
+        });
+        navigate('/');
+        return;
+      }
       setSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: any) {
@@ -122,7 +135,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Password (min. 6)</label>
+              <label className="text-sm font-bold text-slate-700 ml-1">Password (min. 8)</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
