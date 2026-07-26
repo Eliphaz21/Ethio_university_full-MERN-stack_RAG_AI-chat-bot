@@ -9,13 +9,27 @@ const router = Router();
 router.post('/chat', requireAuth, async (req: Request, res: Response) => {
   let assistantText = "I'm having trouble responding right now. Please try again in a moment.";
   try {
-    const { prompt, userId } = req.body;
-    const question = typeof prompt === 'string' ? prompt : String(prompt || '').trim();
+    const { prompt } = req.body;
+
+    // NEVER trust userId from the body. Always use the authenticated req.user.id,
+    // otherwise a logged-in user could spoof another user's conversation history.
+    const effectiveUserId = String(req.user?.id || '');
+    if (!effectiveUserId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const rawQuestion = typeof prompt === 'string' ? prompt : String(prompt || '');
+    const question = rawQuestion.trim();
     if (!question) {
       return res.status(400).json({ error: 'Prompt is required' });
     }
+    if (question.length > 4000) {
+      return res
+        .status(400)
+        .json({ error: 'Prompt is too long (max 4000 characters)' });
+    }
 
-    console.log(' Chat request received:', { question, user: req.user?.id });
+    console.log(' Chat request received:', { questionLength: question.length, user: effectiveUserId });
 
     const { getRelevantContext } = await import('../services/rag.ts');
     const { generateAnswer } = await import('../services/voyage.ts');
@@ -25,25 +39,22 @@ router.post('/chat', requireAuth, async (req: Request, res: Response) => {
     assistantText = await generateAnswer(contextText, question);
     console.log(' Assistant response generated, length:', assistantText.length);
 
-    const effectiveUserId = String(userId || req.user?.id || '');
-    if (effectiveUserId) {
-      try {
-        await Conversation.findOneAndUpdate(
-          { userId: effectiveUserId },
-          {
-            $push: {
-              messages: [
-                { role: 'user', content: question },
-                { role: 'assistant', content: assistantText }
-              ]
-            },
-            $set: { lastUpdated: new Date() }
+    try {
+      await Conversation.findOneAndUpdate(
+        { userId: effectiveUserId },
+        {
+          $push: {
+            messages: [
+              { role: 'user', content: question },
+              { role: 'assistant', content: assistantText }
+            ]
           },
-          { upsert: true }
-        );
-      } catch (dbErr) {
-        console.warn('Chat history save failed:', (dbErr as Error)?.message);
-      }
+          $set: { lastUpdated: new Date() }
+        },
+        { upsert: true }
+      );
+    } catch (dbErr) {
+      console.warn('Chat history save failed:', (dbErr as Error)?.message);
     }
 
     return res.json({ text: assistantText });
