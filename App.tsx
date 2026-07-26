@@ -38,8 +38,8 @@ const App: React.FC = () => {
       try {
         const docs = await api.getKnowledge();
         if (!mounted) return;
-        // backend returns uploadedAt as string, convert to Date
-        setKnowledgeDocs(docs.map((d: any) => ({ id: d.id, title: d.title, content: d.content, type: d.type, uploadedAt: new Date(d.uploadedAt) })));
+        // backend returns uploadedAt as string; normalize to ISO string
+        setKnowledgeDocs(docs.map((d: any) => ({ id: d.id, title: d.title, content: d.content, type: d.type, uploadedAt: typeof d.uploadedAt === 'string' ? d.uploadedAt : new Date(d.uploadedAt).toISOString() })));
       } catch (err) {
         // silently ignore; admin UI will handle errors when open
         console.error('Failed to load knowledge docs', err);
