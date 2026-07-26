@@ -3,9 +3,19 @@ node_modules/
 _backend/node_modules/
 _backend/dist/
 
-# Environment variables
+# Environment variables (secrets — NEVER commit these)
 .env
+.env.*
+!.env.example
+!.env.template
+_backend/.env
+_backend/.env.*
+!_backend/.env.example
+!_backend/.env.template
 backend/.env
+frontend/.env
+_frontend/.env
+*.local
 # Logs
 logs
 *.log

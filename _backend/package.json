@@ -2,14 +2,14 @@
   "name": "ethiou-backend",
   "version": "1.0.0",
   "description": "Backend for EthioUni portal with AI chatbot",
-  "main": "dist/server.ts",
+  "main": "src/server.ts",
   "type": "module",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "ts-node --esm src/server.ts",
     "dev": "ts-node --esm src/server.ts",
     "dev:old": "ts-node-dev --respawn --transpile-only src/server.ts",
     "dev:node": "ts-node --esm src/server.ts",
-    "build": "tsc",
+    "build": "tsc --noEmit",
     "test": "jest"
   },
   "dependencies": {
