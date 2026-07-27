@@ -4,6 +4,8 @@ import { connectDB } from './config/db.ts';
 import { PORT } from './config/env.ts';
 import authRoutes from './routes/authRoutes.ts';
 import adminRoutes from './routes/adminRoutes.ts';
+import universityRoutes from './routes/universityRoutes.ts';
+import { seedUniversities } from './seedUniversities.ts';
 
 const app = express();
 
@@ -14,10 +16,12 @@ app.use(express.json({ limit: '2mb' }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', universityRoutes);
 
 // Load route modules after DB connect to avoid startup crash from voyage/multer
 async function start() {
   await connectDB();
+  await seedUniversities();
 
   const knowledgeRoutes = (await import('./routes/knowledgeRoutes.ts')).default;
   const chatRoutes = (await import('./routes/chatRoutes.ts')).default;

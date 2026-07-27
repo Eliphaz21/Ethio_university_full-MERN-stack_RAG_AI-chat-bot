@@ -2,31 +2,31 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { University, User } from '../types';
-import { UNIVERSITIES } from '../constants';
 import { Search, GraduationCap, MapPin, BookOpen, Users, ArrowRight, Award, School, Filter, Bot, Sparkles } from 'lucide-react';
 
 interface HomeProps {
   user: User | null;
+  universities: University[];
 }
 
-const Home: React.FC<HomeProps> = ({ user }) => {
+const Home: React.FC<HomeProps> = ({ user, universities }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
 
-  const regions = useMemo(() => ['All', ...new Set(UNIVERSITIES.map(u => u.location.region))], []);
-  const types = useMemo(() => ['All', ...new Set(UNIVERSITIES.map(u => u.type))], []);
+  const regions = useMemo(() => ['All', ...new Set(universities.map(u => u.location.region))], [universities]);
+  const types = useMemo(() => ['All', ...new Set(universities.map(u => u.type))], [universities]);
 
   const filteredUnis = useMemo(() => {
-    return UNIVERSITIES.filter(u => {
+    return universities.filter(u => {
       const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.location.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.faculties.some(f => f.toLowerCase().includes(searchTerm.toLowerCase()));
+        (u.faculties || []).some(f => f.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesRegion = selectedRegion === 'All' || u.location.region === selectedRegion;
       const matchesType = selectedType === 'All' || u.type === selectedType;
       return matchesSearch && matchesRegion && matchesType;
     });
-  }, [searchTerm, selectedRegion, selectedType]);
+  }, [searchTerm, selectedRegion, selectedType, universities]);
 
   return (
     <div className="min-h-screen bg-[#fcfdfd]">
@@ -209,7 +209,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
                 <div key={u.id} className="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 flex flex-col">
                   <Link to={`/university/${u.slug}`} className="relative h-64 overflow-hidden block">
                     <img
-                      src={u.image}
+                      src={u.image || '/assets/forall.jpg'}
                       alt={u.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />

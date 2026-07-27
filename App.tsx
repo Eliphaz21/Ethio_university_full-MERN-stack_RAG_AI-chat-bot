@@ -7,9 +7,8 @@ import UniversityDetails from './pages/UniversityDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
-import { User, KnowledgeDoc } from './types';
+import { User, KnowledgeDoc, University } from './types';
 import { api } from './services/api';
-import { UNIVERSITIES } from './constants';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -30,6 +29,7 @@ const App: React.FC = () => {
   });
 
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDoc[]>([]);
+  const [universities, setUniversities] = useState<University[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -48,6 +48,22 @@ const App: React.FC = () => {
     loadDocs();
     return () => { mounted = false; };
   }, [user]);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadUniversities() {
+      try {
+        const data = await api.getUniversities();
+        if (!mounted) return;
+        setUniversities(data as University[]);
+      } catch (err) {
+        console.error('Failed to load universities', err);
+      }
+    }
+
+    loadUniversities();
+    return () => { mounted = false; };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -80,7 +96,7 @@ const App: React.FC = () => {
               path="/"
               element={
                 <ProtectedRoute user={user}>
-                  <Home user={user} />
+                  <Home user={user} universities={universities} />
                 </ProtectedRoute>
               }
             />
@@ -89,7 +105,7 @@ const App: React.FC = () => {
               path="/university/:slug"
               element={
                 <ProtectedRoute user={user}>
-                  <UniversityDetails />
+                  <UniversityDetails universities={universities} />
                 </ProtectedRoute>
               }
             />
@@ -114,7 +130,7 @@ const App: React.FC = () => {
           <ChatWidget
             user={user}
             knowledgeDocs={knowledgeDocs}
-            universities={UNIVERSITIES}
+            universities={universities}
           />
         )}
       </div>

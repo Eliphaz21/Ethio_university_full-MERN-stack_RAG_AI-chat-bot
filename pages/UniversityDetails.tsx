@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { UNIVERSITIES } from '../constants';
-import { Department } from '../types';
+import { Department, University } from '../types';
 import {
   Globe, Mail, Phone, MapPin,
   ArrowLeft, GraduationCap,
@@ -12,10 +11,14 @@ import {
   Clock, Sparkles
 } from 'lucide-react';
 
-const UniversityDetails: React.FC = () => {
+interface UniversityDetailsProps {
+  universities: University[];
+}
+
+const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const uni = UNIVERSITIES.find(u => u.slug === slug);
+  const uni = universities.find(u => u.slug === slug);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [selectedDept, setSelectedDept] = useState<Department | null>(null);
 
@@ -29,11 +32,16 @@ const UniversityDetails: React.FC = () => {
   }
 
   const galleryImages = [
-    uni.image,
-    `/assets/forall.jpg`,
-    `/assets/forall.jpg`,
-    `/assets/forall.jpg`,
+    uni.image || '/assets/forall.jpg',
+    '/assets/forall.jpg',
+    '/assets/forall.jpg',
+    '/assets/forall.jpg',
   ];
+
+  const coordinates = uni.coordinates || uni.location.coordinates || { lat: 0, lng: 0 };
+  const colleges = uni.colleges || [];
+  const campuses = uni.campuses || [];
+  const facilities = uni.facilities || [];
 
   const nextImg = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -130,7 +138,7 @@ const UniversityDetails: React.FC = () => {
                 <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Campus Network</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {uni.campuses.map((campus, idx) => (
+                {campuses.map((campus, idx) => (
                   <div key={idx} className="bg-white p-6 rounded-3xl border border-slate-100 flex items-center gap-4 group hover:border-emerald-200 transition-all hover:shadow-md">
                     <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
                       <MapPin className="w-5 h-5" />
@@ -148,7 +156,7 @@ const UniversityDetails: React.FC = () => {
                 <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Colleges & Programs</h2>
               </div>
               <div className="space-y-8">
-                {uni.colleges.map((college, idx) => (
+                {colleges.map((college, idx) => (
                   <div key={idx} className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl transition-all">
                     <div className="bg-slate-900 p-8 flex justify-between items-center">
                       <div className="flex items-center gap-4">
@@ -194,7 +202,7 @@ const UniversityDetails: React.FC = () => {
                     height="100%"
                     frameBorder="0"
                     style={{ border: 0 }}
-                    src={`https://www.google.com/maps?q=${uni.coordinates.lat},${uni.coordinates.lng}&z=14&output=embed`}
+                    src={`https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}&z=14&output=embed`}
                     allowFullScreen
                   />
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-100 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -205,7 +213,7 @@ const UniversityDetails: React.FC = () => {
                   <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><MapPin className="w-5 h-5" /></div>
                   <div>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Coordinates</p>
-                    <p className="text-sm font-bold text-slate-700">{uni.coordinates.lat.toFixed(4)}° N, {uni.coordinates.lng.toFixed(4)}° E</p>
+                    <p className="text-sm font-bold text-slate-700">{coordinates.lat.toFixed(4)}° N, {coordinates.lng.toFixed(4)}° E</p>
                   </div>
                 </div>
               </div>
@@ -250,7 +258,7 @@ const UniversityDetails: React.FC = () => {
               <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
                 <h3 className="text-lg font-black uppercase tracking-tighter mb-6">Campus Amenities</h3>
                 <div className="flex flex-wrap gap-2">
-                  {uni.facilities.map((f, idx) => (
+                  {facilities.map((f, idx) => (
                     <span key={idx} className="bg-slate-50 text-slate-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-slate-100">{f}</span>
                   ))}
                 </div>

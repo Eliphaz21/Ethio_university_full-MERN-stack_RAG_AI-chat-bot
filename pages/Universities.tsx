@@ -1,18 +1,36 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { UNIVERSITIES } from '../constants';
+import { University } from '../types';
+import { api } from '../services/api';
 import { Search, MapPin, ArrowRight, Filter, Globe, School } from 'lucide-react';
 
 const Universities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
+  const [universities, setUniversities] = useState<University[]>([]);
 
-  const regions = useMemo(() => ['All', ...new Set(UNIVERSITIES.map(u => u.location.region))], []);
-  const types = useMemo(() => ['All', ...new Set(UNIVERSITIES.map(u => u.type))], []);
+  useEffect(() => {
+    let mounted = true;
+    async function loadUniversities() {
+      try {
+        const data = await api.getUniversities();
+        if (!mounted) return;
+        setUniversities(data as University[]);
+      } catch (err) {
+        console.error('Failed to load universities', err);
+      }
+    }
 
-  const filteredUnis = UNIVERSITIES.filter(u => {
+    loadUniversities();
+    return () => { mounted = false; };
+  }, []);
+
+  const regions = useMemo(() => ['All', ...new Set(universities.map(u => u.location.region))], [universities]);
+  const types = useMemo(() => ['All', ...new Set(universities.map(u => u.type))], [universities]);
+
+  const filteredUnis = universities.filter(u => {
     const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.location.city.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRegion = selectedRegion === 'All' || u.location.region === selectedRegion;
@@ -92,7 +110,7 @@ const Universities: React.FC = () => {
             <div key={u.id} className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col">
               <Link to={`/university/${u.slug}`} className="relative h-64 overflow-hidden block">
                 <img
-                  src={u.image}
+                  src={u.image || '/assets/forall.jpg'}
                   alt={u.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />

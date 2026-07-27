@@ -135,4 +135,14 @@ export const api = {
       method: 'DELETE',
       requireAuth: true,
     }),
+
+  getUniversities: () =>
+    request<Array<any>>('/api/universities', {
+      method: 'GET',
+    }),
+
+  getUniversityBySlug: (slug: string) =>
+    request<any>(`/api/universities/${slug}`, {
+      method: 'GET',
+    }),
 };
