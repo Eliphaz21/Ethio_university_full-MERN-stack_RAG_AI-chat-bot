@@ -5,7 +5,7 @@
 
 import axios, { AxiosRequestConfig } from 'axios';
 
-const getBaseUrl = () => (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000';
+const getBaseUrl = () => (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001';
 
 const getToken = (): string | null => localStorage.getItem('token');
 

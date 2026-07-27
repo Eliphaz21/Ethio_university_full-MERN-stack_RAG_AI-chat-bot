@@ -20,8 +20,12 @@ app.use('/api', universityRoutes);
 
 // Load route modules after DB connect to avoid startup crash from voyage/multer
 async function start() {
-  await connectDB();
-  await seedUniversities();
+  try {
+    await connectDB();
+    await seedUniversities();
+  } catch (error) {
+    console.warn('⚠️  Database initialization failed:', error);
+  }
 
   const knowledgeRoutes = (await import('./routes/knowledgeRoutes.ts')).default;
   const chatRoutes = (await import('./routes/chatRoutes.ts')).default;
