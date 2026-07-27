@@ -11,7 +11,7 @@ import {
   Shield
 } from 'lucide-react';
 
-const LOGO_SRC = '/assets/logo.png';
+const LOGO_URL = '/assets/logo.png';
 
 interface NavbarProps {
   user: User | null;
@@ -37,49 +37,44 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
 
   return (
     <nav className="sticky top-0 z-50 bg-[#f8fafc]/95 backdrop-blur-xl border-b border-slate-200/80 py-2">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center h-full relative z-[70]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 items-center">
+          <div className="flex items-center">
             <Link
               to="/"
-              className="relative flex items-center group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-3xl pr-3"
+              className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-xl pr-2 relative z-[95]"
               aria-label="EthioUni Portal Home"
             >
-              <div
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] rounded-[2.5rem] bg-gradient-to-br from-emerald-500/15 via-amber-400/12 to-rose-500/15 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 scale-110"
-                aria-hidden="true"
-              ></div>
-              <img
-                src={LOGO_SRC}
-                alt="EthioUni Portal — Ethiopian University AI Navigator Logo"
-                loading="eager"
-                decoding="async"
-                className="relative z-10 h-auto max-h-32 sm:max-h-40 md:max-h-48 lg:max-h-52 w-auto max-w-[28rem] md:max-w-[34rem] object-contain image-rendering-auto select-none group-hover:scale-[1.03] group-active:scale-[0.995] transition-transform duration-300 ease-out drop-shadow-[0_10px_28px_rgba(45,106,79,0.26)] group-hover:drop-shadow-[0_16px_42px_rgba(45,106,79,0.38)] -my-10 sm:-my-12 md:-my-14 lg:-my-16 -translate-x-[96px] sm:-translate-x-[128px] md:-translate-x-[160px] lg:-translate-x-[192px] translate-y-3 sm:translate-y-4 md:translate-y-5 lg:translate-y-6"
-                draggable={false}
-                onError={(e) => {
-                  const el = e.currentTarget;
-                  el.onerror = null;
-                  el.style.display = 'none';
-                  const sib = el.nextElementSibling as HTMLElement | null;
-                  if (sib) sib.style.display = 'flex';
-                }}
-              />
-              <div
-                style={{ display: 'none' }}
-                className="h-16 w-auto min-w-[11rem] rounded-2xl bg-gradient-to-br from-emerald-600 via-amber-500 to-rose-600 items-center justify-center px-2 py-1 shadow-2xl"
-              >
-                <div className="w-full h-full rounded-xl bg-white flex items-center justify-center px-5 gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 via-amber-500 to-rose-600 flex items-center justify-center text-white font-black shadow-md">EU</div>
-                  <div className="flex flex-col leading-none">
-                    <span className="text-slate-900 font-black text-lg tracking-tight">EthioUni</span>
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.18em] mt-1">AI Navigator</span>
+              <div className="relative">
+                <div className="absolute -inset-12 lg:-inset-20 rounded-3xl bg-gradient-to-br from-emerald-500/45 via-amber-400/32 to-rose-500/45 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 scale-125"></div>
+                <img
+                  src={LOGO_URL}
+                  alt="EthioUni Portal Logo"
+                  loading="eager"
+                  decoding="async"
+                  className="h-32 lg:h-48 w-auto -my-16 lg:-my-28 translate-y-8 lg:translate-y-12 -translate-x-10 lg:-translate-x-[220px] object-contain drop-shadow-[0_24px_48px_rgba(16,185,129,0.6)] group-hover:scale-[1.07] group-hover:drop-shadow-[0_32px_64px_rgba(16,185,129,0.75)] transition-all duration-300 ease-out pointer-events-auto"
+                  draggable={false}
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    el.onerror = null;
+                    el.style.display = 'none';
+                    const sib = el.nextElementSibling as HTMLElement | null;
+                    if (sib) sib.style.display = 'flex';
+                  }}
+                />
+                <div
+                  style={{ display: 'none' }}
+                  className="h-32 lg:h-48 w-32 lg:w-48 rounded-3xl bg-gradient-to-br from-emerald-600 via-amber-500 to-rose-600 items-center justify-center p-3 shadow-[0_24px_48px_rgba(16,185,129,0.6)]"
+                >
+                  <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
+                    <span className="bg-gradient-to-br from-emerald-700 to-amber-600 bg-clip-text text-transparent text-5xl lg:text-7xl font-black tracking-tight">EU</span>
                   </div>
                 </div>
               </div>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-10 text-sm font-bold text-slate-600 h-16">
+          <div className="hidden md:flex items-center space-x-10 text-sm font-bold text-slate-600">
             {user && (
               <Link to="/" className={`flex items-center gap-2 hover:text-[#2d6a4f] transition ${isActive('/') ? 'text-[#2d6a4f]' : ''}`}>
                 <LayoutDashboard className="w-4 h-4" /> Dashboard
@@ -94,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                   </Link>
                 )}
 
-                <div className="h-6 w-px bg-slate-200"></div>
+                <div className="h-4 w-px bg-slate-200"></div>
 
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
