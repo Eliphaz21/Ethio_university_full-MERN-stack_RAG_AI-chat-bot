@@ -5,7 +5,6 @@ import { PORT } from './config/env.ts';
 import authRoutes from './routes/authRoutes.ts';
 import adminRoutes from './routes/adminRoutes.ts';
 import universityRoutes from './routes/universityRoutes.ts';
-import { seedUniversities } from './seedUniversities.ts';
 
 const app = express();
 
@@ -22,7 +21,6 @@ app.use('/api', universityRoutes);
 async function start() {
   try {
     await connectDB();
-    await seedUniversities();
   } catch (error) {
     console.warn('⚠️  Database initialization failed:', error);
   }
