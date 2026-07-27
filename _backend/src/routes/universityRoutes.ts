@@ -3,10 +3,20 @@ import type { Request, Response } from 'express';
 import multer from 'multer';
 import { University } from '../models/university.ts';
 import { requireAuth, requireAdmin } from '../middleware/auth.ts';
-import { uploadBufferToCloudinary } from '../services/cloudinary.ts';
+import { uploadBufferToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl } from '../services/cloudinary.ts';
 
 const router = Router();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    fileFilter: (_req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files (JPEG, PNG, WebP, GIF, SVG) are allowed!'));
+        }
+    },
+});
 
 function serializeUniversity(doc: any) {
     return {
@@ -15,7 +25,7 @@ function serializeUniversity(doc: any) {
         slug: doc.slug,
         description: doc.description,
         website: doc.website,
-        location: doc.location,
+        location: doc.location || { city: '', region: '' },
         established: doc.established,
         type: doc.type,
         contactEmail: doc.contactEmail,
@@ -24,8 +34,8 @@ function serializeUniversity(doc: any) {
         campuses: doc.campuses || [],
         colleges: doc.colleges || [],
         facilities: doc.facilities || [],
-        coordinates: doc.coordinates,
-        image: doc.image,
+        coordinates: doc.coordinates || doc.location?.coordinates || { lat: 9.03, lng: 38.74 },
+        image: doc.image || '',
     };
 }
 
@@ -54,15 +64,17 @@ router.get('/universities/:slug', async (req: Request, res: Response) => {
 router.post('/admin/universities', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         const payload = req.body;
-        if (!payload?.name || !payload?.slug || !payload?.description || !payload?.website) {
-            return res.status(400).json({ error: 'name, slug, description, and website are required' });
+        if (!payload?.name || !payload?.description || !payload?.website) {
+            return res.status(400).json({ error: 'name, description, and website are required' });
         }
 
-        const existing = await University.findOne({ slug: payload.slug });
+        const slug = payload.slug || payload.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const existing = await University.findOne({ slug });
         if (existing) {
             return res.status(409).json({ error: 'University with this slug already exists' });
         }
 
+        payload.slug = slug;
         const created = await new University(payload).save();
         res.status(201).json({ message: 'University created', university: serializeUniversity(created.toObject()) });
     } catch (err: any) {
@@ -93,25 +105,54 @@ router.post('/admin/universities/:id/image', requireAuth, requireAdmin, upload.s
             return res.status(404).json({ error: 'University not found' });
         }
 
-        const uploaded = await uploadBufferToCloudinary(req.file.buffer, `${university.slug}-cover`);
+        // If replacing an existing Cloudinary image, clean it up
+        if (university.image) {
+            const oldPublicId = extractPublicIdFromUrl(university.image);
+            if (oldPublicId) {
+                await deleteFromCloudinary(oldPublicId);
+            }
+        }
+
+        const customPublicId = `${university.slug}-${Date.now()}`;
+        const uploaded = await uploadBufferToCloudinary(req.file.buffer, {
+            publicId: customPublicId,
+            folder: 'ethiouni-universities',
+        });
+
         university.image = uploaded.secure_url;
         await university.save();
 
-        res.json({ message: 'Image uploaded', image: uploaded.secure_url });
+        res.json({
+            message: 'Image uploaded successfully to Cloudinary',
+            image: uploaded.secure_url,
+            university: serializeUniversity(university.toObject()),
+        });
     } catch (err: any) {
-        res.status(500).json({ error: err.message });
+        console.error('⚠️ Image upload error:', err);
+        const errMsg = err?.message || 'Failed to upload image to Cloudinary';
+        res.status(400).json({ error: errMsg });
     }
 });
 
 // DELETE /api/admin/universities/:id
 router.delete('/admin/universities/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
-        const deleted = await University.findByIdAndDelete(req.params.id);
-        if (!deleted) return res.status(404).json({ error: 'University not found' });
-        res.json({ message: 'University deleted' });
+        const university = await University.findById(req.params.id);
+        if (!university) return res.status(404).json({ error: 'University not found' });
+
+        if (university.image) {
+            const publicId = extractPublicIdFromUrl(university.image);
+            if (publicId) {
+                await deleteFromCloudinary(publicId);
+            }
+        }
+
+        await University.findByIdAndDelete(req.params.id);
+        res.json({ message: 'University deleted successfully' });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }
 });
 
 export default router;
+

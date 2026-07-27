@@ -36,40 +36,47 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#f8fafc]/95 backdrop-blur-xl border-b border-slate-200/80 py-2">
+    <nav className="sticky top-0 z-50 bg-[#f8fafc]/95 backdrop-blur-xl border-b border-slate-200/80 py-3">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+        <div className="flex justify-between items-center h-14">
           <div className="flex items-center">
             <Link
               to="/"
-              className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-xl pr-2 relative z-[95]"
+              className="flex items-center gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-2xl py-1 px-1 transition-all"
               aria-label="EthioUni Portal Home"
             >
-              <div className="relative">
-                <div className="absolute -inset-12 lg:-inset-20 rounded-3xl bg-gradient-to-br from-emerald-500/45 via-amber-400/32 to-rose-500/45 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 scale-125"></div>
+              <div className="relative flex items-center justify-center">
+                <div className="absolute -inset-2 rounded-2xl bg-emerald-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <img
-                  src={LOGO_URL}
+                  src="/assets/logo.png"
                   alt="EthioUni Portal Logo"
                   loading="eager"
-                  decoding="async"
-                  className="h-32 lg:h-48 w-auto -my-16 lg:-my-28 translate-y-8 lg:translate-y-12 -translate-x-10 lg:-translate-x-[220px] object-contain drop-shadow-[0_24px_48px_rgba(16,185,129,0.6)] group-hover:scale-[1.07] group-hover:drop-shadow-[0_32px_64px_rgba(16,185,129,0.75)] transition-all duration-300 ease-out pointer-events-auto"
-                  draggable={false}
+                  className="h-11 md:h-14 w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     const el = e.currentTarget;
                     el.onerror = null;
                     el.style.display = 'none';
-                    const sib = el.nextElementSibling as HTMLElement | null;
-                    if (sib) sib.style.display = 'flex';
+                    const fallback = el.nextElementSibling as HTMLElement | null;
+                    if (fallback) fallback.style.display = 'flex';
                   }}
                 />
                 <div
                   style={{ display: 'none' }}
-                  className="h-32 lg:h-48 w-32 lg:w-48 rounded-3xl bg-gradient-to-br from-emerald-600 via-amber-500 to-rose-600 items-center justify-center p-3 shadow-[0_24px_48px_rgba(16,185,129,0.6)]"
+                  className="h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-600 via-amber-500 to-rose-600 items-center justify-center p-0.5 shadow-md"
                 >
-                  <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
-                    <span className="bg-gradient-to-br from-emerald-700 to-amber-600 bg-clip-text text-transparent text-5xl lg:text-7xl font-black tracking-tight">EU</span>
+                  <div className="w-full h-full rounded-[10px] bg-white flex items-center justify-center">
+                    <span className="bg-gradient-to-br from-emerald-700 to-amber-600 bg-clip-text text-transparent text-lg font-black tracking-tight">EU</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="flex flex-col">
+                <span className="text-xl md:text-2xl font-black tracking-tight text-slate-900 leading-none group-hover:text-emerald-700 transition-colors">
+                  Ethio<span className="text-emerald-600">Uni</span>
+                </span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">
+                  Higher Education Portal
+                </span>
               </div>
             </Link>
           </div>

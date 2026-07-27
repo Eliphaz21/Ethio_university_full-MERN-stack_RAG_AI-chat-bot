@@ -145,4 +145,42 @@ export const api = {
     request<any>(`/api/universities/${slug}`, {
       method: 'GET',
     }),
+
+  createUniversity: (data: any) =>
+    request<{ message: string; university: any }>('/api/admin/universities', {
+      method: 'POST',
+      data,
+      requireAuth: true,
+    }),
+
+  updateUniversity: (id: string, data: any) =>
+    request<{ message: string; university: any }>(`/api/admin/universities/${id}`, {
+      method: 'PUT',
+      data,
+      requireAuth: true,
+    }),
+
+  deleteUniversity: (id: string) =>
+    request<{ message: string }>(`/api/admin/universities/${id}`, {
+      method: 'DELETE',
+      requireAuth: true,
+    }),
+
+  uploadUniversityImage: (id: string, file: File) => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('image', file);
+    return axios.post(`${getBaseUrl()}/api/admin/universities/${id}/image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    })
+      .then((res) => res.data)
+      .catch((error) => {
+        const message = error.response?.data?.error || error.message || 'Image upload failed';
+        throw new Error(message);
+      });
+  },
 };
+

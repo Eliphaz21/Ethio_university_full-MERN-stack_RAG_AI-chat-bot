@@ -5,6 +5,8 @@ import { University } from '../types';
 import { api } from '../services/api';
 import { Search, MapPin, ArrowRight, Filter, Globe, School } from 'lucide-react';
 
+import { getOptimizedImageUrl } from '../utils/imageUtils';
+
 const Universities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
@@ -110,8 +112,9 @@ const Universities: React.FC = () => {
             <div key={u.id} className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col">
               <Link to={`/university/${u.slug}`} className="relative h-64 overflow-hidden block">
                 <img
-                  src={u.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80'}
+                  src={getOptimizedImageUrl(u.image, 800)}
                   alt={u.name}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute top-6 left-6 flex gap-2">
