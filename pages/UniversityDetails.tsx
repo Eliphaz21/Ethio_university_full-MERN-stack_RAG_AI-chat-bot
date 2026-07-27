@@ -32,10 +32,10 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
   }
 
   const galleryImages = [
-    uni.image || '/assets/forall.jpg',
-    '/assets/forall.jpg',
-    '/assets/forall.jpg',
-    '/assets/forall.jpg',
+    uni.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80',
   ];
 
   const coordinates = uni.coordinates || uni.location.coordinates || { lat: 0, lng: 0 };

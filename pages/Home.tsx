@@ -209,7 +209,7 @@ const Home: React.FC<HomeProps> = ({ user, universities }) => {
                 <div key={u.id} className="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 flex flex-col">
                   <Link to={`/university/${u.slug}`} className="relative h-64 overflow-hidden block">
                     <img
-                      src={u.image || '/assets/forall.jpg'}
+                      src={u.image || 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80'}
                       alt={u.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />

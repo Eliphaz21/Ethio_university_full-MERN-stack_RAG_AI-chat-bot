@@ -1,9 +1,12 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
+import multer from 'multer';
 import { University } from '../models/university.ts';
 import { requireAuth, requireAdmin } from '../middleware/auth.ts';
+import { uploadBufferToCloudinary } from '../services/cloudinary.ts';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 function serializeUniversity(doc: any) {
     return {
@@ -73,6 +76,28 @@ router.put('/admin/universities/:id', requireAuth, requireAdmin, async (req: Req
         const updated = await University.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         if (!updated) return res.status(404).json({ error: 'University not found' });
         res.json({ message: 'University updated', university: serializeUniversity(updated.toObject()) });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/admin/universities/:id/image
+router.post('/admin/universities/:id/image', requireAuth, requireAdmin, upload.single('image'), async (req: Request, res: Response) => {
+    try {
+        if (!req.file?.buffer) {
+            return res.status(400).json({ error: 'Image file is required' });
+        }
+
+        const university = await University.findById(req.params.id);
+        if (!university) {
+            return res.status(404).json({ error: 'University not found' });
+        }
+
+        const uploaded = await uploadBufferToCloudinary(req.file.buffer, `${university.slug}-cover`);
+        university.image = uploaded.secure_url;
+        await university.save();
+
+        res.json({ message: 'Image uploaded', image: uploaded.secure_url });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }
