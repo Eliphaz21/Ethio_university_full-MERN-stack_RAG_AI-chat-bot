@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Admin from './pages/Admin';
 import { User, KnowledgeDoc, University } from './types';
 import { api } from './services/api';
+import { UNIVERSITIES } from './constants';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   });
 
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDoc[]>([]);
-  const [universities, setUniversities] = useState<University[]>([]);
+  const [universities, setUniversities] = useState<University[]>(UNIVERSITIES as University[]);
 
   useEffect(() => {
     let mounted = true;
@@ -55,9 +56,12 @@ const App: React.FC = () => {
       try {
         const data = await api.getUniversities();
         if (!mounted) return;
-        setUniversities(data as University[]);
+        const nextUniversities = Array.isArray(data) && data.length > 0 ? (data as University[]) : UNIVERSITIES;
+        setUniversities(nextUniversities);
       } catch (err) {
         console.error('Failed to load universities', err);
+        if (!mounted) return;
+        setUniversities(UNIVERSITIES as University[]);
       }
     }
 
