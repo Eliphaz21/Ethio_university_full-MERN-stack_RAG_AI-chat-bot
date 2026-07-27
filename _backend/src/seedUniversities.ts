@@ -280,12 +280,148 @@ const universities = [
         facilities: ['Eastern ICT Hub', 'Modern Student Plaza'],
         image: '/assets/diredewa.png',
     },
+    {
+        name: 'Arsi University',
+        slug: 'arsi',
+        location: { city: 'Asella', region: 'Oromia' },
+        established: 2014,
+        type: 'Public',
+        description: 'Arsi University is a dynamic public university in Asella offering applied sciences and health-related programs.',
+        website: 'http://www.arsiun.edu.et',
+        contactEmail: 'info@arsiun.edu.et',
+        phone: '+251 22 331 1122',
+        coordinates: { lat: 7.95, lng: 39.12 },
+        faculties: ['Health Sciences', 'Agriculture', 'Business', 'Law'],
+        campuses: ['Main Campus', 'Health Science Campus'],
+        colleges: [
+            {
+                name: 'College of Health Sciences',
+                departments: [
+                    { name: 'Doctor of Medicine', duration: '6.5 Years' },
+                    { name: 'Nursing', duration: '4 Years' },
+                ],
+            },
+            {
+                name: 'College of Agriculture & Environmental Science',
+                departments: [
+                    { name: 'Animal Science', duration: '4 Years' },
+                    { name: 'Plant Science', duration: '4 Years' },
+                ],
+            },
+        ],
+        facilities: ['Referral Hospital', 'Agricultural Research Center'],
+        image: '/assets/arsi.jpg',
+    },
+    {
+        name: 'Jijiga University',
+        slug: 'jju',
+        location: { city: 'Jijiga', region: 'Somali' },
+        established: 2007,
+        type: 'Public',
+        description: 'Jijiga University is a growing public university in the Somali Region with strong applied programs.',
+        website: 'http://www.jju.edu.et',
+        contactEmail: 'info@jju.edu.et',
+        phone: '+251 25 775 5971',
+        coordinates: { lat: 9.35, lng: 42.8 },
+        faculties: ['Dryland Agriculture', 'Medicine', 'Law', 'Business'],
+        campuses: ['Main Campus'],
+        colleges: [
+            {
+                name: 'College of Dryland Agriculture',
+                departments: [
+                    { name: 'Range Management', duration: '4 Years' },
+                    { name: 'Dryland Crop Science', duration: '4 Years' },
+                ],
+            },
+            {
+                name: 'College of Medicine',
+                departments: [
+                    { name: 'Medicine', duration: '6.5 Years' },
+                    { name: 'Public Health', duration: '4 Years' },
+                ],
+            },
+        ],
+        facilities: ['Pastoralist Research Center', 'Community Radio'],
+        image: '/assets/jijga1.png',
+    },
+    {
+        name: 'Unity University',
+        slug: 'unity',
+        location: { city: 'Addis Ababa', region: 'Addis Ababa' },
+        established: 1991,
+        type: 'Private',
+        description: 'Unity University is a leading private institution in Addis Ababa with strong business and technology programs.',
+        website: 'http://www.uu.edu.et',
+        contactEmail: 'info@uu.edu.et',
+        phone: '+251 11 629 8151',
+        coordinates: { lat: 9.0062, lng: 38.7735 },
+        faculties: ['Business', 'Engineering', 'Social Science'],
+        campuses: ['Gerji Main Campus', 'Adama Campus'],
+        colleges: [
+            {
+                name: 'College of Engineering & Computing',
+                departments: [
+                    { name: 'Information Technology', duration: '4 Years' },
+                    { name: 'Computer Science', duration: '4 Years' },
+                ],
+            },
+            {
+                name: 'College of Business & Economics',
+                departments: [
+                    { name: 'Accounting & Finance', duration: '4 Years' },
+                    { name: 'Management', duration: '4 Years' },
+                ],
+            },
+        ],
+        facilities: ['Modern Labs', 'Student Lounge'],
+        image: '/assets/unity1.jpg',
+    },
+    {
+        name: 'Hope University',
+        slug: 'hope',
+        location: { city: 'Addis Ababa', region: 'Addis Ababa' },
+        established: 2003,
+        type: 'Private',
+        description: 'Hope University is a private higher education institution focused on business, technology, and applied sciences.',
+        website: 'http://www.hope.edu.et',
+        contactEmail: 'info@hope.edu.et',
+        phone: '+251 11 348 2433',
+        coordinates: { lat: 9.0033, lng: 38.7061 },
+        faculties: ['Architecture', 'Business', 'Environmental Engineering'],
+        campuses: ['Lideta Campus'],
+        colleges: [
+            {
+                name: 'Architecture & Engineering',
+                departments: [
+                    { name: 'Architecture', duration: '5 Years' },
+                    { name: 'Environmental Engineering', duration: '5 Years' },
+                ],
+            },
+            {
+                name: 'Business & Economics',
+                departments: [
+                    { name: 'Management', duration: '4 Years' },
+                    { name: 'Accounting', duration: '4 Years' },
+                ],
+            },
+        ],
+        facilities: ['Modern Architecture Studios', 'Leadership Center'],
+        image: '/assets/hope.jpg',
+    },
 ];
 
 export async function seedUniversities() {
-    const count = await University.countDocuments();
-    if (count > 0) return count;
+    const operations = universities.map((university) => ({
+        updateOne: {
+            filter: { slug: university.slug },
+            update: { $set: university },
+            upsert: true,
+        },
+    }));
 
-    await University.insertMany(universities);
-    return universities.length;
+    if (operations.length > 0) {
+        await University.bulkWrite(operations, { ordered: false });
+    }
+
+    return University.countDocuments();
 }
