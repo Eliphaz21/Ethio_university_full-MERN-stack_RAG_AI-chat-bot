@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ChatMessage, KnowledgeDoc, University, User, ChatSession } from '../types';
 import { api } from '../services/api';
 import {
@@ -307,7 +308,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                 <ShieldCheck className="w-16 h-16 text-blue-500 mb-6 opacity-20" />
                 <h4 className="text-xl font-black text-white mb-4">Access Restricted</h4>
                 <p className="text-slate-500 mb-8 max-w-sm text-sm">Please sign in to interact with the AI assistant.</p>
-                <a href="#/login" onClick={() => setIsOpen(false)} className="bg-blue-600 text-white font-black px-10 py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95">Verify Identity</a>
+                <Link to="/login" onClick={() => setIsOpen(false)} className="bg-blue-600 text-white font-black px-10 py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95">Verify Identity</Link>
               </div>
             ) : (
               <>
