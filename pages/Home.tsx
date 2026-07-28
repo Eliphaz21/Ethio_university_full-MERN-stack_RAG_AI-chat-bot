@@ -44,7 +44,7 @@ const Home: React.FC<HomeProps> = ({
           <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0">
               <img
-                src="/assets/unionpic.jpg"
+                src="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=1600"
                 className="w-full h-full object-cover"
                 alt="Ethiopian University Campus"
               />

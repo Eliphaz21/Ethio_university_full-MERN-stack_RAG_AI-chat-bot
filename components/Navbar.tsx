@@ -77,10 +77,11 @@ const Navbar: React.FC<NavbarProps> = ({
               <div className="relative flex items-center justify-center">
                 <div className="absolute -inset-2 rounded-2xl bg-[#059669]/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <img
-                  src="/assets/logo.png"
+                  src="/assets/logo.png?v=3"
                   alt="Ethio University Logo"
                   loading="eager"
-                  className="h-16 md:h-20 lg:h-22 w-auto object-contain max-h-[105px] drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                  className="block h-20 md:h-24 lg:h-28 w-auto min-w-[84px] object-contain max-h-[140px] drop-shadow-md group-hover:scale-105 transition-transform duration-300"
+                  style={{ imageRendering: 'auto' }}
                   onError={(e) => {
                     const el = e.currentTarget;
                     el.onerror = null;
@@ -91,10 +92,10 @@ const Navbar: React.FC<NavbarProps> = ({
                 />
                 <div
                   style={{ display: 'none' }}
-                  className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#059669] via-amber-500 to-rose-600 items-center justify-center p-0.5 shadow-md"
+                  className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-gradient-to-br from-[#059669] via-amber-500 to-rose-600 items-center justify-center p-0.5 shadow-md"
                 >
                   <div className="w-full h-full rounded-xl bg-white flex items-center justify-center">
-                    <span className="bg-gradient-to-br from-[#059669] to-amber-600 bg-clip-text text-transparent text-lg font-black tracking-tight">EU</span>
+                    <span className="bg-gradient-to-br from-[#059669] to-amber-600 bg-clip-text text-transparent text-2xl font-black tracking-tight">EU</span>
                   </div>
                 </div>
               </div>
