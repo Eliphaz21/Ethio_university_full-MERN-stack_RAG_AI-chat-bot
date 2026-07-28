@@ -31,6 +31,11 @@ const App: React.FC = () => {
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDoc[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
 
+  // Shared Navbar / Dashboard Search & Filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('All');
+  const [selectedType, setSelectedType] = useState('All');
+
   useEffect(() => {
     let mounted = true;
     async function loadDocs() {
@@ -38,10 +43,8 @@ const App: React.FC = () => {
       try {
         const docs = await api.getKnowledge();
         if (!mounted) return;
-        // backend returns uploadedAt as ISO string; keep as ISO string (matches KnowledgeDoc type + api response shape)
         setKnowledgeDocs(docs.map((d: any) => ({ id: d.id, title: d.title, content: d.content, type: d.type, uploadedAt: typeof d.uploadedAt === 'string' ? d.uploadedAt : new Date(d.uploadedAt).toISOString() })));
       } catch (err) {
-        // silently ignore; admin UI will handle errors when open
         console.error('Failed to load knowledge docs', err);
       }
     }
@@ -90,8 +93,18 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-slate-50">
-        <Navbar user={user} onLogout={handleLogout} />
+      <div className="flex flex-col min-h-screen bg-[#FBF7F1]">
+        <Navbar
+          user={user}
+          onLogout={handleLogout}
+          universities={universities}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedRegion={selectedRegion}
+          setSelectedRegion={setSelectedRegion}
+          selectedType={selectedType}
+          setSelectedType={setSelectedType}
+        />
 
         <main className="flex-grow flex flex-col">
           <Routes>
@@ -99,7 +112,16 @@ const App: React.FC = () => {
               path="/"
               element={
                 <ProtectedRoute user={user}>
-                  <Home user={user} universities={universities} />
+                  <Home
+                    user={user}
+                    universities={universities}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    selectedRegion={selectedRegion}
+                    setSelectedRegion={setSelectedRegion}
+                    selectedType={selectedType}
+                    setSelectedType={setSelectedType}
+                  />
                 </ProtectedRoute>
               }
             />

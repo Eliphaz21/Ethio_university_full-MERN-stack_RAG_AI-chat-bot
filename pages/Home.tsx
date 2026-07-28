@@ -8,13 +8,24 @@ import { getOptimizedImageUrl } from '../utils/imageUtils';
 interface HomeProps {
   user: User | null;
   universities: University[];
+  searchTerm: string;
+  setSearchTerm: (val: string) => void;
+  selectedRegion: string;
+  setSelectedRegion: (val: string) => void;
+  selectedType: string;
+  setSelectedType: (val: string) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ user, universities }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('All');
-  const [selectedType, setSelectedType] = useState('All');
-
+const Home: React.FC<HomeProps> = ({
+  user,
+  universities,
+  searchTerm,
+  setSearchTerm,
+  selectedRegion,
+  setSelectedRegion,
+  selectedType,
+  setSelectedType
+}) => {
   const regions = useMemo(() => ['All', ...new Set(universities.map(u => u.location.region))], [universities]);
   const types = useMemo(() => ['All', ...new Set(universities.map(u => u.type))], [universities]);
 

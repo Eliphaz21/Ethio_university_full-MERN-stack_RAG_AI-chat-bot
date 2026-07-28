@@ -1,29 +1,54 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { User } from '../types';
+import { User, University } from '../types';
 import {
   LayoutDashboard,
   User as UserIcon,
   ChevronDown,
   Mail,
   LogOut,
-  Shield
+  Shield,
+  UserPlus,
+  LogIn,
+  Search,
+  MapPin,
+  School
 } from 'lucide-react';
-
-const LOGO_URL = '/assets/logo.png';
 
 interface NavbarProps {
   user: User | null;
   onLogout: () => void;
+  universities?: University[];
+  searchTerm?: string;
+  setSearchTerm?: (val: string) => void;
+  selectedRegion?: string;
+  setSelectedRegion?: (val: string) => void;
+  selectedType?: string;
+  setSelectedType?: (val: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  user,
+  onLogout,
+  universities = [],
+  searchTerm = '',
+  setSearchTerm,
+  selectedRegion = 'All',
+  setSelectedRegion,
+  selectedType = 'All',
+  setSelectedType
+}) => {
   const location = useLocation();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname === path;
+  const isLoginPage = location.pathname === '/login';
+  const isRegisterPage = location.pathname === '/register';
+  const isDashboardPage = location.pathname === '/';
+
+  const regions = useMemo(() => ['All', ...new Set(universities.map(u => u.location.region))], [universities]);
+  const types = useMemo(() => ['All', ...new Set(universities.map(u => u.type))], [universities]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,24 +61,25 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#f8fafc]/95 backdrop-blur-xl border-b border-slate-200/80 py-1">
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24 md:h-28">
+    <nav className="sticky top-0 z-50 bg-[#f8fafc]/95 backdrop-blur-xl border-b border-slate-200/80 transition-all duration-300 py-1.5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 md:h-18 gap-4">
+          
           {/* Top-Left Logo & Title Container */}
-          <div className="flex items-center">
+          <div className="flex items-center shrink-0">
             <Link
               to="/"
-              className="flex items-center gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 rounded-xl py-1 transition-all"
+              className="flex items-center gap-3.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 rounded-2xl py-1 transition-all"
               aria-label="Ethio University Portal Home"
             >
               {/* Prominent Large Logo Image Only */}
               <div className="relative flex items-center justify-center">
-                <div className="absolute -inset-3 rounded-2xl bg-emerald-500/25 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute -inset-2 rounded-2xl bg-[#059669]/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <img
                   src="/assets/logo.png"
                   alt="Ethio University Logo"
                   loading="eager"
-                  className="h-24 md:h-32 lg:h-36 w-auto object-contain max-h-[140px] drop-shadow-xl group-hover:scale-105 transition-transform duration-300"
+                  className="h-14 md:h-16 lg:h-18 w-auto object-contain max-h-[90px] drop-shadow-md group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     const el = e.currentTarget;
                     el.onerror = null;
@@ -64,37 +90,85 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                 />
                 <div
                   style={{ display: 'none' }}
-                  className="h-20 w-20 md:h-28 md:w-28 rounded-2xl bg-gradient-to-br from-emerald-600 via-amber-500 to-rose-600 items-center justify-center p-1 shadow-xl"
+                  className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#059669] via-amber-500 to-rose-600 items-center justify-center p-0.5 shadow-md"
                 >
                   <div className="w-full h-full rounded-xl bg-white flex items-center justify-center">
-                    <span className="bg-gradient-to-br from-emerald-700 to-amber-600 bg-clip-text text-transparent text-3xl font-black tracking-tight">EU</span>
+                    <span className="bg-gradient-to-br from-[#059669] to-amber-600 bg-clip-text text-transparent text-lg font-black tracking-tight">EU</span>
                   </div>
                 </div>
               </div>
 
               {/* Standard Normal-Sized Brand Text */}
               <div className="flex flex-col justify-center">
-                <span className="text-base md:text-lg font-bold tracking-tight text-slate-900 leading-tight group-hover:text-emerald-700 transition-colors">
-                  Ethio <span className="text-emerald-600 font-extrabold">University</span>
+                <span className="text-base md:text-lg font-bold tracking-tight text-slate-900 leading-tight group-hover:text-[#059669] transition-colors">
+                  Ethio <span className="text-[#059669] font-extrabold">University</span>
                 </span>
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest leading-none mt-1">
+                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest leading-none mt-1">
                   Higher Education Portal
                 </span>
               </div>
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-10 text-sm font-bold text-slate-600">
-            {user && (
-              <Link to="/" className={`flex items-center gap-2 hover:text-[#2d6a4f] transition ${isActive('/') ? 'text-[#2d6a4f]' : ''}`}>
-                <LayoutDashboard className="w-4 h-4" /> Dashboard
-              </Link>
-            )}
+          {/* Embedded Top Navbar Search & Filters (On Dashboard View) */}
+          {user && isDashboardPage && setSearchTerm && setSelectedRegion && setSelectedType && (
+            <div className="hidden lg:flex items-center gap-3 flex-1 max-w-2xl mx-4">
+              {/* Search Bar */}
+              <div className="relative flex-1 group">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#059669] transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search universities, cities, faculties..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-slate-100/80 border border-slate-200/80 rounded-xl py-2 pl-9 pr-3 text-slate-900 text-xs font-medium placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/10 transition-all shadow-inner"
+                />
+              </div>
 
+              {/* Region Filter */}
+              <div className="relative group shrink-0 w-36">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-hover:text-[#059669] transition-colors pointer-events-none" />
+                <select
+                  value={selectedRegion}
+                  onChange={(e) => setSelectedRegion(e.target.value)}
+                  className="w-full bg-slate-100/80 border border-slate-200/80 rounded-xl py-2 pl-8 pr-6 text-slate-700 text-xs font-semibold outline-none appearance-none cursor-pointer focus:bg-white focus:border-[#059669] transition-all"
+                >
+                  <option value="All">All Regions</option>
+                  {regions.filter(r => r !== 'All').map(r => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+              </div>
+
+              {/* Type Filter */}
+              <div className="relative group shrink-0 w-32">
+                <School className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-hover:text-[#059669] transition-colors pointer-events-none" />
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="w-full bg-slate-100/80 border border-slate-200/80 rounded-xl py-2 pl-8 pr-6 text-slate-700 text-xs font-semibold outline-none appearance-none cursor-pointer focus:bg-white focus:border-[#059669] transition-all"
+                >
+                  <option value="All">All Types</option>
+                  {types.filter(t => t !== 'All').map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+              </div>
+            </div>
+          )}
+
+          {/* Right Navigation & User Actions */}
+          <div className="flex items-center space-x-6 text-sm font-bold text-slate-700 shrink-0">
             {user ? (
-              <div className="flex items-center gap-8 relative" ref={dropdownRef}>
+              <div className="flex items-center gap-6 relative" ref={dropdownRef}>
+                <Link to="/" className={`flex items-center gap-2 hover:text-[#059669] transition ${isActive('/') ? 'text-[#059669]' : ''}`}>
+                  <LayoutDashboard className="w-4 h-4" /> Dashboard
+                </Link>
+
                 {user.role === 'admin' && (
-                  <Link to="/admin" className={`hover:text-[#2d6a4f] transition flex items-center gap-2 ${isActive('/admin') ? 'text-[#2d6a4f]' : ''}`}>
+                  <Link to="/admin" className={`hover:text-[#059669] transition flex items-center gap-2 ${isActive('/admin') ? 'text-[#059669]' : ''}`}>
                     <Shield className="w-4 h-4" /> Admin Panel
                   </Link>
                 )}
@@ -103,28 +177,29 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
 
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-4 group focus:outline-none"
+                  className="flex items-center gap-3 group focus:outline-none"
                 >
                   <div className="flex flex-col items-end leading-none">
-                    <span className="text-slate-900 font-black tracking-tight group-hover:text-[#2d6a4f] transition-colors">
+                    <span className="text-slate-900 font-black tracking-tight group-hover:text-[#059669] transition-colors">
                       {user.username}
                     </span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
                       {user.role === 'admin' ? 'Administrator' : 'Scholar Profile'}
-                      <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isProfileOpen ? 'rotate-180 text-[#2d6a4f]' : ''}`} />
+                      <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isProfileOpen ? 'rotate-180 text-[#059669]' : ''}`} />
                     </span>
                   </div>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isProfileOpen ? 'bg-[#2d6a4f] text-white shadow-lg' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-600'}`}>
-                    <UserIcon className="w-5 h-5" />
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${isProfileOpen ? 'bg-[#059669] text-white shadow-lg' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'}`}>
+                    <UserIcon className="w-4.5 h-4.5" />
                   </div>
                 </button>
 
+                {/* Profile Dropdown */}
                 {isProfileOpen && (
-                  <div className="absolute right-0 top-full mt-4 w-72 bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right">
-                    <div className="p-6 bg-slate-50 border-b border-slate-100">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-[#2d6a4f] rounded-2xl flex items-center justify-center text-white shadow-lg">
-                          <span className="text-lg font-black">{user.username.substring(0, 2).toUpperCase()}</span>
+                  <div className="absolute right-0 top-full mt-3 w-72 bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                    <div className="p-5 bg-slate-50 border-b border-slate-100">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-11 h-11 bg-[#059669] rounded-2xl flex items-center justify-center text-white shadow-md">
+                          <span className="text-base font-black">{user.username.substring(0, 2).toUpperCase()}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-slate-900 font-black truncate text-sm">{user.username}</h4>
@@ -142,7 +217,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                           setIsProfileOpen(false);
                           onLogout();
                         }}
-                        className="w-full flex items-center justify-center gap-2 py-3 bg-white text-red-600 hover:bg-red-50 rounded-2xl transition border border-slate-200 font-black text-[10px] uppercase tracking-widest shadow-sm"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-white text-red-600 hover:bg-red-50 rounded-2xl transition border border-slate-200 font-black text-[10px] uppercase tracking-widest shadow-sm"
                       >
                         <LogOut className="w-3.5 h-3.5" /> Logout Session
                       </button>
@@ -151,14 +226,49 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-8">
-                <Link to="/login" className="text-slate-700 hover:text-[#2d6a4f] transition uppercase tracking-widest text-[11px] font-black">Sign In</Link>
-                <Link to="/register" className="bg-[#2d6a4f] text-white px-8 py-3 rounded-xl hover:bg-[#1b4332] transition shadow-lg text-[11px] font-black uppercase tracking-widest">
-                  Create Account
-                </Link>
+              /* Unauthenticated Actions: Conditional view for Login vs Register */
+              <div className="flex items-center gap-3">
+                {isLoginPage ? (
+                  /* On Login Page: Show ONLY "Create Account" Green Button */
+                  <Link
+                    to="/register"
+                    className="bg-[#059669] hover:bg-[#047857] active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md shadow-emerald-900/10 flex items-center gap-2"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    <span>Create Account</span>
+                  </Link>
+                ) : isRegisterPage ? (
+                  /* On Register Page: Show ONLY "Sign In" Green Button */
+                  <Link
+                    to="/login"
+                    className="bg-[#059669] hover:bg-[#047857] active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md shadow-emerald-900/10 flex items-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Sign In</span>
+                  </Link>
+                ) : (
+                  /* Default / Other Pages: Show Both Buttons */
+                  <div className="flex items-center gap-3">
+                    <Link
+                      to="/login"
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5"
+                    >
+                      <LogIn className="w-4 h-4" />
+                      <span>Sign In</span>
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="bg-[#059669] hover:bg-[#047857] active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md shadow-emerald-900/10 flex items-center gap-1.5"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>Create Account</span>
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </div>
+
         </div>
       </div>
     </nav>

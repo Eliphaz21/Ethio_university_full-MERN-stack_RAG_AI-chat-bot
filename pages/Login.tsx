@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Loader2, AlertCircle } from 'lucide-react';
+import { Shield, User as UserIcon, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { api } from '../services/api';
 
 interface LoginProps {
@@ -11,6 +10,7 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     try {
       const lowerEmail = email.trim().toLowerCase();
       if (!lowerEmail || !password) {
-        throw new Error('Email and password are required.');
+        throw new Error('Please enter both email address and password.');
       }
 
       const res = await api.postLogin({ email: lowerEmail, password });
@@ -45,64 +45,96 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-slate-50">
-      <div className="w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-8 md:p-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Login</h1>
-          <p className="text-slate-500 mt-3 text-lg">Sign in to the EthioUni Ecosystem</p>
+    <div className="min-h-[85vh] bg-[#FBF7F1] flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-slate-100 p-8 sm:p-10 transition-all">
+        
+        {/* Header matching screenshot */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <Shield className="w-6 h-6 text-[#059669] shrink-0 stroke-[2.5]" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0f172a] tracking-tight">Sign In</h1>
+          </div>
+          <p className="text-slate-500 text-sm font-normal">Enter your credentials to access the system</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold">
-            <AlertCircle className="w-5 h-5" />
-            {error}
+          <div className="mb-6 p-3.5 bg-red-50 border border-red-200/80 rounded-xl flex items-start gap-2.5 text-red-700 text-xs font-semibold">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Email Address */}
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Email Address
+            </label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-medium"
+                className="w-full bg-[#f1f5f9] border border-slate-200/60 rounded-xl py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium"
                 placeholder="you@example.com"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between items-center ml-1">
-              <label className="text-sm font-bold text-slate-700">Password</label>
-            </div>
+          {/* Password */}
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all font-medium"
-                placeholder="••••••••"
+                className="w-full bg-[#f1f5f9] border border-slate-200/60 rounded-xl py-3 pl-10 pr-10 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium"
+                placeholder="Enter your password"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
+          {/* Green Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-600 text-white font-black py-4.5 rounded-2xl hover:bg-indigo-700 transition shadow-xl shadow-indigo-100 mt-4 text-lg uppercase tracking-widest flex items-center justify-center gap-2"
+            className="w-full bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/15 flex items-center justify-center gap-2 text-base transition-all disabled:opacity-60 disabled:pointer-events-none mt-4"
           >
-            {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : "Login"}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Signing In...</span>
+              </>
+            ) : (
+              <>
+                <Shield className="w-4 h-4 stroke-[2.5]" />
+                <span>Sign In</span>
+              </>
+            )}
           </button>
         </form>
 
-        <div className="mt-10 text-center text-sm text-slate-500 border-t border-slate-50 pt-8">
-          New to the portal? <Link to="/register" className="text-indigo-600 font-bold hover:underline">Create account</Link>
+        {/* Footer Link */}
+        <div className="mt-8 text-center text-xs text-slate-500 border-t border-slate-100 pt-6">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-[#059669] font-bold hover:underline">
+            Create an account
+          </Link>
         </div>
       </div>
     </div>
