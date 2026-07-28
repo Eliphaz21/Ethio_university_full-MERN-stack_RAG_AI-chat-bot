@@ -63,10 +63,24 @@ export const api = {
     }),
 
   postLogin: (body: { email: string; password: string }) =>
-    request<{ token: string; user: { id: string; username: string; email: string; role: string } }>(
-      '/api/auth/login',
-      { method: 'POST', data: body }
-    ),
+    request<{ token: string; user: any }>('/api/auth/login', { method: 'POST', data: body }),
+
+  getProfile: () => request<{ user: any }>('/api/auth/profile', { method: 'GET', requireAuth: true }),
+
+  updateProfile: (body: {
+    username?: string;
+    phone?: string;
+    institution?: string;
+    department?: string;
+    bio?: string;
+    academicTitle?: string;
+    avatarUrl?: string;
+  }) =>
+    request<{ message: string; user: any }>('/api/auth/profile', {
+      method: 'PUT',
+      data: body,
+      requireAuth: true,
+    }),
 
   postChat: (body: { prompt: string; userId?: string }) =>
     request<{ text: string }>('/api/chat', {

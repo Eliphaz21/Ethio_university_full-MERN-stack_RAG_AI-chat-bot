@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user.ts';
 import { JWT_SECRET } from '../config/env.ts';
+import { requireAuth } from '../middleware/auth.ts';
 
 const router = Router();
 
@@ -51,11 +52,90 @@ router.post('/login', async (req: Request, res: Response) => {
         id: String(user._id),
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        phone: user.phone || '',
+        institution: user.institution || '',
+        department: user.department || '',
+        bio: user.bio || '',
+        academicTitle: user.academicTitle || '',
+        avatarUrl: user.avatarUrl || ''
       }
     });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/auth/profile - Fetch current logged-in user profile
+router.get('/profile', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({
+      user: {
+        id: String(user._id),
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        phone: user.phone || '',
+        institution: user.institution || '',
+        department: user.department || '',
+        bio: user.bio || '',
+        academicTitle: user.academicTitle || '',
+        avatarUrl: user.avatarUrl || '',
+        createdAt: user.createdAt
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/auth/profile - Update current user profile details
+router.put('/profile', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { username, phone, institution, department, bio, academicTitle, avatarUrl } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (username) user.username = username.trim();
+    if (phone !== undefined) user.phone = phone.trim();
+    if (institution !== undefined) user.institution = institution.trim();
+    if (department !== undefined) user.department = department.trim();
+    if (bio !== undefined) user.bio = bio.trim();
+    if (academicTitle !== undefined) user.academicTitle = academicTitle.trim();
+    if (avatarUrl !== undefined) user.avatarUrl = avatarUrl.trim();
+
+    await user.save();
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: {
+        id: String(user._id),
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        phone: user.phone || '',
+        institution: user.institution || '',
+        department: user.department || '',
+        bio: user.bio || '',
+        academicTitle: user.academicTitle || '',
+        avatarUrl: user.avatarUrl || ''
+      }
+    });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
   }
 });
 

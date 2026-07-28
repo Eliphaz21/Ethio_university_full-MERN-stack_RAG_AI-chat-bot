@@ -686,49 +686,69 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
         {/* Users Management Tab */}
         {activeTab === 'users' && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-            <div className="px-6 py-4 border-b border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-900">Users Management</h3>
+            <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Registered Scholars & Users</h3>
+                <p className="text-xs text-slate-500">View registered account details, academic affiliations, and profile information stored in the database</p>
+              </div>
+              <span className="bg-emerald-50 text-[#059669] px-3 py-1 rounded-full text-xs font-black">
+                {users.length} Total Users
+              </span>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Scholar / User</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Institution & Department</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Contact & Phone</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Academic Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-200">
-                  {users.map((user) => (
-                    <tr key={user.id}>
+                  {users.map((u: any) => (
+                    <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center">
-                            <span className="text-sm font-medium text-slate-600">
-                              {user.username.substring(0, 2).toUpperCase()}
-                            </span>
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-xl bg-[#059669] text-white flex items-center justify-center shadow-sm overflow-hidden shrink-0">
+                            {u.avatarUrl ? (
+                              <img src={u.avatarUrl} alt={u.username} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-xs font-black">{u.username ? u.username.substring(0, 2).toUpperCase() : 'EU'}</span>
+                            )}
                           </div>
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-slate-900">{user.username}</div>
-                            <div className="text-sm text-slate-500">{user.email}</div>
+                          <div>
+                            <div className="text-sm font-bold text-slate-900">{u.username}</div>
+                            <div className="text-xs text-slate-500">{u.email}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">{user.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === 'admin' 
-                            ? 'bg-red-100 text-red-800' 
-                            : 'bg-green-100 text-green-800'
+                        <div className="text-xs font-semibold text-slate-800">{u.institution || 'Not set'}</div>
+                        <div className="text-[11px] text-slate-500">{u.department || 'General'}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 font-medium">
+                        {u.phone || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600 font-medium max-w-xs truncate">
+                        {u.academicTitle || 'Scholar'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2.5 py-1 inline-flex text-[10px] font-extrabold uppercase tracking-wider rounded-full ${
+                          u.role === 'admin' 
+                            ? 'bg-red-100 text-red-800 border border-red-200' 
+                            : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                         }`}>
-                          {user.role}
+                          {u.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-xs font-medium">
                         <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-900"
+                          onClick={() => handleDeleteUser(u.id)}
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Remove user"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

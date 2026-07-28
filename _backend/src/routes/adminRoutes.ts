@@ -9,8 +9,20 @@ const router = Router();
 router.get('/users', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         // Exclude password field
-        const users = await User.find().select('username email role createdAt').lean();
-        const mapped = users.map(u => ({ id: u._id, username: u.username, email: u.email, role: u.role, createdAt: u.createdAt }));
+        const users = await User.find().select('username email role phone institution department bio academicTitle avatarUrl createdAt').lean();
+        const mapped = users.map(u => ({
+            id: String(u._id),
+            username: u.username,
+            email: u.email,
+            role: u.role,
+            phone: u.phone || '',
+            institution: u.institution || '',
+            department: u.department || '',
+            bio: u.bio || '',
+            academicTitle: u.academicTitle || '',
+            avatarUrl: u.avatarUrl || '',
+            createdAt: u.createdAt
+        }));
         res.json(mapped);
     } catch (err: any) {
         res.status(500).json({ error: err.message });

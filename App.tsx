@@ -7,6 +7,8 @@ import UniversityDetails from './pages/UniversityDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
+import UserProfileModal from './components/UserProfileModal';
+import Profile from './pages/Profile';
 import { User, KnowledgeDoc, University } from './types';
 import { api } from './services/api';
 
@@ -30,6 +32,9 @@ const App: React.FC = () => {
 
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDoc[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
+
+  // Profile Modal State
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Shared Navbar / Dashboard Search & Filter state
   const [searchTerm, setSearchTerm] = useState('');
@@ -91,12 +96,18 @@ const App: React.FC = () => {
     setUser(null);
   };
 
+  const handleUpdateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-[#FBF7F1]">
         <Navbar
           user={user}
           onLogout={handleLogout}
+          onOpenProfile={() => setIsProfileModalOpen(true)}
           universities={universities}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -135,6 +146,15 @@ const App: React.FC = () => {
               }
             />
 
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute user={user}>
+                  <Profile user={user} onUpdateUser={handleUpdateUser} />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="/login" element={<Login onLogin={handleAuth} />} />
             <Route path="/register" element={<Register onRegister={handleAuth} />} />
 
@@ -150,6 +170,15 @@ const App: React.FC = () => {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+
+        {user && isProfileModalOpen && (
+          <UserProfileModal
+            user={user}
+            isOpen={isProfileModalOpen}
+            onClose={() => setIsProfileModalOpen(false)}
+            onUpdateUser={handleUpdateUser}
+          />
+        )}
 
         {user && (
           <ChatWidget

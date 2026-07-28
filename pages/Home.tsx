@@ -1,8 +1,7 @@
-
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { University, User } from '../types';
-import { Search, GraduationCap, MapPin, BookOpen, Users, ArrowRight, Award, School, Filter, Bot, Sparkles } from 'lucide-react';
+import { Search, MapPin, BookOpen, ArrowRight, Award, School } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 
 interface HomeProps {
@@ -26,9 +25,6 @@ const Home: React.FC<HomeProps> = ({
   selectedType,
   setSelectedType
 }) => {
-  const regions = useMemo(() => ['All', ...new Set(universities.map(u => u.location.region))], [universities]);
-  const types = useMemo(() => ['All', ...new Set(universities.map(u => u.type))], [universities]);
-
   const filteredUnis = useMemo(() => {
     return universities.filter(u => {
       const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -41,9 +37,10 @@ const Home: React.FC<HomeProps> = ({
   }, [searchTerm, selectedRegion, selectedType, universities]);
 
   return (
-    <div className="min-h-screen bg-[#fcfdfd]">
+    <div className="min-h-screen bg-[#FBF7F1]">
       {!user ? (
         <>
+          {/* Public Landing Hero for Unauthenticated Visitors */}
           <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0">
               <img
@@ -69,7 +66,7 @@ const Home: React.FC<HomeProps> = ({
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to="/register"
-                  className="bg-[#e9c46a] text-emerald-950 px-10 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-[#f4a261] transition-all shadow-xl group"
+                  className="bg-[#059669] text-white px-10 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-[#047857] transition-all shadow-xl group"
                 >
                   Get Started <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
@@ -87,7 +84,7 @@ const Home: React.FC<HomeProps> = ({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-20">
                 <h2 className="text-4xl font-serif font-bold text-slate-900 uppercase tracking-tight">Ethiopia's Academic Heritage</h2>
-                <div className="h-1.5 w-24 bg-[#e9c46a] mx-auto mt-4 rounded-full"></div>
+                <div className="h-1.5 w-24 bg-[#059669] mx-auto mt-4 rounded-full"></div>
                 <p className="text-slate-500 mt-6 max-w-2xl mx-auto text-lg">
                   Ethiopia has a long-standing history of higher learning, blending traditional wisdom with modern scientific advancements across the nation.
                 </p>
@@ -101,14 +98,14 @@ const Home: React.FC<HomeProps> = ({
                     alt="Campus Library"
                     className="relative z-10 rounded-[3rem] shadow-2xl border-8 border-white"
                   />
-                  <div className="absolute -bottom-8 -right-8 bg-emerald-700 text-white p-8 rounded-3xl shadow-xl z-20 hidden lg:block">
+                  <div className="absolute -bottom-8 -right-8 bg-[#059669] text-white p-8 rounded-3xl shadow-xl z-20 hidden lg:block">
                     <Award className="w-10 h-10 mb-2 text-[#e9c46a]" />
                     <p className="font-bold text-xl leading-tight">Leading Research<br />Centers</p>
                   </div>
                 </div>
                 <div className="space-y-8">
                   <div className="flex gap-6">
-                    <div className="shrink-0 bg-emerald-50 p-4 rounded-2xl h-fit text-emerald-700">
+                    <div className="shrink-0 bg-emerald-50 p-4 rounded-2xl h-fit text-[#059669]">
                       <School className="w-8 h-8" />
                     </div>
                     <div>
@@ -119,7 +116,7 @@ const Home: React.FC<HomeProps> = ({
                     </div>
                   </div>
                   <div className="flex gap-6">
-                    <div className="shrink-0 bg-emerald-50 p-4 rounded-2xl h-fit text-emerald-700">
+                    <div className="shrink-0 bg-emerald-50 p-4 rounded-2xl h-fit text-[#059669]">
                       <BookOpen className="w-8 h-8" />
                     </div>
                     <div>
@@ -135,119 +132,62 @@ const Home: React.FC<HomeProps> = ({
           </section>
         </>
       ) : (
-        <div className="pb-20">
-          <div className="bg-[#2d6a4f] pt-16 pb-32">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-                <div>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-1 bg-[#e9c46a] rounded-full"></div>
-                    <span className="text-emerald-100 font-black uppercase tracking-[0.2em] text-xs">University Dashboard</span>
-                  </div>
-                  <h2 className="text-4xl md:text-5xl font-serif font-medium text-white">
-                    Welcome back, {user.username}
-                  </h2>
-                  <p className="text-emerald-100/80 mt-4 text-lg max-w-2xl">
-                    Explore the comprehensive database of Ethiopia's higher learning institutions.
-                  </p>
-                </div>
-              </div>
+        /* Authenticated Dashboard View */
+        <div className="pb-16 pt-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Top-Left Welcome Title Header (Directly Below Top-Left Logo) */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-slate-200/60">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Welcome back, <span className="text-[#059669]">{user.username}</span>
+              </h1>
             </div>
+
+            {(searchTerm || selectedRegion !== 'All' || selectedType !== 'All') && (
+              <button
+                onClick={() => { setSearchTerm(''); setSelectedRegion('All'); setSelectedType('All'); }}
+                className="text-[#059669] font-bold text-xs hover:underline bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5"
+              >
+                <span>Reset Filters</span>
+              </button>
+            )}
           </div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
-            <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 p-6 md:p-8">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="md:col-span-2 relative group">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition" />
-                  <input
-                    type="text"
-                    placeholder="Search by name, city, or faculty..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-slate-50 border-2 border-transparent rounded-[1.5rem] py-4.5 pl-14 pr-8 text-slate-900 placeholder-slate-500 outline-none focus:bg-white focus:border-emerald-500/20 transition-all shadow-inner text-lg"
-                  />
-                </div>
+          {/* Universities Grid Section (Positioned Directly Below Header) */}
+          <section id="unis-grid">
 
-                <div className="relative group">
-                  <Filter className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-hover:text-emerald-600 transition" />
-                  <select
-                    value={selectedRegion}
-                    onChange={(e) => setSelectedRegion(e.target.value)}
-                    className="w-full bg-slate-50 border-2 border-transparent rounded-[1.5rem] py-4.5 pl-12 pr-6 text-slate-700 outline-none appearance-none focus:bg-white focus:border-emerald-500/20 transition-all shadow-inner text-lg font-medium cursor-pointer"
-                  >
-                    <option value="All">All Regions</option>
-                    {regions.filter(r => r !== 'All').map(r => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="relative group">
-                  <School className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-hover:text-emerald-600 transition" />
-                  <select
-                    value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value)}
-                    className="w-full bg-slate-50 border-2 border-transparent rounded-[1.5rem] py-4.5 pl-12 pr-6 text-slate-700 outline-none appearance-none focus:bg-white focus:border-emerald-500/20 transition-all shadow-inner text-lg font-medium cursor-pointer"
-                  >
-                    <option value="All">All Types</option>
-                    {types.filter(t => t !== 'All').map(t => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <section id="unis-grid" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-            <div className="flex justify-between items-end mb-10">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">Institutions</h2>
-                <p className="text-slate-500 text-sm mt-1">Found {filteredUnis.length} universities matching your criteria</p>
-              </div>
-              {searchTerm || selectedRegion !== 'All' || selectedType !== 'All' ? (
-                <button
-                  onClick={() => { setSearchTerm(''); setSelectedRegion('All'); setSelectedType('All'); }}
-                  className="text-emerald-700 font-bold hover:underline flex items-center gap-1"
-                >
-                  Reset Filters
-                </button>
-              ) : null}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredUnis.map((u) => (
-                <div key={u.id} className="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 flex flex-col">
-                  <Link to={`/university/${u.slug}`} className="relative h-64 overflow-hidden block">
+                <div key={u.id} className="group bg-white rounded-3xl border border-slate-200/70 overflow-hidden hover:shadow-xl hover:shadow-slate-900/5 transition-all duration-300 flex flex-col">
+                  <Link to={`/university/${u.slug}`} className="relative h-56 overflow-hidden block">
                     <img
                       src={getOptimizedImageUrl(u.image, 800)}
                       alt={u.name}
                       loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-6 left-6 bg-white/95 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black text-emerald-700 uppercase tracking-widest shadow-sm">
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black text-[#059669] uppercase tracking-widest shadow-sm">
                       {u.type}
                     </div>
                   </Link>
-                  <div className="p-8 flex-1 flex flex-col">
+                  <div className="p-6 flex-1 flex flex-col">
                     <Link to={`/university/${u.slug}`}>
-                      <h3 className="text-2xl font-bold text-slate-900 leading-tight hover:text-emerald-700 transition-colors mb-3">{u.name}</h3>
+                      <h3 className="text-xl font-bold text-slate-900 leading-snug hover:text-[#059669] transition-colors mb-2">{u.name}</h3>
                     </Link>
-                    <div className="flex items-center text-slate-500 text-sm mb-6 gap-2">
-                      <MapPin className="w-4 h-4 text-emerald-500" />
+                    <div className="flex items-center text-slate-500 text-xs mb-4 gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#059669]" />
                       {u.location.city}, {u.location.region}
                     </div>
-                    <p className="text-slate-600 text-sm line-clamp-2 mb-8 flex-1 leading-relaxed">
+                    <p className="text-slate-600 text-xs line-clamp-2 mb-6 flex-1 leading-relaxed">
                       {u.description}
                     </p>
-                    <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-auto">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Est. {u.established}</span>
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Est. {u.established}</span>
                       <Link
                         to={`/university/${u.slug}`}
-                        className="flex items-center gap-2 text-emerald-700 font-bold text-sm hover:gap-3 transition-all"
+                        className="flex items-center gap-1.5 text-[#059669] font-bold text-xs hover:gap-2 transition-all"
                       >
-                        University Details <ArrowRight className="w-4 h-4" />
+                        University Details <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
@@ -256,15 +196,15 @@ const Home: React.FC<HomeProps> = ({
             </div>
 
             {filteredUnis.length === 0 && (
-              <div className="text-center py-32 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
-                <div className="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                  <Search className="text-slate-300 w-10 h-10" />
+              <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                <div className="bg-slate-50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                  <Search className="text-slate-400 w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900">No institutions found</h3>
-                <p className="text-slate-500 mt-2">Try adjusting your search terms or filters.</p>
+                <h3 className="text-xl font-bold text-slate-900">No institutions found</h3>
+                <p className="text-slate-500 text-xs mt-1">Try adjusting your search query or region filter in the top bar.</p>
                 <button
                   onClick={() => { setSearchTerm(''); setSelectedRegion('All'); setSelectedType('All'); }}
-                  className="mt-6 bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-800 transition shadow-lg"
+                  className="mt-5 bg-[#059669] text-white px-6 py-2.5 rounded-xl font-bold text-xs hover:bg-[#047857] transition shadow-md"
                 >
                   Show All Universities
                 </button>

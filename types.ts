@@ -5,6 +5,13 @@ export interface User {
   username: string;
   email: string;
   role: UserRole;
+  phone?: string;
+  institution?: string;
+  department?: string;
+  bio?: string;
+  academicTitle?: string;
+  avatarUrl?: string;
+  createdAt?: string;
 }
 
 export interface KnowledgeDoc {
