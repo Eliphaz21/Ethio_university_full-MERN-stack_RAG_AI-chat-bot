@@ -28,20 +28,49 @@ export interface Department {
   duration?: string;
   description?: string;
   head?: string;
-  programs?: string[];
+  contactEmail?: string;
+  website?: string;
+  researchAreas?: string[];
+  facilities?: string[];
+  learningOutcomes?: string[];
+  careerPaths?: string[];
+  programs?: Array<string | Program>;
 }
 
 export interface Program {
   id?: string;
   name: string;
-  duration: string;
+  level?: string;
+  duration?: string;
   description?: string;
   requirements?: string[];
+  applicationUrl?: string;
+  tuitionAmount?: string;
+  tuitionCurrency?: string;
+  tuitionPeriod?: string;
+  registrationFee?: string;
+  studyMode?: string;
+  intake?: string;
+  scholarships?: string[];
 }
 
 export interface College {
   name: string;
+  description?: string;
+  website?: string;
   departments?: Department[];
+}
+
+export interface UniversityLink {
+  label: string;
+  url: string;
+  description?: string;
+}
+
+export interface UniversityVideo {
+  title: string;
+  url: string;
+  description?: string;
 }
 
 export interface University {
@@ -63,10 +92,31 @@ export interface University {
   contactEmail?: string;
   contactPhone?: string;
   phone?: string;
+  address?: string;
+  admissionsEmail?: string;
+  admissionsPhone?: string;
+  studentPortal?: string;
+  applicationUrl?: string;
+  mapUrl?: string;
+  academicOverview?: string;
+  mission?: string;
+  vision?: string;
+  accreditation?: string;
+  admissionOverview?: string;
+  tuitionOverview?: string;
+  admissionRequirements?: string[];
+  scholarships?: string[];
+  applicationDeadlines?: string[];
+  studyModes?: string[];
+  studentPopulation?: string;
+  facultyCount?: string;
   faculties?: string[];
   facilities?: string[];
   campuses?: string[];
   colleges?: College[];
+  galleryImages?: string[];
+  videos?: UniversityVideo[];
+  importantLinks?: UniversityLink[];
   coordinates?: { lat: number; lng: number };
   image?: string;
 }

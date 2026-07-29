@@ -7,6 +7,7 @@ import UniversityDetails from './pages/UniversityDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
+import UniversityEdit from './pages/admin/UniversityEdit';
 import UserProfileModal from './components/UserProfileModal';
 import Profile from './pages/Profile';
 import { User, KnowledgeDoc, University } from './types';
@@ -108,6 +109,12 @@ const App: React.FC = () => {
     localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
+  const handleUniversityChange = (updatedUniversity: University) => {
+    setUniversities((current) =>
+      current.map((university) => university.id === updatedUniversity.id ? updatedUniversity : university)
+    );
+  };
+
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-[#FBF7F1]">
@@ -168,7 +175,15 @@ const App: React.FC = () => {
               path="/admin"
               element={
                 <ProtectedRoute user={user} adminOnly>
-                  <Admin user={user} />
+                  <Admin user={user} onUniversitiesChange={setUniversities} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/universities/:id/edit"
+              element={
+                <ProtectedRoute user={user} adminOnly>
+                  <UniversityEdit onUniversityChange={handleUniversityChange} />
                 </ProtectedRoute>
               }
             />

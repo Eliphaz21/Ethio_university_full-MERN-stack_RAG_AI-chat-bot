@@ -20,14 +20,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', universityRoutes);
 
-// Load route modules after DB connect to avoid startup crash from voyage/multer
+// Register all routes and start listening before the remote database handshake.
+// This keeps health/auth responses available during transient MongoDB DNS outages.
 async function start() {
-  try {
-    await connectDB();
-  } catch (error) {
-    console.warn('⚠️  Database initialization failed:', error);
-  }
-
   const knowledgeRoutes = (await import('./routes/knowledgeRoutes.js')).default;
   const chatRoutes = (await import('./routes/chatRoutes.js')).default;
   app.use('/api/admin', knowledgeRoutes);
@@ -36,6 +31,12 @@ async function start() {
   app.listen(PORT, () => {
     console.log(` Server running on port ${PORT}`);
   });
+
+  try {
+    await connectDB();
+  } catch (error) {
+    console.warn('⚠️  Database initialization failed:', error);
+  }
 }
 
 start().catch((err) => {

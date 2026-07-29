@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, KnowledgeDoc, University } from '../types';
 import { api } from '../services/api';
-import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, UploadCloud, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin } from 'lucide-react';
+import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
+import UniversityEditorModal from '../components/admin/UniversityEditorModal';
 
 interface AdminStats {
   totalUsers: number;
@@ -11,7 +13,13 @@ interface AdminStats {
   recentUploads: KnowledgeDoc[];
 }
 
-const Admin: React.FC<{ user: User }> = ({ user }) => {
+interface AdminProps {
+  user: User;
+  onUniversitiesChange?: (universities: University[]) => void;
+}
+
+const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDoc[]>([]);
@@ -31,27 +39,8 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
 
-  // University Cloudinary upload & management state
-  const [selectedUniForImage, setSelectedUniForImage] = useState<University | null>(null);
-  const [imageFileToUpload, setImageFileToUpload] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [uniImageUploading, setUniImageUploading] = useState(false);
-  const [uniImageError, setUniImageError] = useState<string | null>(null);
-  const [uniImageSuccess, setUniImageSuccess] = useState<string | null>(null);
-
-  // New University Form State
-  const [showAddUniModal, setShowAddUniModal] = useState(false);
-  const [newUniData, setNewUniData] = useState({
-    name: '',
-    slug: '',
-    description: '',
-    website: '',
-    city: '',
-    region: '',
-    established: 2000,
-    type: 'Public' as 'Public' | 'Private',
-  });
   const [savingUni, setSavingUni] = useState(false);
+  const [isUniversityEditorOpen, setIsUniversityEditorOpen] = useState(false);
 
   useEffect(() => {
     fetchAdminData();
@@ -71,6 +60,7 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
       setUsers(usersArr);
       setKnowledgeDocs(knowledgeArr);
       setUniversities(uniArr);
+      onUniversitiesChange?.(uniArr);
 
       setStats({
         totalUsers: usersArr.length,
@@ -108,10 +98,14 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
   };
 
   const handleDeleteUniversity = async (uniId: string) => {
-    if (window.confirm('Are you sure you want to delete this university? All associated Cloudinary cover images will also be cleaned up.')) {
+    if (window.confirm('Are you sure you want to delete this university? Its uploaded cover and gallery images will also be removed.')) {
       try {
         await api.deleteUniversity(uniId);
-        setUniversities(prev => prev.filter(u => u.id !== uniId));
+        setUniversities((current) => {
+          const next = current.filter((university) => university.id !== uniId);
+          onUniversitiesChange?.(next);
+          return next;
+        });
       } catch (error: any) {
         alert(error?.message || 'Failed to delete university');
       }
@@ -205,98 +199,42 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
     }
   };
 
-  // Cloudinary Image Selection & Upload Handler
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setUniImageError('Please select a valid image file (JPEG, PNG, WebP, GIF)');
-      return;
-    }
-
-    setImageFileToUpload(file);
-    setUniImageError(null);
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleUploadImageToCloudinary = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedUniForImage || !imageFileToUpload) {
-      setUniImageError('Please select an image file to upload');
-      return;
-    }
-
-    setUniImageUploading(true);
-    setUniImageError(null);
-    setUniImageSuccess(null);
-
-    try {
-      const res = await api.uploadUniversityImage(selectedUniForImage.id, imageFileToUpload);
-      const newImageUrl = res.image || res.university?.image;
-
-      setUniversities(prev => prev.map(u => u.id === selectedUniForImage.id ? { ...u, image: newImageUrl } : u));
-      setUniImageSuccess('Image successfully uploaded to Cloudinary & assigned to university!');
-      
-      setTimeout(() => {
-        setSelectedUniForImage(null);
-        setImageFileToUpload(null);
-        setImagePreview(null);
-        setUniImageSuccess(null);
-      }, 1500);
-    } catch (err: any) {
-      setUniImageError(err?.message || 'Failed to upload image to Cloudinary');
-    } finally {
-      setUniImageUploading(false);
-    }
-  };
-
-  const handleCreateUniversity = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newUniData.name || !newUniData.description || !newUniData.website || !newUniData.city) {
-      alert('Please fill in required fields (Name, Description, Website, City)');
-      return;
-    }
-
+  const handleSaveUniversity = async (draft: Omit<University, 'id'> & { id?: string }) => {
     setSavingUni(true);
     try {
-      const payload = {
-        name: newUniData.name.trim(),
-        slug: newUniData.slug.trim() || undefined,
-        description: newUniData.description.trim(),
-        website: newUniData.website.trim(),
-        location: {
-          city: newUniData.city.trim(),
-          region: newUniData.region.trim() || newUniData.city.trim(),
-        },
-        established: Number(newUniData.established) || 2000,
-        type: newUniData.type,
-      };
-
-      const res = await api.createUniversity(payload);
-      const created = res.university;
-      setUniversities(prev => [...prev, created]);
-      setShowAddUniModal(false);
-      setNewUniData({
-        name: '',
-        slug: '',
-        description: '',
-        website: '',
-        city: '',
-        region: '',
-        established: 2000,
-        type: 'Public',
+      const response = await api.createUniversity(draft);
+      const saved = response.university as University;
+      setUniversities((current) => {
+        const next = [...current, saved].sort((a, b) => a.name.localeCompare(b.name));
+        onUniversitiesChange?.(next);
+        return next;
       });
-    } catch (err: any) {
-      alert(err?.message || 'Failed to create university');
+      setIsUniversityEditorOpen(false);
+    } catch (error: any) {
+      alert(error?.message || 'Failed to create university');
     } finally {
       setSavingUni(false);
     }
+  };
+
+  const updateUniversityInLists = (updated: University) => {
+    setUniversities((current) => {
+      const next = current.map((university) => university.id === updated.id ? updated : university);
+      onUniversitiesChange?.(next);
+      return next;
+    });
+  };
+
+  const handleEditorCoverUpload = async (universityId: string, file: File) => {
+    const response = await api.uploadUniversityImage(universityId, file);
+    updateUniversityInLists(response.university);
+    return response.image;
+  };
+
+  const handleEditorGalleryUpload = async (universityId: string, files: File[]) => {
+    const response = await api.uploadUniversityGalleryImages(universityId, files);
+    updateUniversityInLists(response.university);
+    return response.images;
   };
 
   if (loading) {
@@ -313,7 +251,7 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
-            <p className="text-slate-600">Manage users, knowledge base documents, and university Cloudinary assets</p>
+            <p className="text-slate-600">Manage users, knowledge documents, and complete university directory information</p>
           </div>
         </div>
 
@@ -380,7 +318,7 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
                   : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
               }`}
             >
-              <School className="w-4 h-4" /> Universities & Cloudinary Images
+              <School className="w-4 h-4" /> University List
             </button>
             <button
               onClick={() => setActiveTab('users')}
@@ -425,17 +363,19 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
           </div>
         )}
 
-        {/* Universities & Cloudinary Tab */}
+        {/* University List */}
         {activeTab === 'universities' && (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="px-6 py-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">University Assets & Cloudinary Management</h3>
-                  <p className="text-xs text-slate-500">Upload university cover images directly to Cloudinary for fast WebP/AVIF delivery</p>
+                  <h3 className="text-lg font-bold text-slate-900">University List</h3>
+                  <p className="text-xs text-slate-500">Add, review, edit, publish imagery, and maintain complete institution profiles</p>
                 </div>
                 <button
-                  onClick={() => setShowAddUniModal(true)}
+                  onClick={() => {
+                    setIsUniversityEditorOpen(true);
+                  }}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold rounded-lg shadow-sm transition-all"
                 >
                   <Plus className="w-4 h-4" /> Add University
@@ -445,7 +385,6 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {universities.map((uni) => {
                   const optimizedThumb = getOptimizedImageUrl(uni.image, 300);
-                  const isCloudinary = uni.image?.includes('res.cloudinary.com');
 
                   return (
                     <div key={uni.id} className="bg-slate-50 rounded-2xl border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition-all">
@@ -456,15 +395,6 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
                             alt={uni.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
-                          <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
-                            {isCloudinary ? (
-                              <span className="text-emerald-400 flex items-center gap-1">
-                                <CheckCircle2 className="w-3 h-3" /> Cloudinary Hosted
-                              </span>
-                            ) : (
-                              <span className="text-amber-300">Default Image</span>
-                            )}
-                          </div>
                         </div>
 
                         <h4 className="text-lg font-bold text-slate-900 leading-tight mb-1">{uni.name}</h4>
@@ -473,18 +403,14 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
                         </p>
                       </div>
 
-                      <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between gap-2 mt-2">
+                      <div className="pt-4 border-t border-slate-200/80 grid grid-cols-[1fr_auto] items-center gap-2 mt-2">
                         <button
                           onClick={() => {
-                            setSelectedUniForImage(uni);
-                            setImageFileToUpload(null);
-                            setImagePreview(null);
-                            setUniImageError(null);
-                            setUniImageSuccess(null);
+                            navigate(`/admin/universities/${uni.id}/edit`);
                           }}
-                          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-colors"
+                          className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 rounded-lg text-xs font-bold transition-colors"
                         >
-                          <UploadCloud className="w-4 h-4 text-emerald-400" /> Upload Image
+                          <Edit3 className="w-4 h-4" /> Edit
                         </button>
                         <button
                           onClick={() => handleDeleteUniversity(uni.id)}
@@ -502,185 +428,18 @@ const Admin: React.FC<{ user: User }> = ({ user }) => {
           </div>
         )}
 
-        {/* Modal / Dialog for Uploading Cloudinary Image */}
-        {selectedUniForImage && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-              <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <UploadCloud className="w-5 h-5 text-emerald-400" />
-                  <h3 className="font-bold text-lg">Upload Cover to Cloudinary</h3>
-                </div>
-                <button
-                  onClick={() => setSelectedUniForImage(null)}
-                  className="text-slate-400 hover:text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleUploadImageToCloudinary} className="p-6 space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Target University</label>
-                  <p className="text-base font-bold text-slate-900">{selectedUniForImage.name}</p>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select New Image File</label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    onChange={handleImageFileChange}
-                    className="block w-full text-xs text-slate-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-slate-100 file:text-slate-800 file:font-bold hover:file:bg-slate-200 cursor-pointer"
-                  />
-                  <p className="text-[11px] text-slate-400 mt-1">Supports JPG, PNG, WebP up to 10MB. Images are automatically converted to optimized WebP format on Cloudinary.</p>
-                </div>
-
-                {imagePreview && (
-                  <div className="mt-3">
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Image Preview</p>
-                    <div className="h-44 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                    </div>
-                  </div>
-                )}
-
-                {uniImageError && (
-                  <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <span>{uniImageError}</span>
-                  </div>
-                )}
-
-                {uniImageSuccess && (
-                  <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl text-xs flex items-center gap-2 font-medium">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                    <span>{uniImageSuccess}</span>
-                  </div>
-                )}
-
-                <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedUniForImage(null)}
-                    className="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-50 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={uniImageUploading || !imageFileToUpload}
-                    className="px-6 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-bold transition disabled:opacity-50 flex items-center gap-2"
-                  >
-                    {uniImageUploading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Uploading to Cloudinary...
-                      </>
-                    ) : (
-                      <>
-                        <UploadCloud className="w-4 h-4" /> Upload Now
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Modal / Dialog for Add University */}
-        {showAddUniModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-              <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-                <h3 className="font-bold text-lg">Add New University</h3>
-                <button onClick={() => setShowAddUniModal(false)} className="text-slate-400 hover:text-white transition">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateUniversity} className="p-6 space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">University Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={newUniData.name}
-                    onChange={(e) => setNewUniData({ ...newUniData, name: e.target.value })}
-                    placeholder="e.g. Hawassa University"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">City *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newUniData.city}
-                      onChange={(e) => setNewUniData({ ...newUniData, city: e.target.value, region: e.target.value })}
-                      placeholder="e.g. Hawassa"
-                      className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Type</label>
-                    <select
-                      value={newUniData.type}
-                      onChange={(e) => setNewUniData({ ...newUniData, type: e.target.value as any })}
-                      className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                    >
-                      <option value="Public">Public</option>
-                      <option value="Private">Private</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Official Website *</label>
-                  <input
-                    type="url"
-                    required
-                    value={newUniData.website}
-                    onChange={(e) => setNewUniData({ ...newUniData, website: e.target.value })}
-                    placeholder="https://hu.edu.et"
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Academic Overview / Description *</label>
-                  <textarea
-                    required
-                    rows={3}
-                    value={newUniData.description}
-                    onChange={(e) => setNewUniData({ ...newUniData, description: e.target.value })}
-                    placeholder="Brief history and research focus..."
-                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                  />
-                </div>
-
-                <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddUniModal(false)}
-                    className="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-50 transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={savingUni}
-                    className="px-6 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-bold transition disabled:opacity-50"
-                  >
-                    {savingUni ? 'Saving...' : 'Create Institution'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+        {isUniversityEditorOpen && (
+          <UniversityEditorModal
+            key="new-university"
+            initialUniversity={null}
+            saving={savingUni}
+            onClose={() => {
+              setIsUniversityEditorOpen(false);
+            }}
+            onSave={handleSaveUniversity}
+            onUploadCover={handleEditorCoverUpload}
+            onUploadGallery={handleEditorGalleryUpload}
+          />
         )}
 
         {/* Users Management Tab */}

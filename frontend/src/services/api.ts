@@ -4,6 +4,7 @@
  */
 
 import axios, { AxiosRequestConfig } from 'axios';
+import type { University } from '../types';
 
 const getBaseUrl = () => (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001';
 
@@ -151,24 +152,30 @@ export const api = {
     }),
 
   getUniversities: () =>
-    request<Array<any>>('/api/universities', {
+    request<University[]>('/api/universities', {
       method: 'GET',
     }),
 
   getUniversityBySlug: (slug: string) =>
-    request<any>(`/api/universities/${slug}`, {
+    request<University>(`/api/universities/${slug}`, {
       method: 'GET',
     }),
 
-  createUniversity: (data: any) =>
-    request<{ message: string; university: any }>('/api/admin/universities', {
+  getAdminUniversityById: (id: string) =>
+    request<University>(`/api/admin/universities/${id}`, {
+      method: 'GET',
+      requireAuth: true,
+    }),
+
+  createUniversity: (data: Omit<University, 'id'> | Partial<University>) =>
+    request<{ message: string; university: University }>('/api/admin/universities', {
       method: 'POST',
       data,
       requireAuth: true,
     }),
 
-  updateUniversity: (id: string, data: any) =>
-    request<{ message: string; university: any }>(`/api/admin/universities/${id}`, {
+  updateUniversity: (id: string, data: Partial<University>) =>
+    request<{ message: string; university: University }>(`/api/admin/universities/${id}`, {
       method: 'PUT',
       data,
       requireAuth: true,
@@ -184,7 +191,7 @@ export const api = {
     const token = getToken();
     const formData = new FormData();
     formData.append('image', file);
-    return axios.post(`${getBaseUrl()}/api/admin/universities/${id}/image`, formData, {
+    return axios.post<{ message: string; image: string; university: University }>(`${getBaseUrl()}/api/admin/universities/${id}/image`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -196,5 +203,25 @@ export const api = {
         throw new Error(message);
       });
   },
-};
 
+  uploadUniversityGalleryImages: (id: string, files: File[]) => {
+    const token = getToken();
+    const formData = new FormData();
+    files.forEach((file) => formData.append('images', file));
+    return axios.post<{ message: string; images: string[]; university: University }>(
+      `${getBaseUrl()}/api/admin/universities/${id}/gallery`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      }
+    )
+      .then((response) => response.data)
+      .catch((error) => {
+        const message = error.response?.data?.error || error.message || 'Gallery upload failed';
+        throw new Error(message);
+      });
+  },
+};
