@@ -1,9 +1,0 @@
-{
-  "name": "Copy of EthioUni Portal - AI-Powered University Navigator",
-  "description": "A modern platform for exploring Ethiopian universities with an integrated RAG-based AI chatbot for academic guidance.",
-  "requestFramePermissions": [
-    "camera",
-    "microphone",
-    "geolocation"
-  ]
-}
