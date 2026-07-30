@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import multer from 'multer';
 import { University } from '../models/university.js';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { requireAuth, requireAdmin, requireStaff } from '../middleware/auth.js';
 import { uploadBufferToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl } from '../services/cloudinary.js';
 import { recordAudit } from '../services/audit.js';
 
@@ -106,7 +106,7 @@ router.get('/universities/:slug', async (req: Request, res: Response) => {
 });
 
 // GET /api/admin/universities/:id
-router.get('/admin/universities/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.get('/admin/universities/:id', requireAuth, requireStaff, async (req: Request, res: Response) => {
     try {
         const doc = await University.findById(req.params.id).lean();
         if (!doc) return res.status(404).json({ error: 'University not found' });
@@ -117,7 +117,7 @@ router.get('/admin/universities/:id', requireAuth, requireAdmin, async (req: Req
 });
 
 // POST /api/admin/universities
-router.post('/admin/universities', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.post('/admin/universities', requireAuth, requireStaff, async (req: Request, res: Response) => {
     try {
         const payload = universityPayload(req.body || {});
         if (!payload?.name || !payload?.description || !payload?.website) {
@@ -146,7 +146,7 @@ router.post('/admin/universities', requireAuth, requireAdmin, async (req: Reques
 });
 
 // PUT /api/admin/universities/:id
-router.put('/admin/universities/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.put('/admin/universities/:id', requireAuth, requireStaff, async (req: Request, res: Response) => {
     try {
         const payload = universityPayload(req.body || {});
         const updated = await University.findById(req.params.id);
@@ -181,7 +181,7 @@ router.put('/admin/universities/:id', requireAuth, requireAdmin, async (req: Req
 });
 
 // POST /api/admin/universities/:id/image
-router.post('/admin/universities/:id/image', requireAuth, requireAdmin, upload.single('image'), async (req: Request, res: Response) => {
+router.post('/admin/universities/:id/image', requireAuth, requireStaff, upload.single('image'), async (req: Request, res: Response) => {
     try {
         if (!req.file?.buffer) {
             return res.status(400).json({ error: 'Image file is required' });
@@ -228,7 +228,7 @@ router.post('/admin/universities/:id/image', requireAuth, requireAdmin, upload.s
 });
 
 // POST /api/admin/universities/:id/gallery
-router.post('/admin/universities/:id/gallery', requireAuth, requireAdmin, upload.array('images', 12), async (req: Request, res: Response) => {
+router.post('/admin/universities/:id/gallery', requireAuth, requireStaff, upload.array('images', 12), async (req: Request, res: Response) => {
     try {
         const files = (req.files as Express.Multer.File[] | undefined) || [];
         if (!files.length) return res.status(400).json({ error: 'Select at least one image' });

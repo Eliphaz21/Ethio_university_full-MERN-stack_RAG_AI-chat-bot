@@ -21,7 +21,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, user, adminOnly = false }) => {
   if (!user) return <Navigate to="/login" replace />;
-  if (adminOnly && user.role !== 'admin') return <Navigate to="/" replace />;
+  if (adminOnly && !['admin', 'agent'].includes(user.role)) return <Navigate to="/" replace />;
   return <>{children}</>;
 };
 
@@ -52,7 +52,7 @@ const App: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     async function loadDocs() {
-      if (!user || user.role !== 'admin') return;
+      if (!user || !['admin', 'agent'].includes(user.role)) return;
       try {
         const docs = await api.getKnowledge();
         if (!mounted) return;

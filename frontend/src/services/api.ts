@@ -161,8 +161,8 @@ export const api = {
   getUser: (id: string) =>
     request<User>(`/api/admin/users/${id}`, { method: 'GET', requireAuth: true }),
 
-  createUser: (data: Omit<User, 'id' | 'createdAt'> & { password: string }) =>
-    request<{ message: string; user: User }>('/api/admin/users', {
+  createUser: (data: Omit<User, 'id' | 'createdAt'> & { password?: string }) =>
+    request<{ message: string; user: User; temporaryPassword?: string }>('/api/admin/users', {
       method: 'POST',
       data,
       requireAuth: true,

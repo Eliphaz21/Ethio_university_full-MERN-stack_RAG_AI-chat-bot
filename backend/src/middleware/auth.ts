@@ -5,7 +5,7 @@ import { JWT_SECRET } from '../config/env.js';
 declare global {
   namespace Express {
     interface Request {
-      user?: { id: string; role: 'user' | 'admin' };
+      user?: { id: string; role: 'user' | 'agent' | 'admin' };
     }
   }
 }
@@ -19,7 +19,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; role: 'user' | 'admin' };
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; role: 'user' | 'agent' | 'admin' };
     req.user = { id: decoded.id, role: decoded.role };
     next();
   } catch {
@@ -30,6 +30,13 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+}
+
+export function requireStaff(req: Request, res: Response, next: NextFunction) {
+  if (!req.user || !['admin', 'agent'].includes(req.user.role)) {
+    return res.status(403).json({ error: 'Staff access required' });
   }
   next();
 }

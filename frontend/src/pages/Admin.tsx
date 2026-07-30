@@ -46,6 +46,8 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   const [selectedUser, setSelectedUser] = useState<User | null | undefined>(undefined);
   const [savingUser, setSavingUser] = useState(false);
   const [userSearch, setUserSearch] = useState('');
+  const [userFormError, setUserFormError] = useState<string | null>(null);
+  const [createdCredentials, setCreatedCredentials] = useState<{ email: string; password: string } | null>(null);
 
   useEffect(() => {
     fetchAdminData();
@@ -54,10 +56,10 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   const fetchAdminData = async () => {
     try {
       const [usersList, knowledgeList, uniList, auditResult] = await Promise.all([
-        api.getUsers().catch(() => []),
+        user.role === 'admin' ? api.getUsers().catch(() => []) : Promise.resolve([]),
         api.getKnowledge().catch(() => []),
         api.getUniversities().catch(() => []),
-        api.getAuditLogs({ limit: 50 }).catch(() => ({ items: [], total: 0, page: 1, pages: 1 })),
+        user.role === 'admin' ? api.getAuditLogs({ limit: 50 }).catch(() => ({ items: [], total: 0, page: 1, pages: 1 })) : Promise.resolve({ items: [], total: 0, page: 1, pages: 1 }),
       ]);
       const usersArr = Array.isArray(usersList) ? usersList : (usersList as any)?.data ?? [];
       const knowledgeArr = Array.isArray(knowledgeList) ? knowledgeList : (knowledgeList as any)?.data ?? [];
@@ -96,18 +98,22 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
 
   const handleSaveUser = async (draft: UserEditorDraft) => {
     setSavingUser(true);
+    setUserFormError(null);
     try {
       if (draft.id) {
         const response = await api.updateUser(draft.id, draft);
         setUsers((current) => current.map((item) => item.id === response.user.id ? response.user : item));
       } else {
-        const response = await api.createUser(draft as Omit<User, 'id' | 'createdAt'> & { password: string });
+        const response = await api.createUser(draft);
         setUsers((current) => [response.user, ...current]);
+        if (response.temporaryPassword) {
+          setCreatedCredentials({ email: response.user.email, password: response.temporaryPassword });
+        }
       }
       setSelectedUser(undefined);
       void refreshAuditLogs();
     } catch (error: any) {
-      alert(error?.message || 'Failed to save user');
+      setUserFormError(error?.message || 'Failed to save user');
     } finally {
       setSavingUser(false);
     }
@@ -338,7 +344,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
             >
               <School className="w-4 h-4" /> University List
             </button>
-            <button
+            {user.role === 'admin' && <button
               onClick={() => setActiveTab('users')}
               className={`rounded-xl px-4 py-3 font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'users'
@@ -347,7 +353,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
               }`}
             >
               <Users className="w-4 h-4" /> Users
-            </button>
+            </button>}
             <button
               onClick={() => setActiveTab('knowledge')}
               className={`rounded-xl px-4 py-3 font-bold text-sm flex items-center gap-2 transition ${
@@ -358,7 +364,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
             >
               <FileText className="w-4 h-4" /> Knowledge Base
             </button>
-            <button
+            {user.role === 'admin' && <button
               onClick={() => {
                 setActiveTab('audit');
                 void refreshAuditLogs();
@@ -370,7 +376,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
               }`}
             >
               <Activity className="w-4 h-4" /> Audit Log
-            </button>
+            </button>}
           </nav>
         </div>
 
@@ -464,13 +470,13 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                         >
                           <Edit3 className="w-4 h-4" /> Edit
                         </button>
-                        <button
+                        {user.role === 'admin' && <button
                           onClick={() => handleDeleteUniversity(uni.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Delete university"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </button>}
                       </div>
                     </div>
                   );
@@ -497,6 +503,19 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
         {/* Users Management Tab */}
         {activeTab === 'users' && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            {createdCredentials && (
+              <div className="m-5 flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-wider text-emerald-700">Account created successfully</p>
+                  <p className="mt-1 text-sm text-emerald-950">Temporary sign-in for <strong>{createdCredentials.email}</strong>: <code className="rounded bg-white px-2 py-1 font-black">{createdCredentials.password}</code></p>
+                  <p className="mt-1 text-xs text-emerald-800">Share this securely. It is displayed only for this creation result.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => void navigator.clipboard.writeText(createdCredentials.password)} className="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-black text-white">Copy password</button>
+                  <button onClick={() => setCreatedCredentials(null)} className="rounded-xl border border-emerald-300 px-3 py-2 text-xs font-bold text-emerald-900">Dismiss</button>
+                </div>
+              </div>
+            )}
             <div className="px-6 py-4 border-b border-slate-200 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <h3 className="text-lg font-bold text-slate-900">Registered Scholars & Users</h3>
@@ -552,8 +571,10 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2.5 py-1 inline-flex text-[10px] font-extrabold uppercase tracking-wider rounded-full ${
-                          u.role === 'admin' 
-                            ? 'bg-red-100 text-red-800 border border-red-200' 
+                          u.role === 'admin'
+                            ? 'bg-red-100 text-red-800 border border-red-200'
+                            : u.role === 'agent'
+                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
                             : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                         }`}>
                           {u.role}
@@ -747,7 +768,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
         )}
       </div>
       {selectedUser !== undefined && (
-        <UserEditorModal initialUser={selectedUser} saving={savingUser} onClose={() => setSelectedUser(undefined)} onSave={handleSaveUser} />
+        <UserEditorModal initialUser={selectedUser} saving={savingUser} error={userFormError} onClose={() => { setSelectedUser(undefined); setUserFormError(null); }} onSave={handleSaveUser} />
       )}
       {selectedKnowledge && (
         <KnowledgeDetailsModal document={selectedKnowledge} saving={savingKnowledge} onClose={() => setSelectedKnowledge(null)} onSave={saveKnowledgeMetadata} />

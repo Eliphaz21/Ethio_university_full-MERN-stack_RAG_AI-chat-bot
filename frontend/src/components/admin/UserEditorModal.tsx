@@ -9,6 +9,7 @@ interface UserEditorModalProps {
   saving: boolean;
   onClose: () => void;
   onSave: (draft: UserEditorDraft) => Promise<void>;
+  error?: string | null;
 }
 
 const emptyDraft = (): UserEditorDraft => ({
@@ -24,7 +25,7 @@ const emptyDraft = (): UserEditorDraft => ({
   avatarUrl: '',
 });
 
-const UserEditorModal: React.FC<UserEditorModalProps> = ({ initialUser, saving, onClose, onSave }) => {
+const UserEditorModal: React.FC<UserEditorModalProps> = ({ initialUser, saving, onClose, onSave, error }) => {
   const [draft, setDraft] = useState<UserEditorDraft>({ ...emptyDraft(), ...initialUser, password: '' });
   const field = <K extends keyof UserEditorDraft>(key: K, value: UserEditorDraft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
@@ -46,12 +47,12 @@ const UserEditorModal: React.FC<UserEditorModalProps> = ({ initialUser, saving, 
         <div className="grid gap-5 p-6 md:grid-cols-2">
           <Field label="Full name *"><input required className={inputClass} value={draft.username} onChange={(e) => field('username', e.target.value)} /></Field>
           <Field label="Email *"><input required type="email" className={inputClass} value={draft.email} onChange={(e) => field('email', e.target.value)} /></Field>
-          <Field label={initialUser ? 'New password (leave blank to keep)' : 'Temporary password *'}>
-            <input required={!initialUser} minLength={8} type="password" className={inputClass} value={draft.password || ''} onChange={(e) => field('password', e.target.value)} placeholder="Minimum 8 characters" />
+          <Field label={initialUser ? 'New password (optional)' : 'Temporary password (optional)'}>
+            <input minLength={8} type="password" className={inputClass} value={draft.password || ''} onChange={(e) => field('password', e.target.value)} placeholder={initialUser ? 'Leave blank to keep current password' : 'Leave blank to generate securely'} />
           </Field>
           <Field label="Role">
             <select className={inputClass} value={draft.role} onChange={(e) => field('role', e.target.value as UserRole)}>
-              <option value="user">User</option><option value="admin">Administrator</option>
+              <option value="user">User</option><option value="agent">Agent</option><option value="admin">Administrator</option>
             </select>
           </Field>
           <Field label="Phone"><input className={inputClass} value={draft.phone || ''} onChange={(e) => field('phone', e.target.value)} /></Field>
@@ -61,8 +62,9 @@ const UserEditorModal: React.FC<UserEditorModalProps> = ({ initialUser, saving, 
           <Field label="Avatar URL" className="md:col-span-2"><input type="url" className={inputClass} value={draft.avatarUrl || ''} onChange={(e) => field('avatarUrl', e.target.value)} /></Field>
           <Field label="Biography" className="md:col-span-2"><textarea rows={5} className={inputClass} value={draft.bio || ''} onChange={(e) => field('bio', e.target.value)} /></Field>
           <div className="md:col-span-2 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-900">
-            <Shield className="mt-0.5 h-4 w-4 shrink-0" /> Administrator accounts can manage users, universities, knowledge documents, and audit records. Assign this role only when required.
+            <Shield className="mt-0.5 h-4 w-4 shrink-0" /> Agents can manage universities and RAG knowledge sources. Administrators additionally control users, roles, deletions, and audit records.
           </div>
+          {error && <div className="md:col-span-2 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">{error}</div>}
         </div>
         <footer className="flex justify-end gap-3 border-t border-slate-200 bg-white p-5">
           <button type="button" onClick={onClose} className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-bold text-slate-700">Cancel</button>

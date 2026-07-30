@@ -138,7 +138,7 @@ const Profile: React.FC<ProfilePageProps> = ({ user, onUpdateUser }) => {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">{formData.username}</h1>
                   <span className="bg-emerald-500/20 backdrop-blur-md border border-emerald-400/30 text-emerald-300 px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider">
-                    {user?.role === 'admin' ? 'Administrator' : 'Academic Scholar'}
+                    {user?.role === 'admin' ? 'Administrator' : user?.role === 'agent' ? 'Operations Agent' : 'Academic Scholar'}
                   </span>
                 </div>
                 <p className="text-emerald-100/80 text-xs sm:text-sm mt-1 font-medium truncate">

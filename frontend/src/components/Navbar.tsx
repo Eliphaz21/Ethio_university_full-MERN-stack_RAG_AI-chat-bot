@@ -174,9 +174,9 @@ const Navbar: React.FC<NavbarProps> = ({
                   <LayoutDashboard className="w-4 h-4" /> Dashboard
                 </Link>
 
-                {user.role === 'admin' && (
+                {['admin', 'agent'].includes(user.role) && (
                   <Link to="/admin" className={`hover:text-[#059669] transition flex items-center gap-2 ${isActive('/admin') ? 'text-[#059669]' : ''}`}>
-                    <Shield className="w-4 h-4" /> Admin Panel
+                    <Shield className="w-4 h-4" /> Operations
                   </Link>
                 )}
 
@@ -193,7 +193,7 @@ const Navbar: React.FC<NavbarProps> = ({
                       {user.username}
                     </span>
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
-                      {user.role === 'admin' ? 'Administrator' : 'My Profile'}
+                      {user.role === 'admin' ? 'Administrator' : user.role === 'agent' ? 'Operations Agent' : 'My Profile'}
                       <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isProfileOpen ? 'rotate-180 text-[#059669]' : ''}`} />
                     </span>
                   </div>

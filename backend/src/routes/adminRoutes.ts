@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 import { User } from '../models/user.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 import { AuditLog } from '../models/auditLog.js';
@@ -47,19 +48,22 @@ router.get('/users/:id', requireAuth, requireAdmin, async (req: Request, res: Re
 router.post('/users', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         const { username, email, password, role = 'user', phone, institution, department, bio, academicTitle, avatarUrl } = req.body;
-        if (!username?.trim() || !email?.trim() || !password) {
-            return res.status(400).json({ error: 'Name, email, and password are required' });
+        if (!username?.trim() || !email?.trim()) {
+            return res.status(400).json({ error: 'Name and email are required' });
         }
-        if (String(password).length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
-        if (!['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Invalid user role' });
+        if (password && String(password).length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters or left blank for automatic generation' });
+        if (!['user', 'agent', 'admin'].includes(role)) return res.status(400).json({ error: 'Invalid user role' });
 
         const normalizedEmail = String(email).trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) return res.status(400).json({ error: 'Enter a valid email address' });
         if (await User.exists({ email: normalizedEmail })) return res.status(409).json({ error: 'Email already in use' });
+        const temporaryPassword = password ? undefined : `${randomBytes(6).toString('base64url')}!aA1`;
+        const passwordToHash = String(password || temporaryPassword);
 
         const created = await User.create({
             username: String(username).trim(),
             email: normalizedEmail,
-            password: await bcrypt.hash(String(password), 10),
+            password: await bcrypt.hash(passwordToHash, 10),
             role,
             phone: String(phone || '').trim(),
             institution: String(institution || '').trim(),
@@ -75,7 +79,11 @@ router.post('/users', requireAuth, requireAdmin, async (req: Request, res: Respo
             resourceLabel: created.email,
             details: { role: created.role },
         });
-        res.status(201).json({ message: 'User created', user: serializeUser(created) });
+        res.status(201).json({
+            message: temporaryPassword ? 'User created with a generated temporary password' : 'User created',
+            user: serializeUser(created),
+            temporaryPassword,
+        });
     } catch (err: any) {
         res.status(400).json({ error: err.message });
     }
@@ -95,7 +103,7 @@ router.put('/users/:id', requireAuth, requireAdmin, async (req: Request, res: Re
         }
         if (username !== undefined) user.username = String(username).trim();
         if (role !== undefined) {
-            if (!['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Invalid user role' });
+            if (!['user', 'agent', 'admin'].includes(role)) return res.status(400).json({ error: 'Invalid user role' });
             user.role = role;
         }
         if (password) {

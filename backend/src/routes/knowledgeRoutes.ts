@@ -6,7 +6,7 @@ import { randomUUID } from 'crypto';
 import { isIP } from 'net';
 import { lookup } from 'dns/promises';
 import { Knowledge } from '../models/knowledge.js';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { requireAuth, requireStaff } from '../middleware/auth.js';
 import { embedText, chunkText, RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP } from '../services/voyage.js';
 import { recordAudit } from '../services/audit.js';
 
@@ -98,7 +98,7 @@ function multerSingleFile(req: Request, res: Response, next: NextFunction) {
 }
 
 // GET /api/admin/knowledge/debug - debug endpoint to see what's in DB
-router.get('/knowledge/debug', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.get('/knowledge/debug', requireAuth, requireStaff, async (req: Request, res: Response) => {
   try {
     const allDocs = await Knowledge.find().lean();
     const debugInfo = {
@@ -119,7 +119,7 @@ router.get('/knowledge/debug', requireAuth, requireAdmin, async (req: Request, r
 });
 
 // POST /api/admin/knowledge — text; large content is chunked and each chunk embedded separately
-router.post('/knowledge', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.post('/knowledge', requireAuth, requireStaff, async (req: Request, res: Response) => {
   try {
     const { title, content, type, category } = req.body;
     const typeVal = (type === 'pdf' || type === 'website') ? type : 'text';
@@ -158,7 +158,7 @@ router.post('/knowledge', requireAuth, requireAdmin, async (req: Request, res: R
 });
 
 // POST /api/admin/knowledge/url - fetch website, extract text, index (admin only)
-router.post('/knowledge/url', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.post('/knowledge/url', requireAuth, requireStaff, async (req: Request, res: Response) => {
   try {
     const { url, title: customTitle, category } = req.body as { url?: string; title?: string; category?: string };
     if (!url || typeof url !== 'string') return res.status(400).json({ error: 'URL is required' });
@@ -228,7 +228,7 @@ function extractTextFromPdf(buffer: Buffer): Promise<string> {
   return Promise.reject(new Error('PDF parser not available'));
 }
 
-router.post('/knowledge/pdf', requireAuth, requireAdmin, multerSingleFile, async (req: Request, res: Response) => {
+router.post('/knowledge/pdf', requireAuth, requireStaff, multerSingleFile, async (req: Request, res: Response) => {
   try {
     const file = (req as any).file;
     if (!file?.buffer) return res.status(400).json({ error: 'No PDF file uploaded' });
@@ -272,7 +272,7 @@ router.post('/knowledge/pdf', requireAuth, requireAdmin, multerSingleFile, async
 });
 
 // GET /api/admin/knowledge - list indexed knowledge docs (admin only)
-router.get('/knowledge', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.get('/knowledge', requireAuth, requireStaff, async (req: Request, res: Response) => {
   try {
     const docs = await Knowledge.find().select('-embedding').sort({ uploadedAt: -1, chunkIndex: 1 }).lean();
     const groups = new Map<string, any>();
@@ -303,7 +303,7 @@ router.get('/knowledge', requireAuth, requireAdmin, async (req: Request, res: Re
   }
 });
 
-router.get('/knowledge/:documentId', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.get('/knowledge/:documentId', requireAuth, requireStaff, async (req: Request, res: Response) => {
   try {
     let docs = await Knowledge.find({ documentId: req.params.documentId }).select('-embedding').sort({ chunkIndex: 1 }).lean();
     if (!docs.length) {
@@ -329,7 +329,7 @@ router.get('/knowledge/:documentId', requireAuth, requireAdmin, async (req: Requ
   }
 });
 
-router.put('/knowledge/:documentId', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.put('/knowledge/:documentId', requireAuth, requireStaff, async (req: Request, res: Response) => {
   try {
     const title = String(req.body.title || '').trim();
     const category = String(req.body.category || '').trim();
@@ -354,7 +354,7 @@ router.put('/knowledge/:documentId', requireAuth, requireAdmin, async (req: Requ
 });
 
 // DELETE /api/admin/knowledge/:id - remove a knowledge doc (admin only)
-router.delete('/knowledge/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.delete('/knowledge/:id', requireAuth, requireStaff, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const first = await Knowledge.findOne({ documentId: id }).lean() || await Knowledge.findById(id).lean();
