@@ -103,8 +103,8 @@ export const api = {
     }),
 
   // Admin routes
-  postAdminKnowledge: (body: { title: string; content: string; type: string }) =>
-    request<{ message: string; id: string }>('/api/admin/knowledge', {
+  postAdminKnowledge: (body: { title: string; content: string; type: string; category?: string }) =>
+    request<{ message: string; id: string; title: string; chunks: number; contentLength: number }>('/api/admin/knowledge', {
       method: 'POST',
       data: body,
       requireAuth: true,
@@ -120,16 +120,29 @@ export const api = {
     }).then((res) => res.data);
   },
 
-  postAdminKnowledgeUrl: (body: { url: string; title?: string }) =>
-    request<{ message: string; id: string; title?: string }>('/api/admin/knowledge/url', {
+  postAdminKnowledgeUrl: (body: { url: string; title?: string; category?: string }) =>
+    request<{ message: string; id: string; title?: string; chunks: number; contentLength: number }>('/api/admin/knowledge/url', {
       method: 'POST',
       data: body,
       requireAuth: true,
     }),
 
   getKnowledge: () =>
-    request<Array<{ id: string; title: string; content: string; type: string; uploadedAt: string }>>('/api/admin/knowledge', {
+    request<import('../types').KnowledgeDoc[]>('/api/admin/knowledge', {
       method: 'GET',
+      requireAuth: true,
+    }),
+
+  getKnowledgeDocument: (id: string) =>
+    request<import('../types').KnowledgeDoc>(`/api/admin/knowledge/${id}`, {
+      method: 'GET',
+      requireAuth: true,
+    }),
+
+  updateKnowledgeDocument: (id: string, body: { title: string; category: string }) =>
+    request<{ message: string; updatedChunks: number }>(`/api/admin/knowledge/${id}`, {
+      method: 'PUT',
+      data: body,
       requireAuth: true,
     }),
 

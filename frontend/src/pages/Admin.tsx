@@ -6,6 +6,7 @@ import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image 
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import UniversityEditorModal from '../components/admin/UniversityEditorModal';
 import UserEditorModal, { UserEditorDraft } from '../components/admin/UserEditorModal';
+import KnowledgeDetailsModal from '../components/admin/KnowledgeDetailsModal';
 
 interface AdminProps {
   user: User;
@@ -34,6 +35,11 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const [knowledgeCategory, setKnowledgeCategory] = useState('General');
+  const [knowledgeSearch, setKnowledgeSearch] = useState('');
+  const [knowledgeCategoryFilter, setKnowledgeCategoryFilter] = useState('All');
+  const [selectedKnowledge, setSelectedKnowledge] = useState<KnowledgeDoc | null>(null);
+  const [savingKnowledge, setSavingKnowledge] = useState(false);
 
   const [savingUni, setSavingUni] = useState(false);
   const [isUniversityEditorOpen, setIsUniversityEditorOpen] = useState(false);
@@ -112,6 +118,36 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       .some((value) => value?.toLowerCase().includes(userSearch.trim().toLowerCase()))
   );
 
+  const knowledgeCategories = ['All', ...Array.from(new Set(knowledgeDocs.map((doc) => doc.category || 'General'))).sort()];
+  const visibleKnowledge = knowledgeDocs.filter((doc) => {
+    const matchesCategory = knowledgeCategoryFilter === 'All' || (doc.category || 'General') === knowledgeCategoryFilter;
+    const query = knowledgeSearch.trim().toLowerCase();
+    return matchesCategory && (!query || [doc.title, doc.category, doc.type, doc.content].some((value) => value?.toLowerCase().includes(query)));
+  });
+
+  const openKnowledgeDetails = async (document: KnowledgeDoc) => {
+    try {
+      setSelectedKnowledge(await api.getKnowledgeDocument(document.id));
+    } catch (error: any) {
+      alert(error?.message || 'Unable to load knowledge document');
+    }
+  };
+
+  const saveKnowledgeMetadata = async (title: string, category: string) => {
+    if (!selectedKnowledge) return;
+    setSavingKnowledge(true);
+    try {
+      await api.updateKnowledgeDocument(selectedKnowledge.id, { title, category });
+      setKnowledgeDocs(await api.getKnowledge());
+      setSelectedKnowledge((current) => current ? { ...current, title, category } : null);
+      void refreshAuditLogs();
+    } catch (error: any) {
+      alert(error?.message || 'Unable to update knowledge document');
+    } finally {
+      setSavingKnowledge(false);
+    }
+  };
+
   const handleDeleteKnowledge = async (docId: string) => {
     if (window.confirm('Are you sure you want to delete this knowledge document?')) {
       try {
@@ -163,12 +199,13 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       const formData = new FormData();
       formData.append('file', pdfFile);
       if (pdfTitle.trim()) formData.append('title', pdfTitle.trim());
+      formData.append('category', knowledgeCategory.trim() || 'General');
       const res = await api.uploadAdminKnowledgePDF(formData);
-      const id = (res as any)?.id;
-      setKnowledgeDocs(prev => [{ id: id || String(Date.now()), title: pdfTitle || pdfFile.name, content: '', type: 'pdf', uploadedAt: new Date().toISOString() }, ...prev]);
-      setUploadSuccess('PDF uploaded and indexed successfully.');
+      setKnowledgeDocs(await api.getKnowledge());
+      setUploadSuccess(`PDF indexed into ${(res as any).chunks || 1} searchable chunk(s).`);
       void refreshAuditLogs();
-      clearUploadState();
+      setPdfFile(null);
+      setPdfTitle('');
     } catch (err: any) {
       setUploadError(err?.response?.data?.error || err?.message || 'PDF upload failed');
     } finally {
@@ -187,12 +224,12 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
     setUploadSuccess(null);
     try {
       const title = textTitle.trim() || `Text ${new Date().toLocaleDateString()}`;
-      const res = await api.postAdminKnowledge({ title, content: textContent.trim(), type: 'text' });
-      const id = (res as any)?.id;
-      setKnowledgeDocs(prev => [{ id: id || String(Date.now()), title, content: textContent.trim(), type: 'text', uploadedAt: new Date().toISOString() }, ...prev]);
-      setUploadSuccess('Text document indexed successfully.');
+      const res = await api.postAdminKnowledge({ title, content: textContent.trim(), type: 'text', category: knowledgeCategory.trim() || 'General' });
+      setKnowledgeDocs(await api.getKnowledge());
+      setUploadSuccess(`Text indexed into ${res.chunks || 1} searchable chunk(s).`);
       void refreshAuditLogs();
-      clearUploadState();
+      setTextTitle('');
+      setTextContent('');
     } catch (err: any) {
       setUploadError(err?.message || 'Failed to add text document');
     } finally {
@@ -211,13 +248,12 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
     setUploadError(null);
     setUploadSuccess(null);
     try {
-      const res = await api.postAdminKnowledgeUrl({ url, title: urlTitle.trim() || undefined });
-      const id = (res as any)?.id;
-      const title = (res as any)?.title || url;
-      setKnowledgeDocs(prev => [{ id: id || String(Date.now()), title, content: '', type: 'website', uploadedAt: new Date().toISOString() }, ...prev]);
-      setUploadSuccess('Website content indexed successfully.');
+      const res = await api.postAdminKnowledgeUrl({ url, title: urlTitle.trim() || undefined, category: knowledgeCategory.trim() || 'General' });
+      setKnowledgeDocs(await api.getKnowledge());
+      setUploadSuccess(`Website indexed into ${res.chunks || 1} searchable chunk(s).`);
       void refreshAuditLogs();
-      clearUploadState();
+      setUrlInput('');
+      setUrlTitle('');
     } catch (err: any) {
       setUploadError(err?.message || 'Failed to index website URL');
     } finally {
@@ -565,6 +601,10 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
             </div>
             {(uploadSection === 'pdf' || uploadSection === 'text' || uploadSection === 'url') && (
               <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                <label className="mb-4 block max-w-xl text-sm font-medium text-slate-700">
+                  Category
+                  <input value={knowledgeCategory} onChange={(e) => setKnowledgeCategory(e.target.value)} placeholder="Admissions, Programs, Policies, Student Services..." className="mt-1.5 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+                </label>
                 {uploadSection === 'pdf' && (
                   <form onSubmit={handlePdfUpload} className="space-y-3 max-w-xl">
                     <label className="block text-sm font-medium text-slate-700">PDF file</label>
@@ -640,22 +680,31 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                 {uploadSuccess && <p className="mt-2 text-sm text-green-600">{uploadSuccess}</p>}
               </div>
             )}
+            <div className="grid gap-3 border-b border-slate-200 bg-white p-4 sm:grid-cols-[1fr_220px]">
+              <label className="relative"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input value={knowledgeSearch} onChange={(e) => setKnowledgeSearch(e.target.value)} placeholder="Search indexed documents and content" className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-emerald-600" /></label>
+              <select value={knowledgeCategoryFilter} onChange={(e) => setKnowledgeCategoryFilter(e.target.value)} className="rounded-xl border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-emerald-600">
+                {knowledgeCategories.map((category) => <option key={category}>{category}</option>)}
+              </select>
+            </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Title</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">RAG index</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Uploaded</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-200">
-                  {knowledgeDocs.map((doc) => (
-                    <tr key={doc.id}>
+                  {visibleKnowledge.map((doc) => (
+                    <tr key={doc.id} className="hover:bg-slate-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-slate-900">{doc.title}</div>
+                        <button onClick={() => void openKnowledgeDetails(doc)} className="text-left text-sm font-bold text-slate-900 hover:text-emerald-700">{doc.title}</button>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap"><span className="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase text-amber-800">{doc.category || 'General'}</span></td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           doc.type === 'pdf' 
@@ -667,10 +716,12 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                           {doc.type.toUpperCase()}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-600"><span className="font-black text-slate-900">{doc.chunks || 1}</span> chunk(s)<br />{(doc.contentLength || doc.content.length).toLocaleString()} characters</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                         {new Date(doc.uploadedAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onClick={() => void openKnowledgeDetails(doc)} className="mr-2 text-emerald-700 hover:text-emerald-900"><Edit3 className="h-4 w-4" /></button>
                         <button
                           onClick={() => handleDeleteKnowledge(doc.id)}
                           className="text-red-600 hover:text-red-900"
@@ -680,6 +731,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                       </td>
                     </tr>
                   ))}
+                  {!visibleKnowledge.length && <tr><td colSpan={7} className="px-6 py-12 text-center text-sm text-slate-500">No knowledge documents match these filters.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -688,6 +740,9 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       </div>
       {selectedUser !== undefined && (
         <UserEditorModal initialUser={selectedUser} saving={savingUser} onClose={() => setSelectedUser(undefined)} onSave={handleSaveUser} />
+      )}
+      {selectedKnowledge && (
+        <KnowledgeDetailsModal document={selectedKnowledge} saving={savingKnowledge} onClose={() => setSelectedKnowledge(null)} onSave={saveKnowledgeMetadata} />
       )}
     </div>
   );

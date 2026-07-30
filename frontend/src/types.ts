@@ -19,6 +19,11 @@ export interface KnowledgeDoc {
   title: string;
   content: string;
   type: string;
+  category?: string;
+  sourceUrl?: string;
+  originalFilename?: string;
+  chunks?: number;
+  contentLength?: number;
   uploadedAt: string;
 }
 
