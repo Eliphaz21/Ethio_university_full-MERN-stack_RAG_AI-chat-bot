@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, KnowledgeDoc, University } from '../types';
+import { AuditLog, User, KnowledgeDoc, University } from '../types';
 import { api } from '../services/api';
-import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin } from 'lucide-react';
+import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin, Search, ShieldCheck } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import UniversityEditorModal from '../components/admin/UniversityEditorModal';
-
-interface AdminStats {
-  totalUsers: number;
-  totalKnowledge: number;
-  totalUniversities: number;
-  recentUploads: KnowledgeDoc[];
-}
 
 interface AdminProps {
   user: User;
@@ -20,12 +13,14 @@ interface AdminProps {
 
 const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDoc[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'knowledge' | 'universities'>('overview');
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [auditSearch, setAuditSearch] = useState('');
+  const [auditTotal, setAuditTotal] = useState(0);
+  const [activeTab, setActiveTab] = useState<'users' | 'knowledge' | 'universities' | 'audit'>('universities');
   
   // Knowledge upload state
   const [uploadSection, setUploadSection] = useState<'pdf' | 'text' | 'url' | null>(null);
@@ -48,10 +43,11 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
 
   const fetchAdminData = async () => {
     try {
-      const [usersList, knowledgeList, uniList] = await Promise.all([
+      const [usersList, knowledgeList, uniList, auditResult] = await Promise.all([
         api.getUsers().catch(() => []),
         api.getKnowledge().catch(() => []),
         api.getUniversities().catch(() => []),
+        api.getAuditLogs({ limit: 50 }).catch(() => ({ items: [], total: 0, page: 1, pages: 1 })),
       ]);
       const usersArr = Array.isArray(usersList) ? usersList : (usersList as any)?.data ?? [];
       const knowledgeArr = Array.isArray(knowledgeList) ? knowledgeList : (knowledgeList as any)?.data ?? [];
@@ -60,19 +56,20 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       setUsers(usersArr);
       setKnowledgeDocs(knowledgeArr);
       setUniversities(uniArr);
+      setAuditLogs(auditResult.items);
+      setAuditTotal(auditResult.total);
       onUniversitiesChange?.(uniArr);
-
-      setStats({
-        totalUsers: usersArr.length,
-        totalKnowledge: knowledgeArr.length,
-        totalUniversities: uniArr.length,
-        recentUploads: knowledgeArr.slice(-5)
-      });
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshAuditLogs = async (search = auditSearch) => {
+    const result = await api.getAuditLogs({ limit: 50, search: search.trim() || undefined });
+    setAuditLogs(result.items);
+    setAuditTotal(result.total);
   };
 
   const handleDeleteUser = async (userId: string) => {
@@ -141,7 +138,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       const id = (res as any)?.id;
       setKnowledgeDocs(prev => [{ id: id || String(Date.now()), title: pdfTitle || pdfFile.name, content: '', type: 'pdf', uploadedAt: new Date().toISOString() }, ...prev]);
       setUploadSuccess('PDF uploaded and indexed successfully.');
-      if (stats) setStats({ ...stats, totalKnowledge: stats.totalKnowledge + 1, recentUploads: [{ id: id || '', title: pdfTitle || pdfFile.name, content: '', type: 'pdf', uploadedAt: new Date().toISOString() }, ...stats.recentUploads.slice(0, 4)] });
+      void refreshAuditLogs();
       clearUploadState();
     } catch (err: any) {
       setUploadError(err?.response?.data?.error || err?.message || 'PDF upload failed');
@@ -165,7 +162,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       const id = (res as any)?.id;
       setKnowledgeDocs(prev => [{ id: id || String(Date.now()), title, content: textContent.trim(), type: 'text', uploadedAt: new Date().toISOString() }, ...prev]);
       setUploadSuccess('Text document indexed successfully.');
-      if (stats) setStats({ ...stats, totalKnowledge: stats.totalKnowledge + 1, recentUploads: [{ id: id || '', title, content: '', type: 'text', uploadedAt: new Date().toISOString() }, ...stats.recentUploads.slice(0, 4)] });
+      void refreshAuditLogs();
       clearUploadState();
     } catch (err: any) {
       setUploadError(err?.message || 'Failed to add text document');
@@ -190,7 +187,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       const title = (res as any)?.title || url;
       setKnowledgeDocs(prev => [{ id: id || String(Date.now()), title, content: '', type: 'website', uploadedAt: new Date().toISOString() }, ...prev]);
       setUploadSuccess('Website content indexed successfully.');
-      if (stats) setStats({ ...stats, totalKnowledge: stats.totalKnowledge + 1, recentUploads: [{ id: id || '', title, content: '', type: 'website', uploadedAt: new Date().toISOString() }, ...stats.recentUploads.slice(0, 4)] });
+      void refreshAuditLogs();
       clearUploadState();
     } catch (err: any) {
       setUploadError(err?.message || 'Failed to index website URL');
@@ -255,61 +252,9 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
           </div>
         </div>
 
-        {/* Stats Overview */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600">Total Users</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.totalUsers}</p>
-                </div>
-                <Users className="h-8 w-8 text-slate-400" />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600">Knowledge Docs</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.totalKnowledge}</p>
-                </div>
-                <FileText className="h-8 w-8 text-slate-400" />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600">Universities</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.totalUniversities}</p>
-                </div>
-                <School className="h-8 w-8 text-slate-400" />
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600">Recent Activity</p>
-                  <p className="text-2xl font-bold text-slate-900">{stats.recentUploads.length}</p>
-                </div>
-                <Activity className="h-8 w-8 text-slate-400" />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Tabs */}
         <div className="border-b border-slate-200 mb-6">
           <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-                activeTab === 'overview'
-                  ? 'border-slate-900 text-slate-900'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              Overview
-            </button>
             <button
               onClick={() => setActiveTab('universities')}
               className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
@@ -340,27 +285,61 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
             >
               <FileText className="w-4 h-4" /> Knowledge Base
             </button>
+            <button
+              onClick={() => {
+                setActiveTab('audit');
+                void refreshAuditLogs();
+              }}
+              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+                activeTab === 'audit'
+                  ? 'border-slate-900 text-slate-900'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+              }`}
+            >
+              <Activity className="w-4 h-4" /> Audit Log
+            </button>
           </nav>
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'overview' && stats && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Recent Knowledge Base Uploads</h3>
-              <div className="space-y-3">
-                {stats.recentUploads.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium text-slate-900">{doc.title}</h4>
-                      <p className="text-sm text-slate-600">{doc.type} • {new Date(doc.uploadedAt).toLocaleDateString()}</p>
-                    </div>
-                    <FileText className="h-5 w-5 text-slate-400" />
-                  </div>
-                ))}
+        {activeTab === 'audit' && (
+          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-emerald-700" />
+                  <h2 className="text-lg font-black text-slate-900">Audit Log</h2>
+                </div>
+                <p className="mt-1 text-sm text-slate-500">{auditTotal} recorded administrative actions</p>
               </div>
+              <form className="relative w-full sm:max-w-sm" onSubmit={(event) => { event.preventDefault(); void refreshAuditLogs(); }}>
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input value={auditSearch} onChange={(event) => setAuditSearch(event.target.value)} placeholder="Search actor, action, or resource" className="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-3 text-sm outline-none focus:border-emerald-600" />
+              </form>
             </div>
-          </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200">
+                <thead className="bg-slate-50">
+                  <tr>
+                    {['Time', 'Actor', 'Action', 'Resource', 'Status', 'IP address'].map((heading) => <th key={heading} className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">{heading}</th>)}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {auditLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50">
+                      <td className="whitespace-nowrap px-5 py-4 text-xs text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
+                      <td className="px-5 py-4 text-sm font-bold text-slate-800">{log.actorEmail || 'System'}</td>
+                      <td className="px-5 py-4"><span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">{log.action.replaceAll('.', ' ')}</span></td>
+                      <td className="px-5 py-4"><p className="text-xs font-black uppercase text-emerald-700">{log.resourceType}</p><p className="mt-1 text-sm text-slate-700">{log.resourceLabel || log.resourceId || 'Not specified'}</p></td>
+                      <td className="px-5 py-4"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase ${log.status === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>{log.status}</span></td>
+                      <td className="whitespace-nowrap px-5 py-4 text-xs text-slate-500">{log.ipAddress || 'Unknown'}</td>
+                    </tr>
+                  ))}
+                  {!auditLogs.length && <tr><td colSpan={6} className="px-5 py-14 text-center text-sm text-slate-500">No audit events match this search.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </section>
         )}
 
         {/* University List */}

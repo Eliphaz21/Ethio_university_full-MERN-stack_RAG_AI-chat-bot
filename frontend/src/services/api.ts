@@ -4,7 +4,7 @@
  */
 
 import axios, { AxiosRequestConfig } from 'axios';
-import type { University } from '../types';
+import type { AuditLog, University } from '../types';
 
 const getBaseUrl = () => (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001';
 
@@ -150,6 +150,18 @@ export const api = {
       method: 'DELETE',
       requireAuth: true,
     }),
+
+  getAuditLogs: (params: { page?: number; limit?: number; search?: string; resourceType?: string; status?: string } = {}) => {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') query.set(key, String(value));
+    });
+    const suffix = query.toString() ? `?${query.toString()}` : '';
+    return request<{ items: AuditLog[]; total: number; page: number; pages: number }>(`/api/admin/audit-logs${suffix}`, {
+      method: 'GET',
+      requireAuth: true,
+    });
+  },
 
   getUniversities: () =>
     request<University[]>('/api/universities', {

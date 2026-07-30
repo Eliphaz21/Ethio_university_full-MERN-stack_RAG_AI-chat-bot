@@ -4,6 +4,7 @@ import multer from 'multer';
 import { University } from '../models/university.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 import { uploadBufferToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl } from '../services/cloudinary.js';
+import { recordAudit } from '../services/audit.js';
 
 const router = Router();
 const upload = multer({
@@ -132,6 +133,12 @@ router.post('/admin/universities', requireAuth, requireAdmin, async (req: Reques
 
         payload.slug = slug;
         const created = await new University(payload).save();
+        await recordAudit(req, {
+            action: 'university.created',
+            resourceType: 'university',
+            resourceId: String(created._id),
+            resourceLabel: created.name,
+        });
         res.status(201).json({ message: 'University created', university: serializeUniversity(created.toObject()) });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
@@ -161,6 +168,12 @@ router.put('/admin/universities/:id', requireAuth, requireAdmin, async (req: Req
                 if (publicId) await deleteFromCloudinary(publicId);
             }
         }
+        await recordAudit(req, {
+            action: 'university.updated',
+            resourceType: 'university',
+            resourceId: String(updated._id),
+            resourceLabel: updated.name,
+        });
         res.json({ message: 'University updated', university: serializeUniversity(updated.toObject()) });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
@@ -195,6 +208,12 @@ router.post('/admin/universities/:id/image', requireAuth, requireAdmin, upload.s
 
         university.image = uploaded.secure_url;
         await university.save();
+        await recordAudit(req, {
+            action: 'university.cover_uploaded',
+            resourceType: 'university',
+            resourceId: String(university._id),
+            resourceLabel: university.name,
+        });
 
         res.json({
             message: 'Image uploaded successfully to Cloudinary',
@@ -232,6 +251,13 @@ router.post('/admin/universities/:id/gallery', requireAuth, requireAdmin, upload
         const imageUrls = uploaded.map((image) => image.secure_url);
         university.galleryImages = [...(university.galleryImages || []), ...imageUrls];
         await university.save();
+        await recordAudit(req, {
+            action: 'university.gallery_uploaded',
+            resourceType: 'university',
+            resourceId: String(university._id),
+            resourceLabel: university.name,
+            details: { imageCount: imageUrls.length },
+        });
 
         res.json({
             message: `${imageUrls.length} gallery image${imageUrls.length === 1 ? '' : 's'} uploaded`,
@@ -262,6 +288,12 @@ router.delete('/admin/universities/:id', requireAuth, requireAdmin, async (req: 
         }
 
         await University.findByIdAndDelete(req.params.id);
+        await recordAudit(req, {
+            action: 'university.deleted',
+            resourceType: 'university',
+            resourceId: String(university._id),
+            resourceLabel: university.name,
+        });
         res.json({ message: 'University deleted successfully' });
     } catch (err: any) {
         res.status(500).json({ error: err.message });

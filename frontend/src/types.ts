@@ -22,6 +22,19 @@ export interface KnowledgeDoc {
   uploadedAt: string;
 }
 
+export interface AuditLog {
+  id: string;
+  actorEmail?: string;
+  action: string;
+  resourceType: string;
+  resourceId?: string;
+  resourceLabel?: string;
+  status: 'success' | 'failure';
+  details?: Record<string, unknown>;
+  ipAddress?: string;
+  createdAt: string;
+}
+
 export interface Department {
   id?: string;
   name: string;

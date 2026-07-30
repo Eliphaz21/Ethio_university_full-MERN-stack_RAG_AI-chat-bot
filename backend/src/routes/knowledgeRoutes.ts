@@ -5,6 +5,7 @@ import { createRequire } from 'module';
 import { Knowledge } from '../models/knowledge.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 import { embedText, chunkText, RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP } from '../services/voyage.js';
+import { recordAudit } from '../services/audit.js';
 
 // Chunk when content exceeds this (each chunk embedded separately for precise retrieval)
 const CHUNK_THRESHOLD = RAG_CHUNK_SIZE;
@@ -92,6 +93,12 @@ router.post('/knowledge', requireAuth, requireAdmin, async (req: Request, res: R
 
     const { count, totalLength } = await indexContent(title, content, typeVal);
     if (count === 0) return res.status(400).json({ error: 'No content to index' });
+    await recordAudit(req, {
+      action: 'knowledge.created',
+      resourceType: 'knowledge',
+      resourceLabel: title || 'Untitled text',
+      details: { type: typeVal, chunks: count, contentLength: totalLength },
+    });
 
     console.log('✅ Knowledge indexed:', count, 'chunk(s), total length:', totalLength);
 
@@ -129,6 +136,12 @@ router.post('/knowledge/url', requireAuth, requireAdmin, async (req: Request, re
     const title = (customTitle && customTitle.trim()) || new URL(normalizedUrl).hostname || 'Website';
     const { count, totalLength } = await indexContent(title, content, 'website');
     if (count === 0) return res.status(400).json({ error: 'No content to index' });
+    await recordAudit(req, {
+      action: 'knowledge.url_indexed',
+      resourceType: 'knowledge',
+      resourceLabel: title,
+      details: { url: normalizedUrl, chunks: count, contentLength: totalLength },
+    });
     res.status(201).json({
       message: count > 1 ? `Website indexed (${count} chunks)` : 'Website indexed successfully',
       title,
@@ -185,6 +198,12 @@ router.post('/knowledge/pdf', requireAuth, requireAdmin, multerSingleFile, async
 
     const { count, totalLength } = await indexContent(title, content, 'pdf');
     if (count === 0) return res.status(400).json({ error: 'No content to index' });
+    await recordAudit(req, {
+      action: 'knowledge.pdf_indexed',
+      resourceType: 'knowledge',
+      resourceLabel: title,
+      details: { filename: file.originalname, chunks: count, contentLength: totalLength },
+    });
 
     res.status(201).json({
       message: count > 1 ? `PDF indexed (${count} chunks)` : 'PDF indexed successfully',
@@ -215,6 +234,12 @@ router.delete('/knowledge/:id', requireAuth, requireAdmin, async (req: Request, 
     const { id } = req.params;
     const deleted = await Knowledge.findByIdAndDelete(id);
     if (!deleted) return res.status(404).json({ error: 'Knowledge document not found' });
+    await recordAudit(req, {
+      action: 'knowledge.deleted',
+      resourceType: 'knowledge',
+      resourceId: String(deleted._id),
+      resourceLabel: deleted.title,
+    });
     res.json({ message: 'Knowledge document deleted' });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
