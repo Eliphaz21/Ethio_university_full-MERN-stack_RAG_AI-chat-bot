@@ -308,44 +308,52 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
-            <p className="text-slate-600">Manage users, knowledge documents, and complete university directory information</p>
+    <div className="min-h-screen bg-[#f4f1e9]">
+      <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 lg:py-10">
+        <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-8 text-white shadow-xl sm:px-9 sm:py-10">
+          <div className="absolute -right-20 -top-28 h-72 w-72 rounded-full border-[45px] border-emerald-400/10" />
+          <div className="absolute bottom-0 right-24 h-24 w-48 bg-[radial-gradient(circle,#34d399_1px,transparent_1px)] bg-[size:12px_12px] opacity-20" />
+          <div className="relative max-w-3xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300"><ShieldCheck className="h-3.5 w-3.5" />Protected administration</div>
+            <h1 className="text-3xl font-black tracking-tight sm:text-4xl">EthioUni operations workspace</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">Manage the university directory, registered users, and RAG knowledge sources with accountable, auditable workflows.</p>
+            <div className="mt-6 flex flex-wrap gap-2 text-xs font-bold text-slate-300">
+              <span className="rounded-lg bg-white/10 px-3 py-2">{universities.length} universities</span>
+              <span className="rounded-lg bg-white/10 px-3 py-2">{users.length} users</span>
+              <span className="rounded-lg bg-white/10 px-3 py-2">{knowledgeDocs.length} knowledge sources</span>
+            </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-slate-200 mb-6">
-          <nav className="-mb-px flex space-x-8">
+        <div className="sticky top-2 z-30 mb-6 overflow-x-auto rounded-2xl border border-white/80 bg-white/90 p-1.5 shadow-lg shadow-slate-900/5 backdrop-blur">
+          <nav className="flex min-w-max gap-1">
             <button
               onClick={() => setActiveTab('universities')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              className={`rounded-xl px-4 py-3 font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'universities'
-                  ? 'border-emerald-700 text-emerald-800 font-bold'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  ? 'bg-emerald-700 text-white shadow-md shadow-emerald-900/15'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
               }`}
             >
               <School className="w-4 h-4" /> University List
             </button>
             <button
               onClick={() => setActiveTab('users')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              className={`rounded-xl px-4 py-3 font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'users'
-                  ? 'border-slate-900 text-slate-900'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  ? 'bg-emerald-700 text-white shadow-md shadow-emerald-900/15'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
               }`}
             >
               <Users className="w-4 h-4" /> Users
             </button>
             <button
               onClick={() => setActiveTab('knowledge')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              className={`rounded-xl px-4 py-3 font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'knowledge'
-                  ? 'border-slate-900 text-slate-900'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  ? 'bg-emerald-700 text-white shadow-md shadow-emerald-900/15'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
               }`}
             >
               <FileText className="w-4 h-4" /> Knowledge Base
@@ -355,10 +363,10 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                 setActiveTab('audit');
                 void refreshAuditLogs();
               }}
-              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              className={`rounded-xl px-4 py-3 font-bold text-sm flex items-center gap-2 transition ${
                 activeTab === 'audit'
-                  ? 'border-slate-900 text-slate-900'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                  ? 'bg-emerald-700 text-white shadow-md shadow-emerald-900/15'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
               }`}
             >
               <Activity className="w-4 h-4" /> Audit Log
