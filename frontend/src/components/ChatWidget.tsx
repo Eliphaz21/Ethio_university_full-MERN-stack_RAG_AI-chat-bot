@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChatMessage, KnowledgeDoc, University, User, ChatSession } from '../types';
 import { api } from '../services/api';
+import ConfirmDialog from './ConfirmDialog';
 import {
   Send, X, Bot, Plus, Trash2, MessageSquare,
   ChevronRight, Info, ShieldCheck, History,
@@ -86,6 +87,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmClearHistory, setConfirmClearHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -131,10 +133,16 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
   };
 
   const clearAllHistory = () => {
-    if (!user || !window.confirm("Clear all chat history?")) return;
+    if (!user) return;
+    setConfirmClearHistory(true);
+  };
+
+  const confirmClearAllHistory = () => {
+    if (!user) return;
     localStorage.removeItem(`chat_history_${user.id}`);
     setSessions([]);
     startNewChat();
+    setConfirmClearHistory(false);
   };
 
   const saveCurrentSession = (msgs: ChatMessage[]) => {
@@ -394,6 +402,15 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmClearHistory}
+        title="Clear chat history?"
+        description="All saved EthioUni assistant conversations on this device will be permanently removed."
+        confirmLabel="Clear history"
+        onCancel={() => setConfirmClearHistory(false)}
+        onConfirm={confirmClearAllHistory}
+      />
 
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }

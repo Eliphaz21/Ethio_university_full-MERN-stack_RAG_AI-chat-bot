@@ -7,10 +7,19 @@ import { getOptimizedImageUrl } from '../utils/imageUtils';
 import UniversityEditorModal from '../components/admin/UniversityEditorModal';
 import UserEditorModal, { UserEditorDraft } from '../components/admin/UserEditorModal';
 import KnowledgeDetailsModal from '../components/admin/KnowledgeDetailsModal';
+import ConfirmDialog from '../components/ConfirmDialog';
+import NotificationToast, { NotificationMessage } from '../components/NotificationToast';
 
 interface AdminProps {
   user: User;
   onUniversitiesChange?: (universities: University[]) => void;
+}
+
+interface ConfirmationState {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  action: () => Promise<void>;
 }
 
 const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
@@ -48,6 +57,9 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   const [userSearch, setUserSearch] = useState('');
   const [userFormError, setUserFormError] = useState<string | null>(null);
   const [createdCredentials, setCreatedCredentials] = useState<{ email: string; password: string } | null>(null);
+  const [confirmation, setConfirmation] = useState<ConfirmationState | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [notification, setNotification] = useState<NotificationMessage | null>(null);
 
   useEffect(() => {
     fetchAdminData();
@@ -84,16 +96,42 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
     setAuditTotal(result.total);
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      try {
-        await api.deleteUser(userId);
-        setUsers(users.filter(u => u.id !== userId));
-        void refreshAuditLogs();
-      } catch (error: any) {
-        alert(error?.message || 'Failed to delete user');
-      }
+  const showNotification = (next: NotificationMessage) => {
+    setNotification(next);
+    window.setTimeout(() => setNotification((current) => current === next ? null : current), 5000);
+  };
+
+  const runConfirmedAction = async () => {
+    if (!confirmation) return;
+    setConfirming(true);
+    try {
+      await confirmation.action();
+      setConfirmation(null);
+    } catch {
+      // The action displays a branded error notification and keeps the dialog open.
+    } finally {
+      setConfirming(false);
     }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    const target = users.find((item) => item.id === userId);
+    setConfirmation({
+      title: 'Delete user account?',
+      description: `${target?.username || 'This user'} will permanently lose access to EthioUni. This action cannot be undone.`,
+      confirmLabel: 'Delete user',
+      action: async () => {
+        try {
+        await api.deleteUser(userId);
+        setUsers((current) => current.filter((item) => item.id !== userId));
+        void refreshAuditLogs();
+        showNotification({ type: 'success', title: 'User deleted', message: `${target?.username || 'The account'} was removed successfully.` });
+      } catch (error: any) {
+        showNotification({ type: 'error', title: 'Unable to delete user', message: error?.message || 'The account could not be removed.' });
+        throw error;
+      }
+      },
+    });
   };
 
   const handleSaveUser = async (draft: UserEditorDraft) => {
@@ -135,7 +173,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
     try {
       setSelectedKnowledge(await api.getKnowledgeDocument(document.id));
     } catch (error: any) {
-      alert(error?.message || 'Unable to load knowledge document');
+      showNotification({ type: 'error', title: 'Unable to open source', message: error?.message || 'The knowledge document could not be loaded.' });
     }
   };
 
@@ -148,36 +186,53 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       setSelectedKnowledge((current) => current ? { ...current, title, category } : null);
       void refreshAuditLogs();
     } catch (error: any) {
-      alert(error?.message || 'Unable to update knowledge document');
+      showNotification({ type: 'error', title: 'Unable to save source', message: error?.message || 'The knowledge metadata could not be updated.' });
     } finally {
       setSavingKnowledge(false);
     }
   };
 
   const handleDeleteKnowledge = async (docId: string) => {
-    if (window.confirm('Are you sure you want to delete this knowledge document?')) {
-      try {
+    const target = knowledgeDocs.find((item) => item.id === docId);
+    setConfirmation({
+      title: 'Delete knowledge source?',
+      description: `${target?.title || 'This source'} and all of its RAG vector chunks will be permanently removed.`,
+      confirmLabel: 'Delete source',
+      action: async () => {
+        try {
         await api.deleteKnowledge(docId);
         setKnowledgeDocs(prev => prev.filter(d => d.id !== docId));
-      } catch (error) {
-        console.error('Failed to delete knowledge document:', error);
+        void refreshAuditLogs();
+        showNotification({ type: 'success', title: 'Knowledge source deleted', message: `${target?.title || 'The source'} was removed from the RAG index.` });
+      } catch (error: any) {
+        showNotification({ type: 'error', title: 'Unable to delete source', message: error?.message || 'The knowledge source could not be deleted.' });
+        throw error;
       }
-    }
+      },
+    });
   };
 
   const handleDeleteUniversity = async (uniId: string) => {
-    if (window.confirm('Are you sure you want to delete this university? Its uploaded cover and gallery images will also be removed.')) {
-      try {
+    const target = universities.find((item) => item.id === uniId);
+    setConfirmation({
+      title: 'Delete university?',
+      description: `${target?.name || 'This university'}, its profile, cover image, and gallery images will be permanently removed.`,
+      confirmLabel: 'Delete university',
+      action: async () => {
+        try {
         await api.deleteUniversity(uniId);
         setUniversities((current) => {
           const next = current.filter((university) => university.id !== uniId);
           onUniversitiesChange?.(next);
           return next;
         });
+        showNotification({ type: 'success', title: 'University deleted', message: `${target?.name || 'The university'} was removed successfully.` });
       } catch (error: any) {
-        alert(error?.message || 'Failed to delete university');
+        showNotification({ type: 'error', title: 'Unable to delete university', message: error?.message || 'The university could not be deleted.' });
+        throw error;
       }
-    }
+      },
+    });
   };
 
   const clearUploadState = () => {
@@ -279,7 +334,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       });
       setIsUniversityEditorOpen(false);
     } catch (error: any) {
-      alert(error?.message || 'Failed to create university');
+      showNotification({ type: 'error', title: 'Unable to create university', message: error?.message || 'The university could not be created.' });
     } finally {
       setSavingUni(false);
     }
@@ -773,6 +828,16 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       {selectedKnowledge && (
         <KnowledgeDetailsModal document={selectedKnowledge} saving={savingKnowledge} onClose={() => setSelectedKnowledge(null)} onSave={saveKnowledgeMetadata} />
       )}
+      <ConfirmDialog
+        open={Boolean(confirmation)}
+        title={confirmation?.title || ''}
+        description={confirmation?.description || ''}
+        confirmLabel={confirmation?.confirmLabel}
+        busy={confirming}
+        onCancel={() => { if (!confirming) setConfirmation(null); }}
+        onConfirm={() => void runConfirmedAction()}
+      />
+      <NotificationToast notification={notification} onClose={() => setNotification(null)} />
     </div>
   );
 };
