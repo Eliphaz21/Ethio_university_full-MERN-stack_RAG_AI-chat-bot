@@ -4,7 +4,7 @@
  */
 
 import axios, { AxiosRequestConfig } from 'axios';
-import type { AuditLog, University } from '../types';
+import type { AuditLog, User, University } from '../types';
 
 const getBaseUrl = () => (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001';
 
@@ -140,8 +140,25 @@ export const api = {
     }),
 
   getUsers: () =>
-    request<Array<{ id: string; username: string; email: string; role: string }>>('/api/admin/users', {
+    request<User[]>('/api/admin/users', {
       method: 'GET',
+      requireAuth: true,
+    }),
+
+  getUser: (id: string) =>
+    request<User>(`/api/admin/users/${id}`, { method: 'GET', requireAuth: true }),
+
+  createUser: (data: Omit<User, 'id' | 'createdAt'> & { password: string }) =>
+    request<{ message: string; user: User }>('/api/admin/users', {
+      method: 'POST',
+      data,
+      requireAuth: true,
+    }),
+
+  updateUser: (id: string, data: Partial<User> & { password?: string }) =>
+    request<{ message: string; user: User }>(`/api/admin/users/${id}`, {
+      method: 'PUT',
+      data,
       requireAuth: true,
     }),
 

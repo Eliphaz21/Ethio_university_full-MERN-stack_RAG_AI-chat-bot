@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuditLog, User, KnowledgeDoc, University } from '../types';
 import { api } from '../services/api';
-import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin, Search, ShieldCheck } from 'lucide-react';
+import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin, Search, ShieldCheck, UserPlus } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import UniversityEditorModal from '../components/admin/UniversityEditorModal';
+import UserEditorModal, { UserEditorDraft } from '../components/admin/UserEditorModal';
 
 interface AdminProps {
   user: User;
@@ -36,6 +37,9 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
 
   const [savingUni, setSavingUni] = useState(false);
   const [isUniversityEditorOpen, setIsUniversityEditorOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null | undefined>(undefined);
+  const [savingUser, setSavingUser] = useState(false);
+  const [userSearch, setUserSearch] = useState('');
 
   useEffect(() => {
     fetchAdminData();
@@ -77,11 +81,36 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       try {
         await api.deleteUser(userId);
         setUsers(users.filter(u => u.id !== userId));
-      } catch (error) {
-        console.error('Failed to delete user:', error);
+        void refreshAuditLogs();
+      } catch (error: any) {
+        alert(error?.message || 'Failed to delete user');
       }
     }
   };
+
+  const handleSaveUser = async (draft: UserEditorDraft) => {
+    setSavingUser(true);
+    try {
+      if (draft.id) {
+        const response = await api.updateUser(draft.id, draft);
+        setUsers((current) => current.map((item) => item.id === response.user.id ? response.user : item));
+      } else {
+        const response = await api.createUser(draft as Omit<User, 'id' | 'createdAt'> & { password: string });
+        setUsers((current) => [response.user, ...current]);
+      }
+      setSelectedUser(undefined);
+      void refreshAuditLogs();
+    } catch (error: any) {
+      alert(error?.message || 'Failed to save user');
+    } finally {
+      setSavingUser(false);
+    }
+  };
+
+  const visibleUsers = users.filter((item) =>
+    [item.username, item.email, item.institution, item.department, item.academicTitle]
+      .some((value) => value?.toLowerCase().includes(userSearch.trim().toLowerCase()))
+  );
 
   const handleDeleteKnowledge = async (docId: string) => {
     if (window.confirm('Are you sure you want to delete this knowledge document?')) {
@@ -424,14 +453,18 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
         {/* Users Management Tab */}
         {activeTab === 'users' && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-            <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+            <div className="px-6 py-4 border-b border-slate-200 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <h3 className="text-lg font-bold text-slate-900">Registered Scholars & Users</h3>
-                <p className="text-xs text-slate-500">View registered account details, academic affiliations, and profile information stored in the database</p>
+                <p className="text-xs text-slate-500">Create, inspect, update, assign roles, and safely remove registered accounts</p>
               </div>
-              <span className="bg-emerald-50 text-[#059669] px-3 py-1 rounded-full text-xs font-black">
-                {users.length} Total Users
-              </span>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <label className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input value={userSearch} onChange={(event) => setUserSearch(event.target.value)} placeholder="Search users" className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-emerald-600 sm:w-64" />
+                </label>
+                <button onClick={() => setSelectedUser(null)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-black text-white hover:bg-emerald-800"><UserPlus className="h-4 w-4" />Add user</button>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-200">
@@ -446,7 +479,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-200">
-                  {users.map((u: any) => (
+                  {visibleUsers.map((u) => (
                     <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
@@ -483,6 +516,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-xs font-medium">
+                        <button onClick={() => setSelectedUser(u)} className="mr-1 p-2 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="View and edit user"><Edit3 className="h-4 w-4" /></button>
                         <button
                           onClick={() => handleDeleteUser(u.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -493,6 +527,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                       </td>
                     </tr>
                   ))}
+                  {!visibleUsers.length && <tr><td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">No users match your search.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -651,6 +686,9 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
           </div>
         )}
       </div>
+      {selectedUser !== undefined && (
+        <UserEditorModal initialUser={selectedUser} saving={savingUser} onClose={() => setSelectedUser(undefined)} onSave={handleSaveUser} />
+      )}
     </div>
   );
 };
