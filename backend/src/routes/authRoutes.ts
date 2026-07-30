@@ -12,16 +12,28 @@ const router = Router();
 router.post('/register', async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
+    const normalizedUsername = typeof username === 'string' ? username.trim() : '';
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
 
-    const existing = await User.findOne({ email });
+    if (!normalizedUsername || !normalizedEmail || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Name, email, and password are required' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return res.status(400).json({ error: 'Enter a valid email address' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    const existing = await User.findOne({ email: normalizedEmail });
     if (existing) {
       return res.status(400).json({ error: 'Email already in use' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = email === 'eliphazyab@gmail.com' ? 'admin' : 'user';
+    const role = normalizedEmail === 'eliphazyab@gmail.com' ? 'admin' : 'user';
 
-    const user = new User({ username, email, password: hashedPassword, role });
+    const user = new User({ username: normalizedUsername, email: normalizedEmail, password: hashedPassword, role });
     await user.save();
 
     res.status(201).json({ message: 'User registered successfully' });

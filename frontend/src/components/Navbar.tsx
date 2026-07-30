@@ -176,7 +176,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
                 {['admin', 'agent'].includes(user.role) && (
                   <Link to="/admin" className={`hover:text-[#059669] transition flex items-center gap-2 ${isActive('/admin') ? 'text-[#059669]' : ''}`}>
-                    <Shield className="w-4 h-4" /> Operations
+                    <Shield className="w-4 h-4" /> Admin Panel
                   </Link>
                 )}
 

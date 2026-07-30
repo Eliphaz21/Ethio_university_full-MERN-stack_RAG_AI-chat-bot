@@ -6,7 +6,10 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import type { AuditLog, User, University } from '../types';
 
-const getBaseUrl = () => (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001';
+const getBaseUrl = () => {
+  const configured = String((import.meta as any).env?.VITE_API_URL || 'http://localhost:5001').trim();
+  return configured.replace(/\/+$/, '').replace(/\/api$/i, '');
+};
 
 const getToken = (): string | null => localStorage.getItem('token');
 

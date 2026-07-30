@@ -27,8 +27,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
       setError('Passwords do not match!');
       return;
     }
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long.');
       return;
     }
 
@@ -144,7 +144,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full bg-[#f1f5f9] border border-slate-200/60 rounded-xl py-3 pl-10 pr-10 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium"
-                placeholder="Enter password (min 6 chars)"
+                placeholder="Enter password (min 8 chars)"
               />
               <button
                 type="button"
