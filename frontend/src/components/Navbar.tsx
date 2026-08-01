@@ -177,10 +177,6 @@ const Navbar: React.FC<NavbarProps> = ({
 
             {user ? (
               <div className="flex items-center gap-4 sm:gap-6 relative" ref={dropdownRef}>
-                <Link to="/" className={`hidden sm:flex items-center gap-2 hover:text-[#059669] transition ${isActive('/') ? 'text-[#059669]' : ''}`}>
-                  <LayoutDashboard className="w-4 h-4" /> {t('navHome')}
-                </Link>
-
                 <Link to="/hub" className={`hidden sm:flex items-center gap-2 hover:text-[#059669] transition ${isActive('/hub') ? 'text-[#059669]' : ''}`}>
                   <Sparkles className="w-4 h-4" /> {t('navHub')}
                 </Link>
