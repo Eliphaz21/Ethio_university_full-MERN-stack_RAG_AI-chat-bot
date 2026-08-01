@@ -326,5 +326,15 @@ export const api = {
       method: 'DELETE',
       requireAuth: true,
     }),
+
+  getUniversityReviews: (slug: string) =>
+    request<{ reviews: any[] }>(`/api/universities/${slug}/reviews`, { method: 'GET' }),
+
+  createUniversityReview: (slug: string, body: { rating: number; comment: string }) =>
+    request<{ message: string; review: any }>(`/api/universities/${slug}/reviews`, {
+      method: 'POST',
+      data: body,
+      requireAuth: true,
+    }),
 };
 

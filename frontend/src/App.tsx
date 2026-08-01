@@ -176,7 +176,7 @@ const App: React.FC = () => {
 
               <Route
                 path="/university/:slug"
-                element={<UniversityDetails universities={universities} />}
+                element={<UniversityDetails universities={universities} user={user} />}
               />
 
               <Route

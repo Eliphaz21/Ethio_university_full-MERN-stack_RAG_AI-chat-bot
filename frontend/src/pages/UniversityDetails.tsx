@@ -1,4 +1,4 @@
-import React, { useDeferredValue, useState } from 'react';
+import React, { useDeferredValue, useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -24,15 +24,21 @@ import {
   Video,
   X,
   Users,
+  Star,
+  MessageSquare,
+  Send
 } from 'lucide-react';
-import type { Department, Program, University, UniversityVideo } from '../types';
+import type { Department, Program, University, UniversityVideo, User, UniversityReviewItem } from '../types';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
 import { SEO, buildUniversitySchema } from '../components/SEO';
+import { api } from '../services/api';
+import AuthRequiredModal from '../components/AuthRequiredModal';
 
 interface UniversityDetailsProps {
   universities: University[];
+  user?: User | null;
 }
 
 interface DepartmentEntry {
@@ -40,7 +46,29 @@ interface DepartmentEntry {
   department: Department;
 }
 
-const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) => {
+function coordinatesFromGoogleMapsUrl(mapUrl?: string): { lat: number; lng: number } | null {
+  if (!mapUrl) return null;
+  const match = mapUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (match && match[1] && match[2]) {
+    return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+  }
+  return null;
+}
+
+function displayUrl(url: string): string {
+  try {
+    const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+    return parsed.hostname.replace('www.', '');
+  } catch {
+    return url;
+  }
+}
+
+function phoneHref(phone: string): string {
+  return phone.replace(/[^0-9+]/g, '');
+}
+
+const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities, user }) => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const university = universities.find((item) => item.slug === slug);
@@ -49,6 +77,62 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
   const [expandedDepartment, setExpandedDepartment] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const deferredQuery = useDeferredValue(departmentQuery.trim().toLowerCase());
+
+  // Reviews state
+  const [reviews, setReviews] = useState<UniversityReviewItem[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [ratingInput, setRatingInput] = useState(5);
+  const [commentInput, setCommentInput] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [reviewSuccess, setReviewSuccess] = useState<string | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const fetchReviews = async () => {
+    if (!slug) return;
+    try {
+      setLoadingReviews(true);
+      const res = await api.getUniversityReviews(slug);
+      setReviews(res.reviews || []);
+    } catch (err) {
+      console.error('Failed to load reviews:', err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [slug]);
+
+  const handlePostReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    if (!commentInput.trim()) {
+      setReviewError('Please write your experience or review');
+      return;
+    }
+    try {
+      setReviewSubmitting(true);
+      setReviewError(null);
+      const res = await api.createUniversityReview(slug || '', {
+        rating: ratingInput,
+        comment: commentInput,
+      });
+      setReviewSuccess(res.message || 'Review submitted successfully!');
+      setCommentInput('');
+      setRatingInput(5);
+      setTimeout(() => setReviewSuccess(null), 3000);
+      fetchReviews();
+    } catch (err: any) {
+      setReviewError(err?.message || 'Failed to submit review');
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
 
   if (!university) {
     return (
@@ -113,6 +197,8 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
         type="college"
         structuredData={buildUniversitySchema(university, localized.name, localized.description)}
       />
+      
+      {/* Top Bar Navigation */}
       <div className="border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
           <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 cursor-pointer">
@@ -126,14 +212,17 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
         </div>
       </div>
 
+      {/* Prominent Hero Gallery & Upward Contact Info Header */}
       <header className="relative overflow-hidden bg-[#10231d]">
         <div className="absolute inset-0">
           <img src={getOptimizedImageUrl(images[currentImage], 1800)} alt="" aria-hidden="true" className="h-full w-full scale-110 object-cover opacity-30 blur-2xl" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#10231d] via-[#10231d]/70 to-[#10231d]/25" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#10231d] via-[#10231d]/80 to-[#10231d]/40" />
         </div>
 
-        <div className="relative mx-auto grid max-w-[1440px] gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(360px,0.75fr)] lg:px-10 lg:py-12">
-          <div className="relative min-h-[420px] overflow-hidden rounded-[2rem] border border-white/15 bg-black/25 shadow-2xl sm:min-h-[540px]">
+        <div className="relative mx-auto grid max-w-[1440px] gap-8 px-4 py-8 sm:px-6 lg:grid-cols-12 lg:px-10 lg:py-12">
+          
+          {/* Left Album / Photo Gallery Slider (7 Cols) */}
+          <div className="lg:col-span-7 relative min-h-[380px] overflow-hidden rounded-[2rem] border border-white/15 bg-black/25 shadow-2xl sm:min-h-[480px]">
             <img
               key={images[currentImage]}
               src={getOptimizedImageUrl(images[currentImage], 1800)}
@@ -165,36 +254,74 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
             </button>
           </div>
 
-          <div className="flex flex-col justify-center py-4 text-white">
-            <div className="mb-5 flex flex-wrap gap-2">
-              {university.type && <span className="rounded-full bg-emerald-400/15 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-300 ring-1 ring-emerald-300/20">{university.type === 'Public' ? t('publicUni') : university.type === 'Private' ? t('privateUni') : university.type}</span>}
-              {university.established && <span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15">{t('established')} {university.established}</span>}
+          {/* Right Column: Name, Description, Map Location, & Upward Contact Info Card (5 Cols) */}
+          <div className="lg:col-span-5 flex flex-col justify-between text-white space-y-5">
+            <div>
+              <div className="mb-3 flex flex-wrap gap-2">
+                {university.type && <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-emerald-300 ring-1 ring-emerald-300/20">{university.type === 'Public' ? t('publicUni') : university.type === 'Private' ? t('privateUni') : university.type}</span>}
+                {university.established && <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15">{t('established')} {university.established}</span>}
+              </div>
+              <h1 className="text-3xl font-black leading-tight tracking-tight sm:text-4xl lg:text-5xl">{localized.name}</h1>
+              <p className="mt-3 text-sm leading-relaxed text-slate-200 line-clamp-3">{localized.description}</p>
             </div>
-            <h1 className="text-4xl font-black leading-[0.98] tracking-[-0.04em] sm:text-5xl lg:text-6xl">{localized.name}</h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">{localized.description}</p>
-            <a href={mapsUrl} target="_blank" rel="noreferrer" className="mt-7 flex items-start gap-3 rounded-2xl border border-white/15 bg-white/8 p-4 transition hover:bg-white/15">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
-              <span className="min-w-0">
-                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">{t('mapLocation')}</span>
-                <span className="mt-1 block text-sm font-bold text-white">{locationText}</span>
-              </span>
-              <ArrowUpRight className="ml-auto h-5 w-5 shrink-0 text-white/60" />
-            </a>
-            <div className="mt-5 grid grid-cols-2 gap-3">
+
+            {/* Prominent Contact Info Card moved Upward right next to Album Photo */}
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-4 space-y-2.5 backdrop-blur shadow-lg">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5" /> Official Contacts & Links
+                </span>
+                <a href={mapsUrl} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-slate-300 hover:text-white flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-emerald-400" /> {locationText}
+                </a>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <a href={university.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition truncate">
+                  <Globe2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="truncate">{displayUrl(university.website)}</span>
+                </a>
+                {university.studentPortal && (
+                  <a href={university.studentPortal} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition truncate">
+                    <GraduationCap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">Student Portal</span>
+                  </a>
+                )}
+                {university.contactEmail && (
+                  <a href={`mailto:${university.contactEmail}`} className="flex items-center gap-2 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition truncate">
+                    <Mail className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">{university.contactEmail}</span>
+                  </a>
+                )}
+                {(university.phone || university.contactPhone) && (
+                  <a href={`tel:${phoneHref(university.phone || university.contactPhone || '')}`} className="flex items-center gap-2 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition truncate">
+                    <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">{university.phone || university.contactPhone}</span>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Fact Metrics */}
+            <div className="grid grid-cols-2 gap-2.5">
               <Fact icon={GraduationCap} label={t('tabPrograms')} value={String(university.colleges?.length || localized.faculties.length || 0)} />
               <Fact icon={BookOpen} label={t('keyStats')} value={String(programCount || 12)} />
               {university.studentPopulation && <Fact icon={Users} label="Students" value={university.studentPopulation} />}
               {university.facultyCount && <Fact icon={Sparkles} label="Faculty" value={university.facultyCount} />}
             </div>
+
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1440px] space-y-14 px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
-        <section className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+      {/* Main Content Body */}
+      <main className="mx-auto max-w-[1440px] space-y-12 px-4 py-10 sm:px-6 lg:px-10">
+        
+        {/* Full-Width Overview Section */}
+        <section className="w-full">
           <article className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-9">
             <SectionEyebrow>{t('tabOverview')}</SectionEyebrow>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">{localized.name}</h2>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">{localized.name} Academic Profile</h2>
             <div className="mt-6 whitespace-pre-line text-[16px] leading-8 text-slate-600">
               {localized.academicOverview}
             </div>
@@ -205,18 +332,147 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
               </div>
             )}
           </article>
+        </section>
 
-          <aside className="rounded-[2rem] bg-[#173d32] p-6 text-white shadow-xl sm:p-8">
-            <SectionEyebrow light>{t('tabContact')}</SectionEyebrow>
-            <h2 className="mt-3 text-2xl font-black">{t('tabContact')}</h2>
-            <div className="mt-6 space-y-3">
-              <ContactAction icon={Globe2} label={t('website')} value={displayUrl(university.website)} href={university.website} external />
-              {university.studentPortal && <ContactAction icon={GraduationCap} label="Student Portal" value="Open Portal" href={university.studentPortal} external />}
-              {university.applicationUrl && <ContactAction icon={ExternalLink} label={t('tabAdmission')} value="Apply" href={university.applicationUrl} external />}
-              {university.contactEmail && <ContactAction icon={Mail} label={t('email')} value={university.contactEmail} href={`mailto:${university.contactEmail}`} />}
-              {(university.phone || university.contactPhone) && <ContactAction icon={Phone} label={t('phone')} value={university.phone || university.contactPhone || ''} href={`tel:${phoneHref(university.phone || university.contactPhone || '')}`} />}
+        {/* Student Reviews & Community Feedback Section */}
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-9 space-y-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-black uppercase tracking-wider mb-2">
+                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                <span>Student Community Feedback</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Reviews & Experiences for {localized.name}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                Authentic feedback, admission cutoffs advice, and campus life experiences shared by students & alumni
+              </p>
             </div>
-          </aside>
+
+            <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shrink-0">
+              <div className="text-center px-2">
+                <span className="text-2xl font-black text-slate-900">
+                  {reviews.length > 0
+                    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+                    : '4.8'}
+                </span>
+                <div className="flex items-center gap-0.5 justify-center text-amber-400 mt-0.5">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} className="w-3 h-3 fill-amber-400" />
+                  ))}
+                </div>
+                <span className="text-[10px] text-slate-400 font-bold">{reviews.length} community reviews</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Post a Review Form */}
+          <form onSubmit={handlePostReview} className="bg-slate-50/80 p-5 rounded-2xl border border-slate-200/80 space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                Add Your Experience / Rating for Applicants
+              </span>
+
+              {/* Star Rating Picker */}
+              <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs">
+                <span className="text-xs font-bold text-slate-600 mr-1">Rating:</span>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    type="button"
+                    key={star}
+                    onClick={() => setRatingInput(star)}
+                    className="p-1 hover:scale-110 transition cursor-pointer"
+                  >
+                    <Star
+                      className={`w-4 h-4 ${
+                        star <= ratingInput
+                          ? 'text-amber-500 fill-amber-500'
+                          : 'text-slate-300 fill-slate-100'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <textarea
+              rows={3}
+              value={commentInput}
+              onChange={(e) => setCommentInput(e.target.value)}
+              placeholder={`Share authentic feedback about ${localized.name}'s campus life, dormitories, academic departments, or admission cutoff advice...`}
+              className="w-full bg-white rounded-xl border border-slate-200 p-3 text-xs font-medium text-slate-900 placeholder-slate-400 outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 transition"
+            />
+
+            {reviewError && (
+              <p className="text-xs font-bold text-red-600 bg-red-50 p-2 rounded-xl border border-red-200">
+                {reviewError}
+              </p>
+            )}
+
+            {reviewSuccess && (
+              <p className="text-xs font-bold text-emerald-700 bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                {reviewSuccess}
+              </p>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={reviewSubmitting}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>{reviewSubmitting ? 'Posting...' : 'Submit Student Feedback'}</span>
+              </button>
+            </div>
+          </form>
+
+          {/* Existing Reviews List */}
+          <div className="space-y-4 pt-2">
+            {reviews.map((rev) => (
+              <div key={rev.id} className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white font-black text-xs flex items-center justify-center overflow-hidden">
+                      {rev.authorAvatar ? (
+                        <img src={rev.authorAvatar} alt={rev.authorName} className="w-full h-full object-cover" />
+                      ) : (
+                        rev.authorName.substring(0, 2).toUpperCase()
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">{rev.authorName}</h4>
+                      <p className="text-[10px] text-slate-400 font-medium">
+                        {new Date(rev.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-0.5 text-amber-400">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`w-3.5 h-3.5 ${
+                          star <= rev.rating ? 'fill-amber-400 text-amber-400' : 'fill-slate-100 text-slate-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-xs leading-relaxed text-slate-700 font-medium whitespace-pre-line pl-11">
+                  {rev.comment}
+                </p>
+              </div>
+            ))}
+
+            {!reviews.length && !loadingReviews && (
+              <div className="text-center py-8 text-slate-400 text-xs font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                No student reviews posted yet. Be the first to share your experience with applicants!
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
@@ -437,6 +693,11 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
           </div>
         </div>
       )}
+      <AuthRequiredModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        actionText="leave student reviews & comments"
+      />
     </div>
   );
 };

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import multer from 'multer';
 import { University } from '../models/university.js';
+import { UniversityReview } from '../models/universityReview.js';
+import { User } from '../models/user.js';
 import { requireAuth, requireAdmin, requireStaff } from '../middleware/auth.js';
 import { uploadBufferToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl } from '../services/cloudinary.js';
 import { recordAudit } from '../services/audit.js';
@@ -300,5 +302,83 @@ router.delete('/admin/universities/:id', requireAuth, requireAdmin, async (req: 
     }
 });
 
-export default router;
+// GET /api/universities/:slug/reviews - Fetch reviews for a university
+router.get('/universities/:slug/reviews', async (req: Request, res: Response) => {
+    try {
+        const { slug } = req.params;
+        const reviews = await UniversityReview.find({ universitySlug: slug.toLowerCase() })
+            .sort({ createdAt: -1 })
+            .limit(50);
 
+        const serialized = reviews.map((r) => ({
+            id: String(r._id),
+            universitySlug: r.universitySlug,
+            authorId: String(r.authorId),
+            authorName: r.authorName,
+            authorAvatar: r.authorAvatar || '',
+            rating: r.rating,
+            comment: r.comment,
+            createdAt: r.createdAt.toISOString(),
+        }));
+
+        res.json({ reviews: serialized });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message || 'Failed to fetch reviews' });
+    }
+});
+
+// POST /api/universities/:slug/reviews - Post a new review
+router.post('/universities/:slug/reviews', requireAuth, async (req: Request, res: Response) => {
+    try {
+        const { slug } = req.params;
+        const { rating = 5, comment } = req.body;
+
+        const cleanComment = sanitizeText(comment, 1000);
+        if (!cleanComment) {
+            return res.status(400).json({ error: 'Review comment content is required' });
+        }
+
+        const user = await User.findById(req.user!.id);
+        if (!user) {
+            return res.status(401).json({ error: 'User not found' });
+        }
+
+        const numericRating = Math.min(5, Math.max(1, parseInt(String(rating), 10) || 5));
+
+        const review = new UniversityReview({
+            universitySlug: slug.toLowerCase(),
+            authorId: user._id,
+            authorName: user.username,
+            authorAvatar: user.avatarUrl || '',
+            rating: numericRating,
+            comment: cleanComment,
+        });
+
+        await review.save();
+
+        await recordAudit(req, {
+            action: 'university.review',
+            resourceType: 'university',
+            resourceLabel: `${slug} (${numericRating} stars)`,
+            status: 'success',
+        });
+
+        res.status(201).json({
+            message: 'Review posted successfully',
+            review: {
+                id: String(review._id),
+                universitySlug: review.universitySlug,
+                authorId: String(review.authorId),
+                authorName: review.authorName,
+                authorAvatar: review.authorAvatar || '',
+                rating: review.rating,
+                comment: review.comment,
+                createdAt: review.createdAt.toISOString(),
+            },
+        });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message || 'Failed to post review' });
+    }
+});
+
+export default router;
