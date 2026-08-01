@@ -20,6 +20,25 @@ export function extractAuthToken(req: Request): string | null {
   return req.cookies?.[AUTH_COOKIE] || extractBearerToken(req);
 }
 
+/** Optional auth middleware: attaches req.user if a valid token is provided, without blocking unauthenticated requests */
+export async function optionalAuth(req: Request, _res: Response, next: NextFunction) {
+  const token = extractAuthToken(req);
+  if (!token) return next();
+
+  try {
+    const decoded = verifyAuthToken(token);
+    if (decoded?.id) {
+      req.user = {
+        id: String(decoded.id),
+        role: (decoded.role || 'user') as 'user' | 'agent' | 'admin',
+      };
+    }
+  } catch {
+    // Soft ignore invalid tokens on optional auth endpoints
+  }
+  next();
+}
+
 /** Verify JWT and refresh role from database (prevents stale privilege escalation). */
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   const token = extractAuthToken(req);
