@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { AuditLog, User, KnowledgeDoc, University } from '../types';
 import { api } from '../services/api';
-import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin, Search, ShieldCheck, UserPlus, Eye, Code, Key } from 'lucide-react';
+import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin, Search, ShieldCheck, UserPlus, Eye, Code, Key, ArrowLeft } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import UniversityEditorModal from '../components/admin/UniversityEditorModal';
 import UserEditorModal, { UserEditorDraft } from '../components/admin/UserEditorModal';
@@ -379,6 +379,15 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 lg:py-8">
         
         {/* Modern Studio Top Bar Header */}
+        <div className="mb-4">
+          <RouterLink
+            to="/"
+            className="inline-flex items-center gap-2 text-xs font-bold text-[#059669] hover:underline bg-white px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-xs"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+          </RouterLink>
+        </div>
+
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-300/60">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-slate-900 to-emerald-900 text-emerald-400 flex items-center justify-center font-black shadow-md border border-emerald-500/20">
