@@ -889,15 +889,4 @@ const videoSource = (value: string): VideoSource => {
   }
 };
 
-const displayUrl = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
-const phoneHref = (phone: string) => phone.replace(/[^\d+]/g, '');
-
-const coordinatesFromGoogleMapsUrl = (value?: string) => {
-  if (!value) return undefined;
-  const match = value.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/)
-    || decodeURIComponent(value).match(/[?&](?:q|query)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
-  if (!match) return undefined;
-  return { lat: Number(match[1]), lng: Number(match[2]) };
-};
-
 export default UniversityDetails;

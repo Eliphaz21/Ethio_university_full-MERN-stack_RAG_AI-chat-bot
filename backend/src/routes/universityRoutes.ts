@@ -7,6 +7,7 @@ import { User } from '../models/user.js';
 import { requireAuth, requireAdmin, requireStaff } from '../middleware/auth.js';
 import { uploadBufferToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl } from '../services/cloudinary.js';
 import { recordAudit } from '../services/audit.js';
+import { sanitizeText } from '../middleware/errorHandler.js';
 
 const router = Router();
 const upload = multer({
