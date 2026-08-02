@@ -10,6 +10,7 @@ import {
   PanelLeftClose, PanelLeftOpen, Clock,
   Utensils, PartyPopper, GraduationCap
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // Custom SVG Avatar based on the provided EthioUni Bot design
 const EthioUniBotAvatar = ({ size = 40, showStatus = false }: { size?: number, showStatus?: boolean }) => (
@@ -76,9 +77,11 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
   const [isOpen, setIsOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const { t, language, currentLanguageOption } = useLanguage();
+
   const welcomeMessage: ChatMessage = {
     role: 'assistant',
-    content: "Selam! 👋 I'm your EthioUni Portal AI assistant. Ask me about universities information, admission requirements, or specific programs.",
+    content: `${t('aiTitle')} 👋 ${t('aiSubtitle')}`,
     timestamp: new Date().toISOString()
   };
 
@@ -182,8 +185,12 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
     setIsLoading(true);
 
     try {
+      const languagePrompt = language === 'en'
+        ? text
+        : `[Please respond in ${currentLanguageOption.name} (${currentLanguageOption.nativeName}) language]: ${text}`;
+
       const { text: assistantText } = await api.postChat({
-        prompt: text,
+        prompt: languagePrompt,
         userId: user?.id,
       });
       const assistantMsg: ChatMessage = { role: 'assistant', content: assistantText, timestamp: new Date().toISOString() };
@@ -200,10 +207,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
   };
 
   const quickActions = [
-    { label: 'Tell me about ASTU', text: 'Tell me about ASTU' },
-    { label: 'Tell me about AAU', text: 'Tell me about AAU' },
-    { label: 'Admission 2025/2026', text: 'What are the admission requirements for 2025/2026?' },
-    { label: 'Programs', text: 'What are the top engineering programs in Ethiopia?' },
+    { label: t('prompt1').substring(0, 30) + '...', text: t('prompt1') },
+    { label: t('prompt2').substring(0, 30) + '...', text: t('prompt2') },
+    { label: t('prompt3').substring(0, 30) + '...', text: t('prompt3') },
+    { label: t('prompt4').substring(0, 30) + '...', text: t('prompt4') },
   ];
 
   return (
@@ -294,10 +301,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
 
                   <EthioUniBotAvatar size={52} />
                   <div className="flex flex-col">
-                    <h3 className="text-white font-black text-lg leading-tight">EthioUni AI Assistant</h3>
+                    <h3 className="text-white font-black text-lg leading-tight">{t('aiTitle')}</h3>
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Assistant Online</span>
+                      <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{currentLanguageOption.nativeName} ({currentLanguageOption.name})</span>
                     </div>
                   </div>
                 </div>
@@ -364,7 +371,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                         <button
                           key={idx}
                           onClick={() => handleSend(action.text)}
-                          className="shrink-0 bg-[#1e293b]/50 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-300 border border-slate-700/50 transition-all"
+                          className="shrink-0 bg-[#1e293b]/50 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-300 border border-slate-700/50 transition-all cursor-pointer"
                         >
                           {action.label}
                         </button>
@@ -379,14 +386,14 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                           value={input}
                           onChange={(e) => setInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                          placeholder="Type your inquiry..."
-                          className="w-full bg-[#111827] border-2 border-slate-800/50 rounded-2xl py-4 pl-6 pr-6 text-white outline-none focus:border-blue-500/30 transition-all text-sm shadow-inner placeholder:text-slate-700"
+                          placeholder={t('chatPlaceholder')}
+                          className="w-full bg-[#111827] border-2 border-slate-800/50 rounded-2xl py-4 pl-6 pr-6 text-white outline-none focus:border-blue-500/30 transition-all text-sm shadow-inner placeholder:text-slate-600"
                         />
                       </div>
                       <button
                         disabled={!input.trim() || isLoading}
                         onClick={() => handleSend()}
-                        className="bg-blue-600 hover:bg-blue-500 disabled:opacity-20 p-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center shadow-xl shadow-blue-600/20"
+                        className="bg-blue-600 hover:bg-blue-500 disabled:opacity-20 p-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center shadow-xl shadow-blue-600/20 cursor-pointer"
                       >
                         <Send className="w-5 h-5 text-white" />
                       </button>

@@ -10,6 +10,7 @@ import Admin from './pages/Admin';
 import UniversityEdit from './pages/admin/UniversityEdit';
 import UserProfileModal from './components/UserProfileModal';
 import Profile from './pages/Profile';
+import { LanguageProvider } from './context/LanguageContext';
 import { User, KnowledgeDoc, University } from './types';
 import { api } from './services/api';
 
@@ -116,100 +117,102 @@ const App: React.FC = () => {
   };
 
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen bg-[#FBF7F1]">
-        <Navbar
-          user={user}
-          onLogout={handleLogout}
-          universities={universities}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedRegion={selectedRegion}
-          setSelectedRegion={setSelectedRegion}
-          selectedType={selectedType}
-          setSelectedType={setSelectedType}
-        />
-
-        <main className="flex-grow flex flex-col">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute user={user}>
-                  <Home
-                    user={user}
-                    universities={universities}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    selectedRegion={selectedRegion}
-                    setSelectedRegion={setSelectedRegion}
-                    selectedType={selectedType}
-                    setSelectedType={setSelectedType}
-                  />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/university/:slug"
-              element={
-                <ProtectedRoute user={user}>
-                  <UniversityDetails universities={universities} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute user={user}>
-                  <Profile user={user} onUpdateUser={handleUpdateUser} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="/login" element={<Login onLogin={handleAuth} />} />
-            <Route path="/register" element={<Register onRegister={handleAuth} />} />
-
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute user={user} adminOnly>
-                  <Admin user={user} onUniversitiesChange={setUniversities} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/universities/:id/edit"
-              element={
-                <ProtectedRoute user={user} adminOnly>
-                  <UniversityEdit onUniversityChange={handleUniversityChange} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-
-        {user && isProfileModalOpen && (
-          <UserProfileModal
+    <LanguageProvider>
+      <Router>
+        <div className="flex flex-col min-h-screen bg-[#FBF7F1]">
+          <Navbar
             user={user}
-            isOpen={isProfileModalOpen}
-            onClose={() => setIsProfileModalOpen(false)}
-            onUpdateUser={handleUpdateUser}
-          />
-        )}
-
-        {user && (
-          <ChatWidget
-            user={user}
-            knowledgeDocs={knowledgeDocs}
+            onLogout={handleLogout}
             universities={universities}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedRegion={selectedRegion}
+            setSelectedRegion={setSelectedRegion}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
           />
-        )}
-      </div>
-    </Router>
+
+          <main className="flex-grow flex flex-col">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute user={user}>
+                    <Home
+                      user={user}
+                      universities={universities}
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                      selectedRegion={selectedRegion}
+                      setSelectedRegion={setSelectedRegion}
+                      selectedType={selectedType}
+                      setSelectedType={setSelectedType}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/university/:slug"
+                element={
+                  <ProtectedRoute user={user}>
+                    <UniversityDetails universities={universities} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute user={user}>
+                    <Profile user={user} onUpdateUser={handleUpdateUser} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/login" element={<Login onLogin={handleAuth} />} />
+              <Route path="/register" element={<Register onRegister={handleAuth} />} />
+
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute user={user} adminOnly>
+                    <Admin user={user} onUniversitiesChange={setUniversities} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/universities/:id/edit"
+                element={
+                  <ProtectedRoute user={user} adminOnly>
+                    <UniversityEdit onUniversityChange={handleUniversityChange} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+
+          {user && isProfileModalOpen && (
+            <UserProfileModal
+              user={user}
+              isOpen={isProfileModalOpen}
+              onClose={() => setIsProfileModalOpen(false)}
+              onUpdateUser={handleUpdateUser}
+            />
+          )}
+
+          {user && (
+            <ChatWidget
+              user={user}
+              knowledgeDocs={knowledgeDocs}
+              universities={universities}
+            />
+          )}
+        </div>
+      </Router>
+    </LanguageProvider>
   );
 };
 

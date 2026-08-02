@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, User as UserIcon, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { api } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 interface LoginProps {
   onLogin: (user: any) => void;
@@ -14,6 +15,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +54,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Shield className="w-6 h-6 text-[#059669] shrink-0 stroke-[2.5]" />
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0f172a] tracking-tight">Sign In</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0f172a] tracking-tight">{t('loginTitle')}</h1>
           </div>
-          <p className="text-slate-500 text-sm font-normal">Enter your credentials to access the system</p>
+          <p className="text-slate-500 text-sm font-normal">{t('loginSubtitle')}</p>
         </div>
 
         {error && (
@@ -68,7 +70,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           {/* Email Address */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              Email Address
+              {t('emailAddress')}
             </label>
             <div className="relative">
               <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -86,7 +88,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           {/* Password */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              Password
+              {t('password')}
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -96,7 +98,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-[#f1f5f9] border border-slate-200/60 rounded-xl py-3 pl-10 pr-10 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium"
-                placeholder="Enter your password"
+                placeholder="••••••••"
               />
               <button
                 type="button"
@@ -113,17 +115,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/15 flex items-center justify-center gap-2 text-base transition-all disabled:opacity-60 disabled:pointer-events-none mt-4"
+            className="w-full bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/15 flex items-center justify-center gap-2 text-base transition-all disabled:opacity-60 disabled:pointer-events-none mt-4 cursor-pointer"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Signing In...</span>
+                <span>{t('loading')}</span>
               </>
             ) : (
               <>
                 <Shield className="w-4 h-4 stroke-[2.5]" />
-                <span>Sign In</span>
+                <span>{t('navLogin')}</span>
               </>
             )}
           </button>
@@ -131,9 +133,9 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
         {/* Footer Link */}
         <div className="mt-8 text-center text-xs text-slate-500 border-t border-slate-100 pt-6">
-          Don't have an account?{' '}
+          {t('dontHaveAccount')}{' '}
           <Link to="/register" className="text-[#059669] font-bold hover:underline">
-            Create an account
+            {t('navRegister')}
           </Link>
         </div>
       </div>

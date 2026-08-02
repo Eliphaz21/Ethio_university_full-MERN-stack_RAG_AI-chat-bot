@@ -15,6 +15,8 @@ import {
   GraduationCap,
   X
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavbarProps {
   user: User | null;
@@ -43,6 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const { t } = useLanguage();
   const isActive = (path: string) => location.pathname === path;
   const isLoginPage = location.pathname === '/login';
   const isRegisterPage = location.pathname === '/register';
@@ -120,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 <Search className="w-4 h-4 text-slate-400 shrink-0 mr-2" />
                 <input
                   type="text"
-                  placeholder="Search universities, cities, faculties..."
+                  placeholder={t('searchPlaceholderNav')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full bg-transparent text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none"
@@ -140,7 +143,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   onChange={(e) => setSelectedRegion(e.target.value)}
                   className="w-full bg-transparent text-xs font-bold text-slate-800 outline-none appearance-none cursor-pointer pr-4"
                 >
-                  <option value="All">All Regions</option>
+                  <option value="All">{t('allRegions')}</option>
                   {regions.filter(r => r !== 'All').map(r => (
                     <option key={r} value={r}>{r}</option>
                   ))}
@@ -156,9 +159,9 @@ const Navbar: React.FC<NavbarProps> = ({
                   onChange={(e) => setSelectedType(e.target.value)}
                   className="w-full bg-transparent text-xs font-bold text-slate-800 outline-none appearance-none cursor-pointer pr-4"
                 >
-                  <option value="All">All Types</option>
-                  {types.filter(t => t !== 'All').map(t => (
-                    <option key={t} value={t}>{t}</option>
+                  <option value="All">{t('allTypes')}</option>
+                  {types.filter(item => item !== 'All').map(item => (
+                    <option key={item} value={item}>{item === 'Public' ? t('publicUni') : item === 'Private' ? t('privateUni') : item}</option>
                   ))}
                 </select>
                 <ChevronDown className="w-3 h-3 text-slate-400 absolute right-2.5 pointer-events-none" />
@@ -167,16 +170,19 @@ const Navbar: React.FC<NavbarProps> = ({
           )}
 
           {/* Right Navigation & User Actions (Top-Right) */}
-          <div className="flex items-center space-x-6 text-sm font-bold text-slate-700 shrink-0">
+          <div className="flex items-center space-x-4 sm:space-x-6 text-sm font-bold text-slate-700 shrink-0">
+            {/* Ethiopian Language Switcher */}
+            <LanguageSwitcher />
+
             {user ? (
-              <div className="flex items-center gap-6 relative" ref={dropdownRef}>
-                <Link to="/" className={`flex items-center gap-2 hover:text-[#059669] transition ${isActive('/') ? 'text-[#059669]' : ''}`}>
-                  <LayoutDashboard className="w-4 h-4" /> Dashboard
+              <div className="flex items-center gap-4 sm:gap-6 relative" ref={dropdownRef}>
+                <Link to="/" className={`hidden sm:flex items-center gap-2 hover:text-[#059669] transition ${isActive('/') ? 'text-[#059669]' : ''}`}>
+                  <LayoutDashboard className="w-4 h-4" /> {t('navHome')}
                 </Link>
 
                 {['admin', 'agent'].includes(user.role) && (
-                  <Link to="/admin" className={`hover:text-[#059669] transition flex items-center gap-2 ${isActive('/admin') ? 'text-[#059669]' : ''}`}>
-                    <Shield className="w-4 h-4" /> Admin Panel
+                  <Link to="/admin" className={`hidden sm:flex hover:text-[#059669] transition items-center gap-2 ${isActive('/admin') ? 'text-[#059669]' : ''}`}>
+                    <Shield className="w-4 h-4" /> {t('navAdmin')}
                   </Link>
                 )}
 
@@ -235,7 +241,7 @@ const Navbar: React.FC<NavbarProps> = ({
                         onClick={() => setIsProfileOpen(false)}
                         className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#059669] hover:bg-[#047857] text-white rounded-2xl transition font-bold text-xs uppercase tracking-wider shadow-sm"
                       >
-                        <UserIcon className="w-4 h-4" /> My Profile
+                        <UserIcon className="w-4 h-4" /> {t('navProfile')}
                       </Link>
 
                       {/* Logout Button */}
@@ -244,9 +250,9 @@ const Navbar: React.FC<NavbarProps> = ({
                           setIsProfileOpen(false);
                           onLogout();
                         }}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-white text-red-600 hover:bg-red-50 rounded-2xl transition border border-slate-200 font-black text-[10px] uppercase tracking-widest shadow-sm"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-white text-red-600 hover:bg-red-50 rounded-2xl transition border border-slate-200 font-black text-[10px] uppercase tracking-widest shadow-sm cursor-pointer"
                       >
-                        <LogOut className="w-3.5 h-3.5" /> Logout Session
+                        <LogOut className="w-3.5 h-3.5" /> {t('navLogout')}
                       </button>
                     </div>
                   </div>
@@ -261,7 +267,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     className="bg-[#059669] hover:bg-[#047857] active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md shadow-emerald-900/10 flex items-center gap-2"
                   >
                     <UserPlus className="w-4 h-4" />
-                    <span>Create Account</span>
+                    <span>{t('navRegister')}</span>
                   </Link>
                 ) : isRegisterPage ? (
                   <Link
@@ -269,7 +275,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     className="bg-[#059669] hover:bg-[#047857] active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md shadow-emerald-900/10 flex items-center gap-2"
                   >
                     <LogIn className="w-4 h-4" />
-                    <span>Sign In</span>
+                    <span>{t('navLogin')}</span>
                   </Link>
                 ) : (
                   <div className="flex items-center gap-3">
@@ -278,14 +284,14 @@ const Navbar: React.FC<NavbarProps> = ({
                       className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5"
                     >
                       <LogIn className="w-4 h-4" />
-                      <span>Sign In</span>
+                      <span>{t('navLogin')}</span>
                     </Link>
                     <Link
                       to="/register"
                       className="bg-[#059669] hover:bg-[#047857] active:scale-95 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md shadow-emerald-900/10 flex items-center gap-1.5"
                     >
                       <UserPlus className="w-4 h-4" />
-                      <span>Create Account</span>
+                      <span>{t('navRegister')}</span>
                     </Link>
                   </div>
                 )}

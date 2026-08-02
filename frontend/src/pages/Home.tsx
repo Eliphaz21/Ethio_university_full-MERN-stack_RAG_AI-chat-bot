@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { University, User } from '../types';
 import { Search, MapPin, BookOpen, ArrowRight, Award, School } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HomeProps {
   user: User | null;
@@ -25,6 +26,8 @@ const Home: React.FC<HomeProps> = ({
   selectedType,
   setSelectedType
 }) => {
+  const { t } = useLanguage();
+
   const filteredUnis = useMemo(() => {
     return universities.filter(u => {
       const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,29 +55,26 @@ const Home: React.FC<HomeProps> = ({
             </div>
 
             <div className="relative z-10 max-w-5xl mx-auto px-4 text-center text-white">
-              <h1 className="text-5xl md:text-8xl font-serif font-medium mb-4 leading-tight">
-                Academic Excellence in
-              </h1>
-              <h1 className="text-5xl md:text-8xl font-serif font-medium mb-8 text-[#e9c46a]">
-                The Land of Origins
+              <h1 className="text-4xl md:text-7xl font-serif font-bold mb-4 leading-tight">
+                {t('heroTitle')}
               </h1>
 
               <p className="text-lg md:text-xl text-slate-200 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-                Explore Ethiopia's most prestigious institutions. From historical research centers to modern tech hubs, find your path to success.
+                {t('heroSubtitle')}
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to="/register"
-                  className="bg-[#059669] text-white px-10 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-[#047857] transition-all shadow-xl group"
+                  className="bg-[#059669] text-white px-10 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-[#047857] transition-all shadow-xl group cursor-pointer"
                 >
-                  Get Started <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  {t('navRegister')} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   to="/login"
-                  className="px-10 py-4 rounded-xl font-bold border border-white/40 hover:bg-white/10 backdrop-blur-sm transition-all text-white"
+                  className="px-10 py-4 rounded-xl font-bold border border-white/40 hover:bg-white/10 backdrop-blur-sm transition-all text-white cursor-pointer"
                 >
-                  Sign In
+                  {t('navLogin')}
                 </Link>
               </div>
             </div>
@@ -83,10 +83,10 @@ const Home: React.FC<HomeProps> = ({
           <section className="py-24 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-20">
-                <h2 className="text-4xl font-serif font-bold text-slate-900 uppercase tracking-tight">Ethiopia's Academic Heritage</h2>
+                <h2 className="text-4xl font-serif font-bold text-slate-900 uppercase tracking-tight">{t('whyChooseTitle')}</h2>
                 <div className="h-1.5 w-24 bg-[#059669] mx-auto mt-4 rounded-full"></div>
                 <p className="text-slate-500 mt-6 max-w-2xl mx-auto text-lg">
-                  Ethiopia has a long-standing history of higher learning, blending traditional wisdom with modern scientific advancements across the nation.
+                  {t('whyChooseSub')}
                 </p>
               </div>
 
@@ -100,7 +100,7 @@ const Home: React.FC<HomeProps> = ({
                   />
                   <div className="absolute -bottom-8 -right-8 bg-[#059669] text-white p-8 rounded-3xl shadow-xl z-20 hidden lg:block">
                     <Award className="w-10 h-10 mb-2 text-[#e9c46a]" />
-                    <p className="font-bold text-xl leading-tight">Leading Research<br />Centers</p>
+                    <p className="font-bold text-xl leading-tight">{t('heroStatAI')}</p>
                   </div>
                 </div>
                 <div className="space-y-8">
@@ -109,9 +109,9 @@ const Home: React.FC<HomeProps> = ({
                       <School className="w-8 h-8" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-2">Historical Institutions</h3>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">{t('feature1Title')}</h3>
                       <p className="text-slate-600 leading-relaxed">
-                        Addis Ababa University and Gondar Public Health College represent the foundational pillars of education, serving the nation for over 70 years.
+                        {t('feature1Desc')}
                       </p>
                     </div>
                   </div>
@@ -120,9 +120,9 @@ const Home: React.FC<HomeProps> = ({
                       <BookOpen className="w-8 h-8" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-2">STEM Innovation</h3>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">{t('feature2Title')}</h3>
                       <p className="text-slate-600 leading-relaxed">
-                        Modern science and technology universities like ASTU and AAiT are driving Ethiopia's industrial transformation through specialized engineering and applied sciences.
+                        {t('feature2Desc')}
                       </p>
                     </div>
                   </div>
@@ -135,25 +135,25 @@ const Home: React.FC<HomeProps> = ({
         /* Authenticated Dashboard View */
         <div className="pb-16 pt-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Top-Left Welcome Title Header (Directly Below Top-Left Logo) */}
+          {/* Top-Left Welcome Title Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-slate-200/60">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Welcome back, <span className="text-[#059669]">{user.username}</span>
+                {t('loginTitle')}, <span className="text-[#059669]">{user.username}</span>
               </h1>
             </div>
 
             {(searchTerm || selectedRegion !== 'All' || selectedType !== 'All') && (
               <button
                 onClick={() => { setSearchTerm(''); setSelectedRegion('All'); setSelectedType('All'); }}
-                className="text-[#059669] font-bold text-xs hover:underline bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5"
+                className="text-[#059669] font-bold text-xs hover:underline bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1.5 cursor-pointer"
               >
-                <span>Reset Filters</span>
+                <span>{t('clearFilters')}</span>
               </button>
             )}
           </div>
 
-          {/* Universities Grid Section (Positioned Directly Below Header) */}
+          {/* Universities Grid Section */}
           <section id="unis-grid">
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -167,7 +167,7 @@ const Home: React.FC<HomeProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black text-[#059669] uppercase tracking-widest shadow-sm">
-                      {u.type}
+                      {u.type === 'Public' ? t('publicUni') : u.type === 'Private' ? t('privateUni') : u.type}
                     </div>
                   </Link>
                   <div className="p-6 flex-1 flex flex-col">
@@ -182,12 +182,12 @@ const Home: React.FC<HomeProps> = ({
                       {u.description}
                     </p>
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Est. {u.established}</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('established')} {u.established}</span>
                       <Link
                         to={`/university/${u.slug}`}
                         className="flex items-center gap-1.5 text-[#059669] font-bold text-xs hover:gap-2 transition-all"
                       >
-                        University Details <ArrowRight className="w-3.5 h-3.5" />
+                        {t('viewDetails')} <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
@@ -200,13 +200,12 @@ const Home: React.FC<HomeProps> = ({
                 <div className="bg-slate-50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
                   <Search className="text-slate-400 w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">No institutions found</h3>
-                <p className="text-slate-500 text-xs mt-1">Try adjusting your search query or region filter in the top bar.</p>
+                <h3 className="text-xl font-bold text-slate-900">{t('noUniversitiesFound')}</h3>
                 <button
                   onClick={() => { setSearchTerm(''); setSelectedRegion('All'); setSelectedType('All'); }}
-                  className="mt-5 bg-[#059669] text-white px-6 py-2.5 rounded-xl font-bold text-xs hover:bg-[#047857] transition shadow-md"
+                  className="mt-5 bg-[#059669] text-white px-6 py-2.5 rounded-xl font-bold text-xs hover:bg-[#047857] transition shadow-md cursor-pointer"
                 >
-                  Show All Universities
+                  {t('clearFilters')}
                 </button>
               </div>
             )}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, User as UserIcon, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { api } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 interface RegisterProps {
   onRegister: (user: any) => void;
@@ -19,6 +20,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,8 +60,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           <div className="w-16 h-16 bg-emerald-50 text-[#059669] rounded-2xl flex items-center justify-center mx-auto mb-5 border border-emerald-100">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-black text-[#0f172a] mb-2">Account Created</h1>
-          <p className="text-slate-500 text-sm mb-6">Your profile has been created successfully. Redirecting you to sign in...</p>
+          <h1 className="text-2xl font-black text-[#0f172a] mb-2">{t('registerTitle')}</h1>
+          <p className="text-slate-500 text-sm mb-6">{t('registerSubtitle')}</p>
           <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
             <div className="bg-[#059669] h-full animate-[progress_1.8s_linear]"></div>
           </div>
@@ -82,9 +84,9 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Shield className="w-6 h-6 text-[#059669] shrink-0 stroke-[2.5]" />
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0f172a] tracking-tight">Create Account</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0f172a] tracking-tight">{t('registerTitle')}</h1>
           </div>
-          <p className="text-slate-500 text-sm font-normal">Enter your details to register a new account</p>
+          <p className="text-slate-500 text-sm font-normal">{t('registerSubtitle')}</p>
         </div>
 
         {error && (
@@ -98,7 +100,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           {/* Full Name / Username */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              Full Name or Username
+              {t('fullName')}
             </label>
             <div className="relative">
               <UserIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -108,7 +110,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 className="w-full bg-[#f1f5f9] border border-slate-200/60 rounded-xl py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium"
-                placeholder="John Doe"
+                placeholder="Abebe Bikila"
               />
             </div>
           </div>
@@ -116,7 +118,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           {/* Email Address */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              Email Address
+              {t('emailAddress')}
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -134,7 +136,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           {/* Password */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              Password
+              {t('password')}
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -144,7 +146,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full bg-[#f1f5f9] border border-slate-200/60 rounded-xl py-3 pl-10 pr-10 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium"
-                placeholder="Enter password (min 8 chars)"
+                placeholder="••••••••"
               />
               <button
                 type="button"
@@ -160,7 +162,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           {/* Confirm Password */}
           <div className="space-y-1.5">
             <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              Confirm Password
+              {t('confirmPassword')}
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -170,7 +172,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 className="w-full bg-[#f1f5f9] border border-slate-200/60 rounded-xl py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium"
-                placeholder="Re-enter password"
+                placeholder="••••••••"
               />
             </div>
           </div>
@@ -179,17 +181,17 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/15 flex items-center justify-center gap-2 text-base transition-all disabled:opacity-60 disabled:pointer-events-none mt-4"
+            className="w-full bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-900/15 flex items-center justify-center gap-2 text-base transition-all disabled:opacity-60 disabled:pointer-events-none mt-4 cursor-pointer"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Creating Account...</span>
+                <span>{t('loading')}</span>
               </>
             ) : (
               <>
                 <Shield className="w-4 h-4 stroke-[2.5]" />
-                <span>Create Account</span>
+                <span>{t('navRegister')}</span>
               </>
             )}
           </button>
@@ -197,9 +199,9 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
         {/* Footer Link */}
         <div className="mt-8 text-center text-xs text-slate-500 border-t border-slate-100 pt-6">
-          Already have an account?{' '}
+          {t('alreadyHaveAccount')}{' '}
           <Link to="/login" className="text-[#059669] font-bold hover:underline">
-            Sign In
+            {t('navLogin')}
           </Link>
         </div>
       </div>
