@@ -4,14 +4,17 @@ import { Link } from 'react-router-dom';
 import { University } from '../types';
 import { api } from '../services/api';
 import { Search, MapPin, ArrowRight, Filter, Globe, School } from 'lucide-react';
-
 import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
 
 const Universities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
   const [universities, setUniversities] = useState<University[]>([]);
+
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     let mounted = true;
@@ -33,7 +36,9 @@ const Universities: React.FC = () => {
   const types = useMemo(() => ['All', ...new Set(universities.map(u => u.type))], [universities]);
 
   const filteredUnis = universities.filter(u => {
-    const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const localized = getLocalizedUniversityContent(u, language);
+    const matchesSearch = localized.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.location.city.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRegion = selectedRegion === 'All' || u.location.region === selectedRegion;
     const matchesType = selectedType === 'All' || u.type === selectedType;
@@ -45,9 +50,9 @@ const Universities: React.FC = () => {
       {/* Header Section */}
       <div className="bg-[#2d6a4f] pt-20 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium text-white mb-6">University Directory</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-medium text-white mb-6">{t('navUniversities')}</h1>
           <p className="text-emerald-100 text-lg max-w-2xl mx-auto">
-            Browse through Ethiopia's top-tier higher education institutions and find your future campus.
+            {t('heroSubtitle')}
           </p>
         </div>
       </div>
@@ -60,7 +65,7 @@ const Universities: React.FC = () => {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search by name or city..."
+                placeholder={t('heroSearchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-6 text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all"
@@ -72,9 +77,9 @@ const Universities: React.FC = () => {
               <select
                 value={selectedRegion}
                 onChange={(e) => setSelectedRegion(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-11 pr-4 text-slate-700 outline-none appearance-none focus:ring-2 focus:ring-emerald-500/30 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-11 pr-4 text-slate-700 outline-none appearance-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
               >
-                <option value="All">All Regions</option>
+                <option value="All">{t('allRegions')}</option>
                 {regions.filter(r => r !== 'All').map(r => (
                   <option key={r} value={r}>{r}</option>
                 ))}
@@ -86,11 +91,11 @@ const Universities: React.FC = () => {
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-11 pr-4 text-slate-700 outline-none appearance-none focus:ring-2 focus:ring-emerald-500/30 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-11 pr-4 text-slate-700 outline-none appearance-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
               >
-                <option value="All">All Types</option>
-                {types.filter(t => t !== 'All').map(t => (
-                  <option key={t} value={t}>{t}</option>
+                <option value="All">{t('allTypes')}</option>
+                {types.filter(item => item !== 'All').map(item => (
+                  <option key={item} value={item}>{item === 'Public' ? t('publicUni') : item === 'Private' ? t('privateUni') : item}</option>
                 ))}
               </select>
             </div>
@@ -102,54 +107,56 @@ const Universities: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <div className="flex justify-between items-end mb-10">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">Institutions</h2>
-            <p className="text-slate-500 text-sm mt-1">Showing {filteredUnis.length} universities found</p>
+            <h2 className="text-2xl font-bold text-slate-900">{t('navUniversities')}</h2>
+            <p className="text-slate-500 text-sm mt-1">{filteredUnis.length} {t('resultsFound')}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {filteredUnis.map((u) => (
-            <div key={u.id} className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col">
-              <Link to={`/university/${u.slug}`} className="relative h-64 overflow-hidden block">
-                <img
-                  src={getOptimizedImageUrl(u.image, 800)}
-                  alt={u.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute top-6 left-6 flex gap-2">
-                  <div className="bg-white/95 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black text-[#2d6a4f] uppercase tracking-widest shadow-sm">
-                    {u.type}
+          {filteredUnis.map((u) => {
+            const localized = getLocalizedUniversityContent(u, language);
+            return (
+              <div key={u.id} className="group bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 flex flex-col">
+                <Link to={`/university/${u.slug}`} className="relative h-64 overflow-hidden block">
+                  <img
+                    src={getOptimizedImageUrl(u.image, 800)}
+                    alt={localized.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute top-6 left-6 flex gap-2">
+                    <div className="bg-white/95 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black text-[#2d6a4f] uppercase tracking-widest shadow-sm">
+                      {u.type === 'Public' ? t('publicUni') : u.type === 'Private' ? t('privateUni') : u.type}
+                    </div>
                   </div>
-                </div>
-              </Link>
-              <div className="p-8 flex-1 flex flex-col">
-                <Link to={`/university/${u.slug}`}>
-                  <h3 className="text-2xl font-bold text-slate-900 leading-tight hover:text-[#2d6a4f] transition-colors mb-4">{u.name}</h3>
                 </Link>
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center text-slate-500 text-sm gap-2.5">
-                    <MapPin className="w-4 h-4 text-emerald-600" />
-                    {u.location.city}, {u.location.region}
-                  </div>
-                  <div className="flex items-center text-slate-500 text-sm gap-2.5">
-                    <Globe className="w-4 h-4 text-emerald-600" />
-                    {u.website.replace('http://', '').replace('www.', '')}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">EST. {u.established}</span>
-                  <Link
-                    to={`/university/${u.slug}`}
-                    className="flex items-center gap-2 text-[#2d6a4f] font-bold text-sm hover:gap-3 transition-all"
-                  >
-                    Details <ArrowRight className="w-4 h-4" />
+                <div className="p-8 flex-1 flex flex-col">
+                  <Link to={`/university/${u.slug}`}>
+                    <h3 className="text-2xl font-bold text-slate-900 leading-tight hover:text-[#2d6a4f] transition-colors mb-4">{localized.name}</h3>
                   </Link>
+                  <div className="space-y-3 mb-8">
+                    <div className="flex items-center text-slate-500 text-sm gap-2.5">
+                      <MapPin className="w-4 h-4 text-emerald-600" />
+                      {u.location.city}, {u.location.region}
+                    </div>
+                    <p className="text-slate-600 text-xs line-clamp-2 leading-relaxed font-medium">
+                      {localized.description}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('established')} {u.established}</span>
+                    <Link
+                      to={`/university/${u.slug}`}
+                      className="flex items-center gap-2 text-[#2d6a4f] font-bold text-sm hover:gap-3 transition-all"
+                    >
+                      {t('viewDetails')} <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {filteredUnis.length === 0 && (
@@ -157,13 +164,12 @@ const Universities: React.FC = () => {
             <div className="bg-slate-200/50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
               <Search className="text-slate-400 w-10 h-10" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900">No institutions found</h3>
-            <p className="text-slate-500 mt-2">Try adjusting your search terms or filters.</p>
+            <h3 className="text-3xl font-bold text-slate-900">{t('noUniversitiesFound')}</h3>
             <button
               onClick={() => { setSearchTerm(''); setSelectedRegion('All'); setSelectedType('All'); }}
-              className="mt-8 text-emerald-700 font-bold hover:underline"
+              className="mt-8 text-emerald-700 font-bold hover:underline cursor-pointer"
             >
-              Clear all filters
+              {t('clearFilters')}
             </button>
           </div>
         )}

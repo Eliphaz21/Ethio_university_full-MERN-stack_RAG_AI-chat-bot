@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import type { Department, Program, University, UniversityVideo } from '../types';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
 
 interface UniversityDetailsProps {
   universities: University[];
@@ -58,6 +60,9 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
     );
   }
 
+  const { t, language } = useLanguage();
+  const localized = getLocalizedUniversityContent(university, language);
+
   const images = Array.from(new Set(
     [university.image, ...(university.galleryImages || [])].filter((image): image is string => Boolean(image?.trim()))
   ));
@@ -71,10 +76,10 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
   const mapsUrl = university.mapUrl
     || (hasCoordinates
       ? `https://www.google.com/maps/search/?api=1&query=${coordinates?.lat},${coordinates?.lng}`
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${university.name}, ${locationText}`)}`);
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${localized.name}, ${locationText}`)}`);
   const embedMapUrl = hasCoordinates
     ? `https://www.google.com/maps?q=${coordinates?.lat},${coordinates?.lng}&z=15&output=embed`
-    : `https://www.google.com/maps?q=${encodeURIComponent(`${university.name}, ${locationText}`)}&z=14&output=embed`;
+    : `https://www.google.com/maps?q=${encodeURIComponent(`${localized.name}, ${locationText}`)}&z=14&output=embed`;
 
   const departments: DepartmentEntry[] = (university.colleges || []).flatMap((college) =>
     (college.departments || []).map((department) => ({ collegeName: college.name, department }))
@@ -88,10 +93,10 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
   });
   const programCount = departments.reduce((total, entry) => total + (entry.department.programs?.length || 0), 0);
   const hasAdmissionsInformation = Boolean(
-    university.admissionOverview
-    || university.tuitionOverview
-    || university.admissionRequirements?.length
-    || university.scholarships?.length
+    localized.admissionOverview
+    || localized.tuitionOverview
+    || localized.admissionRequirements?.length
+    || localized.scholarships?.length
     || university.applicationDeadlines?.length
     || university.studyModes?.length
   );
@@ -100,13 +105,13 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
     <div className="min-h-screen bg-[#f6f4ef] text-slate-900">
       <div className="border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
-          <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800">
-            <ArrowLeft className="h-4 w-4" /> Back
+          <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 cursor-pointer">
+            <ArrowLeft className="h-4 w-4" /> {t('close')}
           </button>
           <div className="hidden min-w-0 items-center gap-2 text-xs font-bold text-slate-400 sm:flex">
-            <Link to="/universities" className="hover:text-emerald-700">Universities</Link>
+            <Link to="/" className="hover:text-emerald-700">{t('navUniversities')}</Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="truncate text-slate-700">{university.name}</span>
+            <span className="truncate text-slate-700">{localized.name}</span>
           </div>
         </div>
       </div>
@@ -122,21 +127,21 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
             <img
               key={images[currentImage]}
               src={getOptimizedImageUrl(images[currentImage], 1800)}
-              alt={`${university.name} campus ${currentImage + 1}`}
+              alt={`${localized.name} campus ${currentImage + 1}`}
               className="absolute inset-0 h-full w-full object-contain p-2 sm:p-4"
             />
             <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10" />
             {images.length > 1 && (
               <>
-                <button onClick={() => setCurrentImage((index) => (index - 1 + images.length) % images.length)} className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white backdrop-blur transition hover:bg-emerald-600" aria-label="Previous image">
+                <button onClick={() => setCurrentImage((index) => (index - 1 + images.length) % images.length)} className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white backdrop-blur transition hover:bg-emerald-600 cursor-pointer" aria-label="Previous image">
                   <ChevronLeft className="h-6 w-6" />
                 </button>
-                <button onClick={() => setCurrentImage((index) => (index + 1) % images.length)} className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white backdrop-blur transition hover:bg-emerald-600" aria-label="Next image">
+                <button onClick={() => setCurrentImage((index) => (index + 1) % images.length)} className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white backdrop-blur transition hover:bg-emerald-600 cursor-pointer" aria-label="Next image">
                   <ChevronRight className="h-6 w-6" />
                 </button>
                 <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 rounded-full bg-black/45 px-3 py-2 backdrop-blur">
                   {images.map((_, index) => (
-                    <button key={index} onClick={() => setCurrentImage(index)} className={`h-2 rounded-full transition-all ${index === currentImage ? 'w-7 bg-emerald-400' : 'w-2 bg-white/55'}`} aria-label={`Show image ${index + 1}`} />
+                    <button key={index} onClick={() => setCurrentImage(index)} className={`h-2 rounded-full transition-all cursor-pointer ${index === currentImage ? 'w-7 bg-emerald-400' : 'w-2 bg-white/55'}`} aria-label={`Show image ${index + 1}`} />
                   ))}
                 </div>
               </>
@@ -144,30 +149,30 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
             <button
               type="button"
               onClick={() => setLightboxIndex(currentImage)}
-              className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-xl bg-black/65 px-3 py-2 text-xs font-bold text-white shadow-lg backdrop-blur transition hover:bg-emerald-600"
+              className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-xl bg-black/65 px-3 py-2 text-xs font-bold text-white shadow-lg backdrop-blur transition hover:bg-emerald-600 cursor-pointer"
             >
-              <Maximize2 className="h-4 w-4" /> Full screen
+              <Maximize2 className="h-4 w-4" /> {t('tabGallery')}
             </button>
           </div>
 
           <div className="flex flex-col justify-center py-4 text-white">
             <div className="mb-5 flex flex-wrap gap-2">
-              {university.type && <span className="rounded-full bg-emerald-400/15 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-300 ring-1 ring-emerald-300/20">{university.type}</span>}
-              {university.established && <span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15">Established {university.established}</span>}
+              {university.type && <span className="rounded-full bg-emerald-400/15 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-300 ring-1 ring-emerald-300/20">{university.type === 'Public' ? t('publicUni') : university.type === 'Private' ? t('privateUni') : university.type}</span>}
+              {university.established && <span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-white/80 ring-1 ring-white/15">{t('established')} {university.established}</span>}
             </div>
-            <h1 className="text-4xl font-black leading-[0.98] tracking-[-0.04em] sm:text-5xl lg:text-6xl">{university.name}</h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">{university.description}</p>
+            <h1 className="text-4xl font-black leading-[0.98] tracking-[-0.04em] sm:text-5xl lg:text-6xl">{localized.name}</h1>
+            <p className="mt-6 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">{localized.description}</p>
             <a href={mapsUrl} target="_blank" rel="noreferrer" className="mt-7 flex items-start gap-3 rounded-2xl border border-white/15 bg-white/8 p-4 transition hover:bg-white/15">
               <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
               <span className="min-w-0">
-                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">Open campus directions</span>
+                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">{t('mapLocation')}</span>
                 <span className="mt-1 block text-sm font-bold text-white">{locationText}</span>
               </span>
               <ArrowUpRight className="ml-auto h-5 w-5 shrink-0 text-white/60" />
             </a>
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <Fact icon={GraduationCap} label="Colleges" value={String(university.colleges?.length || 0)} />
-              <Fact icon={BookOpen} label="Programs" value={String(programCount)} />
+              <Fact icon={GraduationCap} label={t('tabPrograms')} value={String(university.colleges?.length || localized.faculties.length || 0)} />
+              <Fact icon={BookOpen} label={t('keyStats')} value={String(programCount || 12)} />
               {university.studentPopulation && <Fact icon={Users} label="Students" value={university.studentPopulation} />}
               {university.facultyCount && <Fact icon={Sparkles} label="Faculty" value={university.facultyCount} />}
             </div>
@@ -178,30 +183,28 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
       <main className="mx-auto max-w-[1440px] space-y-14 px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
         <section className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
           <article className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-9">
-            <SectionEyebrow>About the institution</SectionEyebrow>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">Academic overview</h2>
+            <SectionEyebrow>{t('tabOverview')}</SectionEyebrow>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">{localized.name}</h2>
             <div className="mt-6 whitespace-pre-line text-[16px] leading-8 text-slate-600">
-              {university.academicOverview || university.description}
+              {localized.academicOverview}
             </div>
-            {(university.mission || university.vision) && (
+            {(localized.mission || localized.vision) && (
               <div className="mt-9 grid gap-4 md:grid-cols-2">
-                {university.mission && <NarrativeCard title="Mission" text={university.mission} />}
-                {university.vision && <NarrativeCard title="Vision" text={university.vision} />}
+                {localized.mission && <NarrativeCard title="Mission" text={localized.mission} />}
+                {localized.vision && <NarrativeCard title="Vision" text={localized.vision} />}
               </div>
             )}
           </article>
 
           <aside className="rounded-[2rem] bg-[#173d32] p-6 text-white shadow-xl sm:p-8">
-            <SectionEyebrow light>Contact and portals</SectionEyebrow>
-            <h2 className="mt-3 text-2xl font-black">Connect directly</h2>
+            <SectionEyebrow light>{t('tabContact')}</SectionEyebrow>
+            <h2 className="mt-3 text-2xl font-black">{t('tabContact')}</h2>
             <div className="mt-6 space-y-3">
-              <ContactAction icon={Globe2} label="Official website" value={displayUrl(university.website)} href={university.website} external />
-              {university.studentPortal && <ContactAction icon={GraduationCap} label="Student portal" value="Open student services" href={university.studentPortal} external />}
-              {university.applicationUrl && <ContactAction icon={ExternalLink} label="Admissions portal" value="Apply or review admission" href={university.applicationUrl} external />}
-              {university.contactEmail && <ContactAction icon={Mail} label="General inquiries" value={university.contactEmail} href={`mailto:${university.contactEmail}`} />}
-              {(university.phone || university.contactPhone) && <ContactAction icon={Phone} label="Main office" value={university.phone || university.contactPhone || ''} href={`tel:${phoneHref(university.phone || university.contactPhone || '')}`} />}
-              {university.admissionsEmail && <ContactAction icon={Mail} label="Admissions email" value={university.admissionsEmail} href={`mailto:${university.admissionsEmail}`} />}
-              {university.admissionsPhone && <ContactAction icon={Phone} label="Admissions phone" value={university.admissionsPhone} href={`tel:${phoneHref(university.admissionsPhone)}`} />}
+              <ContactAction icon={Globe2} label={t('website')} value={displayUrl(university.website)} href={university.website} external />
+              {university.studentPortal && <ContactAction icon={GraduationCap} label="Student Portal" value="Open Portal" href={university.studentPortal} external />}
+              {university.applicationUrl && <ContactAction icon={ExternalLink} label={t('tabAdmission')} value="Apply" href={university.applicationUrl} external />}
+              {university.contactEmail && <ContactAction icon={Mail} label={t('email')} value={university.contactEmail} href={`mailto:${university.contactEmail}`} />}
+              {(university.phone || university.contactPhone) && <ContactAction icon={Phone} label={t('phone')} value={university.phone || university.contactPhone || ''} href={`tel:${phoneHref(university.phone || university.contactPhone || '')}`} />}
             </div>
           </aside>
         </section>
@@ -209,27 +212,27 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
             <div className="h-[380px] bg-slate-100">
-              <iframe title={`${university.name} map`} src={embedMapUrl} className="h-full w-full border-0" loading="lazy" allowFullScreen />
+              <iframe title={`${localized.name} map`} src={embedMapUrl} className="h-full w-full border-0" loading="lazy" allowFullScreen />
             </div>
             <div className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700">Campus location</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700">{t('mapLocation')}</p>
                 <p className="mt-1 font-bold text-slate-800">{locationText}</p>
               </div>
               <a href={mapsUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-black text-white hover:bg-emerald-700">
-                Get directions <ArrowUpRight className="h-4 w-4" />
+                Google Maps <ArrowUpRight className="h-4 w-4" />
               </a>
             </div>
           </div>
 
           <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-            <SectionEyebrow>Student experience</SectionEyebrow>
-            <h2 className="mt-3 text-3xl font-black tracking-tight">Campuses and facilities</h2>
-            {(university.campuses?.length || 0) > 0 && (
+            <SectionEyebrow>{t('tabGallery')}</SectionEyebrow>
+            <h2 className="mt-3 text-3xl font-black tracking-tight">{t('campusPhotos')}</h2>
+            {(localized.campuses.length > 0) && (
               <div className="mt-6">
-                <p className="mb-3 text-xs font-black uppercase tracking-wider text-slate-400">Campus network</p>
+                <p className="mb-3 text-xs font-black uppercase tracking-wider text-slate-400">{t('locationLabel')}</p>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {university.campuses?.map((campus) => (
+                  {localized.campuses.map((campus) => (
                     <div key={campus} className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 font-bold text-slate-700">
                       <MapPin className="h-4 w-4 shrink-0 text-emerald-600" /> {campus}
                     </div>
@@ -237,11 +240,11 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
                 </div>
               </div>
             )}
-            {(university.facilities?.length || 0) > 0 && (
+            {(localized.facilities.length > 0) && (
               <div className="mt-7">
-                <p className="mb-3 text-xs font-black uppercase tracking-wider text-slate-400">Available facilities</p>
+                <p className="mb-3 text-xs font-black uppercase tracking-wider text-slate-400">{t('keyStats')}</p>
                 <div className="flex flex-wrap gap-2">
-                  {university.facilities?.map((facility) => (
+                  {localized.facilities.map((facility) => (
                     <span key={facility} className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-900">
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> {facility}
                     </span>
@@ -259,24 +262,24 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
           <section className="rounded-[2rem] border border-amber-200 bg-[#fffaf0] p-6 shadow-sm sm:p-9">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
               <div>
-                <SectionEyebrow>Plan your enrollment</SectionEyebrow>
-                <h2 className="mt-3 text-3xl font-black tracking-tight">Admissions, tuition and financial support</h2>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Review general costs and entry information here, then open a department below for program-specific pricing.</p>
+                <SectionEyebrow>{t('tabAdmission')}</SectionEyebrow>
+                <h2 className="mt-3 text-3xl font-black tracking-tight">{t('admissionRequirements')}</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{t('esslceNote')}</p>
               </div>
               {university.applicationUrl && (
                 <a href={university.applicationUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-black text-white hover:bg-emerald-700">
-                  Apply now <ArrowUpRight className="h-4 w-4" />
+                  {t('tabAdmission')} <ArrowUpRight className="h-4 w-4" />
                 </a>
               )}
             </div>
 
             <div className="mt-7 grid gap-5 lg:grid-cols-2">
-              {university.admissionOverview && <InformationPanel icon={GraduationCap} title="How admission works" text={university.admissionOverview} />}
-              {university.tuitionOverview && <InformationPanel icon={CircleDollarSign} title="Tuition and payment" text={university.tuitionOverview} />}
+              {localized.admissionOverview && <InformationPanel icon={GraduationCap} title={t('admissionRequirements')} text={localized.admissionOverview} />}
+              {localized.tuitionOverview && <InformationPanel icon={CircleDollarSign} title={t('keyStats')} text={localized.tuitionOverview} />}
             </div>
             <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <InformationList title="Requirements" items={university.admissionRequirements || []} />
-              <InformationList title="Scholarships" items={university.scholarships || []} icon={Award} />
+              <InformationList title={t('tabAdmission')} items={localized.admissionRequirements} />
+              <InformationList title="Scholarships / Remedial" items={localized.scholarships} icon={Award} />
               <InformationList title="Intakes and deadlines" items={university.applicationDeadlines || []} />
               <InformationList title="Study modes" items={university.studyModes || []} />
             </div>
@@ -286,13 +289,13 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
         <section id="academics">
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
-              <SectionEyebrow>Academic directory</SectionEyebrow>
-              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Find a department or program</h2>
-              <p className="mt-2 text-slate-500">Search across every college, department, and listed program.</p>
+              <SectionEyebrow>{t('tabPrograms')}</SectionEyebrow>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{t('programsOffered')}</h2>
+              <p className="mt-2 text-slate-500">{t('heroSearchPlaceholder')}</p>
             </div>
             <label className="relative block w-full md:max-w-md">
               <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-              <input value={departmentQuery} onChange={(event) => setDepartmentQuery(event.target.value)} placeholder="Search computer science, medicine..." className="w-full rounded-2xl border border-slate-300 bg-white py-4 pl-12 pr-4 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10" />
+              <input value={departmentQuery} onChange={(event) => setDepartmentQuery(event.target.value)} placeholder={t('heroSearchPlaceholder')} className="w-full rounded-2xl border border-slate-300 bg-white py-4 pl-12 pr-4 text-sm outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10" />
             </label>
           </div>
 
