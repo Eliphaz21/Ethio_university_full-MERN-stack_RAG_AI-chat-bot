@@ -1,0 +1,14 @@
+# EthioUni Portal Robots.txt
+User-agent: *
+Allow: /
+Allow: /universities
+Allow: /university/
+Allow: /login
+Allow: /register
+
+# Disallow private user routes
+Disallow: /admin
+Disallow: /profile
+Disallow: /api/
+
+Sitemap: https://ethiouni.portal.et/sitemap.xml
