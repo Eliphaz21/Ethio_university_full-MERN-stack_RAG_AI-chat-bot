@@ -1,27 +1,34 @@
 /**
  * Frontend API client for EthioUni backend.
- * All auth-protected requests use the token from localStorage (set on login).
+ * Authentication uses httpOnly cookies — tokens are never stored in localStorage.
  */
 
 import axios, { AxiosRequestConfig } from 'axios';
 import type { AuditLog, User, University } from '../types';
 
+const CSRF_COOKIE = 'ethiouni_csrf';
+const CSRF_HEADER = 'x-csrf-token';
+
 const getBaseUrl = () => {
-  const configured = String((import.meta as any).env?.VITE_API_URL || 'http://localhost:5001').trim();
-  return configured.replace(/\/+$/, '').replace(/\/api$/i, '');
+  const configured = String((import.meta as any).env?.VITE_API_URL || '').trim();
+  if (configured) return configured.replace(/\/+$/, '').replace(/\/api$/i, '');
+  if (typeof window !== 'undefined') return window.location.origin;
+  return 'http://localhost:5001';
 };
 
-const getToken = (): string | null => localStorage.getItem('token');
+function getCsrfToken(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${CSRF_COOKIE}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
-// Create axios instance with default config
 const apiClient = axios.create({
   baseURL: getBaseUrl(),
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-// We set auth headers per-request below instead of using a custom axios property
 
 export interface ApiError {
   error: string;
@@ -36,38 +43,69 @@ async function request<T>(
   } = {}
 ): Promise<T> {
   const { method = 'GET', data, requireAuth = false } = options;
+  const isMutating = !['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase());
 
   try {
-    const token = getToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (isMutating) {
+      const csrfToken = getCsrfToken();
+      if (csrfToken) headers[CSRF_HEADER] = csrfToken;
+    }
+
     const config: AxiosRequestConfig = {
       url: path,
       method: method as any,
       data,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
+      withCredentials: true,
     };
-    if (requireAuth && token) {
-      (config.headers as any).Authorization = `Bearer ${token}`;
-    }
+
     const response = await apiClient.request(config);
     return response.data;
   } catch (error: any) {
+    if (requireAuth && error.response?.status === 401) {
+      throw new Error(error.response?.data?.error || 'Authentication required');
+    }
     const message = error.response?.data?.error || error.message || 'Request failed';
     throw new Error(message);
   }
 }
 
-// Auth (no token required)
+function uploadRequest<T>(path: string, formData: FormData): Promise<T> {
+  const csrfToken = getCsrfToken();
+  return axios
+    .post<T>(`${getBaseUrl()}${path}`, formData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...(csrfToken ? { [CSRF_HEADER]: csrfToken } : {}),
+      },
+    })
+    .then((res) => res.data)
+    .catch((error) => {
+      const message = error.response?.data?.error || error.message || 'Upload failed';
+      throw new Error(message);
+    });
+}
+
 export const api = {
   postRegister: (body: { username: string; email: string; password: string }) =>
-    request<{ message: string; token: string; user: any }>('/api/auth/register', {
+    request<{ message: string }>('/api/auth/register', {
       method: 'POST',
       data: body,
     }),
 
   postLogin: (body: { email: string; password: string }) =>
-    request<{ token: string; user: any }>('/api/auth/login', { method: 'POST', data: body }),
+    request<{ user: any }>('/api/auth/login', { method: 'POST', data: body }),
+
+  postLogout: () =>
+    request<{ message: string }>('/api/auth/logout', { method: 'POST' }),
+
+  getSession: () =>
+    request<{ user: any }>('/api/auth/session', { method: 'GET', requireAuth: true }),
 
   getProfile: () => request<{ user: any }>('/api/auth/profile', { method: 'GET', requireAuth: true }),
 
@@ -86,7 +124,7 @@ export const api = {
       requireAuth: true,
     }),
 
-  postChat: (body: { prompt: string; userId?: string }) =>
+  postChat: (body: { prompt: string }) =>
     request<{ text: string }>('/api/chat', {
       method: 'POST',
       data: body,
@@ -105,7 +143,6 @@ export const api = {
       requireAuth: true,
     }),
 
-  // Admin routes
   postAdminKnowledge: (body: { title: string; content: string; type: string; category?: string }) =>
     request<{ message: string; id: string; title: string; chunks: number; contentLength: number }>('/api/admin/knowledge', {
       method: 'POST',
@@ -113,15 +150,8 @@ export const api = {
       requireAuth: true,
     }),
 
-  uploadAdminKnowledgePDF: (formData: FormData) => {
-    const token = getToken();
-    return axios.post(`${getBaseUrl()}/api/admin/knowledge/pdf`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    }).then((res) => res.data);
-  },
+  uploadAdminKnowledgePDF: (formData: FormData) =>
+    uploadRequest('/api/admin/knowledge/pdf', formData),
 
   postAdminKnowledgeUrl: (body: { url: string; title?: string; category?: string }) =>
     request<{ message: string; id: string; title?: string; chunks: number; contentLength: number }>('/api/admin/knowledge/url', {
@@ -233,40 +263,20 @@ export const api = {
     }),
 
   uploadUniversityImage: (id: string, file: File) => {
-    const token = getToken();
     const formData = new FormData();
     formData.append('image', file);
-    return axios.post<{ message: string; image: string; university: University }>(`${getBaseUrl()}/api/admin/universities/${id}/image`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    })
-      .then((res) => res.data)
-      .catch((error) => {
-        const message = error.response?.data?.error || error.message || 'Image upload failed';
-        throw new Error(message);
-      });
+    return uploadRequest<{ message: string; image: string; university: University }>(
+      `/api/admin/universities/${id}/image`,
+      formData
+    );
   },
 
   uploadUniversityGalleryImages: (id: string, files: File[]) => {
-    const token = getToken();
     const formData = new FormData();
     files.forEach((file) => formData.append('images', file));
-    return axios.post<{ message: string; images: string[]; university: University }>(
-      `${getBaseUrl()}/api/admin/universities/${id}/gallery`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      }
-    )
-      .then((response) => response.data)
-      .catch((error) => {
-        const message = error.response?.data?.error || error.message || 'Gallery upload failed';
-        throw new Error(message);
-      });
+    return uploadRequest<{ message: string; images: string[]; university: University }>(
+      `/api/admin/universities/${id}/gallery`,
+      formData
+    );
   },
 };

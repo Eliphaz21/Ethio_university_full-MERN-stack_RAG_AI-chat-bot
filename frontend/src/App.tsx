@@ -28,10 +28,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, user, adminOn
 };
 
 const App: React.FC = () => {
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
 
   const [knowledgeDocs, setKnowledgeDocs] = useState<KnowledgeDoc[]>([]);
   const [universities, setUniversities] = useState<University[]>([]);
@@ -49,6 +47,24 @@ const App: React.FC = () => {
       const cleanPath = window.location.hash.slice(1);
       window.history.replaceState(null, '', cleanPath || '/');
     }
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    async function restoreSession() {
+      try {
+        const res = await api.getSession();
+        if (!mounted) return;
+        setUser(res.user);
+      } catch {
+        if (!mounted) return;
+        setUser(null);
+      } finally {
+        if (mounted) setAuthReady(true);
+      }
+    }
+    restoreSession();
+    return () => { mounted = false; };
   }, []);
 
   useEffect(() => {
@@ -88,22 +104,23 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
   }, [user]);
 
   const handleAuth = (userData: any) => {
     setUser(userData);
-    if (userData.token) {
-      localStorage.setItem('token', userData.token);
-    }
   };
 
-  const handleLogout = () => {
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+      await api.postLogout();
+    } catch {
+      // Clear local state even if the network call fails.
+    } finally {
+      setUser(null);
+    }
   };
 
   const handleUpdateUser = (updatedUser: User) => {

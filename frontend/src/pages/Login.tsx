@@ -30,14 +30,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       }
 
       const res = await api.postLogin({ email: lowerEmail, password });
-      const { token, user: backendUser } = res;
+      const { user: backendUser } = res;
       const role = ['admin', 'agent'].includes(backendUser.role) ? backendUser.role : 'user';
       onLogin({
         id: String(backendUser.id),
         username: backendUser.username,
         email: backendUser.email,
         role,
-        token,
       });
       navigate('/');
     } catch (err: any) {

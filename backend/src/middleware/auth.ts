@@ -1,29 +1,29 @@
 import type { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/env.js';
+import { AUTH_COOKIE, verifyAuthToken } from '../utils/authTokens.js';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: { id: string; role: 'user' | 'agent' | 'admin' };
-    }
-  }
+function extractBearerToken(req: Request): string | null {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  return authHeader.split(' ')[1] || null;
+}
+
+export function extractAuthToken(req: Request): string | null {
+  return req.cookies?.[AUTH_COOKIE] || extractBearerToken(req);
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'No token provided' });
+  const token = extractAuthToken(req);
+
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required' });
   }
 
-  const token = authHeader.split(' ')[1];
-
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; role: 'user' | 'agent' | 'admin' };
+    const decoded = verifyAuthToken(token);
     req.user = { id: decoded.id, role: decoded.role };
     next();
   } catch {
-    return res.status(401).json({ error: 'Invalid token' });
+    return res.status(401).json({ error: 'Invalid or expired session' });
   }
 }
 

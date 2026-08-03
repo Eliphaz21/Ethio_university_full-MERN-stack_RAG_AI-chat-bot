@@ -191,7 +191,6 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
 
       const { text: assistantText } = await api.postChat({
         prompt: languagePrompt,
-        userId: user?.id,
       });
       const assistantMsg: ChatMessage = { role: 'assistant', content: assistantText, timestamp: new Date().toISOString() };
       const finalMessages = [...newMessages, assistantMsg];
