@@ -6,7 +6,8 @@ import { randomUUID } from 'crypto';
 import { isIP } from 'net';
 import { lookup } from 'dns/promises';
 import { Knowledge } from '../models/knowledge.js';
-import { requireAuth, requireStaff } from '../middleware/auth.js';
+import { requireAuth, requireStaff, requireAdmin } from '../middleware/auth.js';
+import { IS_PRODUCTION } from '../config/env.js';
 import { embedText, chunkText, RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP } from '../services/voyage.js';
 import { recordAudit } from '../services/audit.js';
 
@@ -97,8 +98,11 @@ function multerSingleFile(req: Request, res: Response, next: NextFunction) {
   });
 }
 
-// GET /api/admin/knowledge/debug - debug endpoint to see what's in DB
-router.get('/knowledge/debug', requireAuth, requireStaff, async (req: Request, res: Response) => {
+// GET /api/admin/knowledge/debug - admin-only diagnostic (disabled in production)
+router.get('/knowledge/debug', requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+  if (IS_PRODUCTION) {
+    return res.status(404).json({ error: 'Not found' });
+  }
   try {
     const allDocs = await Knowledge.find().lean();
     const debugInfo = {
