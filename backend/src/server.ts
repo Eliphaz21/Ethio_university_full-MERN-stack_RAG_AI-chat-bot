@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import { connectDB } from './config/db.js';
 import { PORT, CORS_ORIGINS } from './config/env.js';
 import { csrfProtection } from './middleware/csrf.js';
+import { applySecurityHeaders, apiRateLimiter, authRateLimiter } from './middleware/security.js';
 import { assertJwtSecretConfigured } from './utils/authTokens.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -14,6 +15,8 @@ assertJwtSecretConfigured();
 
 const app = express();
 app.set('trust proxy', 1);
+
+applySecurityHeaders(app);
 
 app.use(cors({
   origin(origin, callback) {
@@ -28,12 +31,13 @@ app.use(cors({
 
 app.use(cookieParser());
 app.use(express.json({ limit: '2mb' }));
+app.use(apiRateLimiter);
 app.use(csrfProtection);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRateLimiter, authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', universityRoutes);
 app.use('/', seoRoutes);
