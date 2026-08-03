@@ -1,59 +1,60 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { chatRateLimiter } from '../middleware/security.js';
+import { sanitizeChatPrompt, detectPromptInjection } from '../services/promptSecurity.js';
 import { Conversation } from '../models/Conversation.js';
 
 const router = Router();
 
-// POST /api/chat - RAG: retrieve context from MongoDB, then generate answer (Voyage embeddings + template)
-router.post('/chat', requireAuth, async (req: Request, res: Response) => {
-  let assistantText = "I'm having trouble responding right now. Please try again in a moment.";
+router.post('/chat', requireAuth, chatRateLimiter, async (req: Request, res: Response) => {
   try {
-    const { prompt, userId } = req.body;
-    const question = typeof prompt === 'string' ? prompt : String(prompt || '').trim();
+    const rawPrompt = typeof req.body?.prompt === 'string' ? req.body.prompt : '';
+    const question = sanitizeChatPrompt(rawPrompt);
+
     if (!question) {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    console.log(' Chat request received:', { question, user: req.user?.id });
+    if (detectPromptInjection(question)) {
+      return res.status(400).json({ error: 'Your message contains disallowed instructions. Please rephrase your question.' });
+    }
+
+    const userId = String(req.user?.id || '');
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     const { getRelevantContext } = await import('../services/rag.js');
     const { generateAnswer } = await import('../services/voyage.js');
     const contextText = await getRelevantContext(question);
-    console.log(' Context retrieved:', contextText ? 'YES' : 'NO');
+    const assistantText = await generateAnswer(contextText, question);
 
-    assistantText = await generateAnswer(contextText, question);
-    console.log(' Assistant response generated, length:', assistantText.length);
-
-    const effectiveUserId = String(userId || req.user?.id || '');
-    if (effectiveUserId) {
-      try {
-        await Conversation.findOneAndUpdate(
-          { userId: effectiveUserId },
-          {
-            $push: {
-              messages: [
-                { role: 'user', content: question },
-                { role: 'assistant', content: assistantText }
-              ]
-            },
-            $set: { lastUpdated: new Date() }
+    try {
+      await Conversation.findOneAndUpdate(
+        { userId },
+        {
+          $push: {
+            messages: [
+              { role: 'user', content: question },
+              { role: 'assistant', content: assistantText },
+            ],
           },
-          { upsert: true }
-        );
-      } catch (dbErr) {
-        console.warn('Chat history save failed:', (dbErr as Error)?.message);
-      }
+          $set: { lastUpdated: new Date() },
+        },
+        { upsert: true }
+      );
+    } catch (dbErr) {
+      console.warn('Chat history save failed:', (dbErr as Error)?.message);
     }
 
     return res.json({ text: assistantText });
   } catch (err: any) {
-    console.error(' Chat route error:', err);
-    return res.json({ text: assistantText });
+    console.error('Chat route error:', err?.message || err);
+    return res.status(500).json({ error: 'Unable to process your message right now.' });
   }
 });
 
-// GET /api/chat/history - get current user's chat history (messages)
 router.get('/chat/history', requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = String(req.user?.id || '');
@@ -62,11 +63,10 @@ router.get('/chat/history', requireAuth, async (req: Request, res: Response) => 
     const messages = conv?.messages ?? [];
     res.json({ messages });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Unable to load chat history.' });
   }
 });
 
-// DELETE /api/chat/history - clear current user's chat history
 router.delete('/chat/history', requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = String(req.user?.id || '');
@@ -78,7 +78,7 @@ router.delete('/chat/history', requireAuth, async (req: Request, res: Response) 
     );
     res.json({ message: 'Chat history cleared' });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Unable to clear chat history.' });
   }
 });
 
