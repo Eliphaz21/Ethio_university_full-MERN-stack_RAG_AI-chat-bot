@@ -18,6 +18,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 
 interface ProfilePageProps {
   user: User | null;
@@ -107,6 +108,7 @@ const Profile: React.FC<ProfilePageProps> = ({ user, onUpdateUser }) => {
 
   return (
     <div className="min-h-screen bg-[#FBF7F1] pb-24 pt-4">
+      <SEO title="My Profile" noIndex description="Private user profile." />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Back Link */}

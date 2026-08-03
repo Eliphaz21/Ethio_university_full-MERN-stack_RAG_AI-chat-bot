@@ -29,6 +29,11 @@ import type { Department, Program, University, UniversityVideo } from '../types'
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
+import {
+  SEO,
+  buildUniversitySchema,
+  buildBreadcrumbSchema,
+} from '../components/SEO';
 
 interface UniversityDetailsProps {
   universities: University[];
@@ -52,6 +57,7 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
   if (!university) {
     return (
       <main className="mx-auto flex min-h-[65vh] max-w-4xl flex-col items-center justify-center px-4 text-center">
+        <SEO title="University Not Found" noIndex description="The requested university page could not be found." />
         <Building2 className="mb-5 h-12 w-12 text-slate-300" />
         <h1 className="text-3xl font-black text-slate-900">University not found</h1>
         <p className="mt-3 text-slate-500">This institution may have been removed or its address may have changed.</p>
@@ -103,6 +109,21 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
 
   return (
     <div className="min-h-screen bg-[#f6f4ef] text-slate-900">
+      <SEO
+        title={localized.name}
+        description={localized.description || `${localized.name} — programs, admissions, campus, and contact information in Ethiopia.`}
+        keywords={[localized.name, university.location.city, university.location.region, university.type, 'Ethiopian university']}
+        image={university.image || undefined}
+        type="college"
+        structuredData={[
+          buildUniversitySchema(university, localized.name, localized.description),
+          buildBreadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Universities', path: '/universities' },
+            { name: localized.name, path: `/university/${university.slug}` },
+          ]),
+        ]}
+      />
       <div className="border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
           <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 cursor-pointer">

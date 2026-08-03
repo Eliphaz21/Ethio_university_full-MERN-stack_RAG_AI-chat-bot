@@ -9,6 +9,7 @@ import UserEditorModal, { UserEditorDraft } from '../components/admin/UserEditor
 import KnowledgeDetailsModal from '../components/admin/KnowledgeDetailsModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import NotificationToast, { NotificationMessage } from '../components/NotificationToast';
+import { SEO } from '../components/SEO';
 
 interface AdminProps {
   user: User;
@@ -370,6 +371,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
 
   return (
     <div className="min-h-screen bg-[#f4f1e9]">
+      <SEO title="Administration" noIndex description="Private administration workspace." />
       <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 lg:py-10">
         <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-8 text-white shadow-xl sm:px-9 sm:py-10">
           <div className="absolute -right-20 -top-28 h-72 w-72 rounded-full border-[45px] border-emerald-400/10" />

@@ -5,6 +5,12 @@ import { Search, MapPin, BookOpen, ArrowRight, Award, School } from 'lucide-reac
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
+import {
+  SEO,
+  buildWebSiteSchema,
+  buildOrganizationSchema,
+  buildAIAssistantSchema,
+} from '../components/SEO';
 
 interface HomeProps {
   user: User | null;
@@ -42,6 +48,12 @@ const Home: React.FC<HomeProps> = ({
 
   return (
     <div className="min-h-screen bg-[#FBF7F1]">
+      <SEO
+        title={user ? 'Dashboard' : undefined}
+        description="Browse Ethiopian universities, compare programs, check ESSLCE admission requirements, and get AI-powered guidance in five languages."
+        keywords={['Ethiopian university portal', 'ESSLCE admission', 'university directory Ethiopia']}
+        structuredData={[buildWebSiteSchema(), buildOrganizationSchema(), buildAIAssistantSchema()]}
+      />
       {!user ? (
         <>
           {/* Public Landing Hero for Unauthenticated Visitors */}

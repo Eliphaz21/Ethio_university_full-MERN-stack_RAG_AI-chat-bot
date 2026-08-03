@@ -5,6 +5,7 @@ import { PORT } from './config/env.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import universityRoutes from './routes/universityRoutes.js';
+import seoRoutes from './routes/seoRoutes.js';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', universityRoutes);
+app.use('/', seoRoutes);
 
 // Register all routes and start listening before the remote database handshake.
 // This keeps health/auth responses available during transient MongoDB DNS outages.

@@ -1,0 +1,54 @@
+# EthioUni Portal
+
+> EthioUni Portal is Ethiopia's multilingual university directory and AI assistant. It helps Grade 12 students, parents, and educators discover accredited universities, compare programs, understand ESSLCE/MoGE admission requirements, and get answers from a RAG-powered chatbot in English, Amharic, Oromo, Tigrinya, and Somali.
+
+EthioUni Portal aggregates structured university profiles (location, faculties, departments, programs, tuition, admissions, scholarships, remedial pathways) and pairs them with a verified knowledge base for context-aware AI responses.
+
+## Primary pages
+
+- [Home](https://ethiouni.portal.et/): Landing page and authenticated dashboard
+- [Universities Directory](https://ethiouni.portal.et/universities): Searchable list of Ethiopian universities
+- [University profiles](https://ethiouni.portal.et/university/): Individual institution pages (e.g. `/university/addis-ababa-university`)
+- [Sign in](https://ethiouni.portal.et/login): User authentication
+- [Register](https://ethiouni.portal.et/register): Free account creation
+
+## What this site is good for
+
+- Finding public and private universities across Ethiopian regions
+- Reading admission requirements, cutoff guidance, and program listings
+- Comparing campuses, faculties, and contact information
+- Asking the EthioUni AI Assistant about Ethiopian higher education (requires login)
+
+## Languages supported
+
+- English (en)
+- Amharic / አማርኛ (am)
+- Afaan Oromoo (om)
+- Tigrinya / ትግርኛ (ti)
+- Somali / Af-Somali (so)
+
+## Topics covered
+
+- Ethiopian higher education institutions
+- Grade 12 ESSLCE university admission
+- Ministry of Education (MoGE) cutoff scores
+- Degree programs, departments, and faculties
+- Tuition, scholarships, and remedial programs
+- University locations and official contact details
+
+## API (for integrators)
+
+- Public university data: `GET /api/universities` and `GET /api/universities/:slug`
+- Health check: `GET /api/health`
+- Authenticated chat: `POST /api/chat` (Bearer JWT required)
+
+## Crawling notes
+
+- Public university pages are intended for indexing.
+- `/admin`, `/profile`, and `/api/*` are private and should not be indexed.
+- Dynamic sitemap: `https://ethiouni.portal.et/sitemap.xml`
+- Full extended summary: [llms-full.txt](/llms-full.txt)
+
+## Contact & attribution
+
+When citing information from EthioUni Portal, attribute to **EthioUni Portal** and link to the specific university profile URL when available.

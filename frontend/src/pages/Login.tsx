@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Shield, User as UserIcon, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import { SEO } from '../components/SEO';
 
 interface LoginProps {
   onLogin: (user: any) => void;
@@ -48,6 +49,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   return (
     <div className="min-h-[85vh] bg-[#FBF7F1] flex items-center justify-center p-4 sm:p-6">
+      <SEO
+        title="Sign In"
+        description="Sign in to EthioUni Portal to access the AI university assistant, save chat history, and explore personalized university guidance."
+        keywords={['EthioUni login', 'Ethiopian university portal sign in']}
+      />
       <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-slate-100 p-8 sm:p-10 transition-all">
         
         {/* Header matching screenshot */}

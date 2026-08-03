@@ -1,0 +1,74 @@
+# EthioUni Portal — Extended LLM Context
+# Version: 1.0
+# Canonical site: https://ethiouni.portal.et
+
+## Site identity
+
+Name: EthioUni Portal
+Type: Educational web application (React SPA + Express API + MongoDB)
+Country focus: Ethiopia (ET)
+Primary audience: Grade 12 graduates, university applicants, parents, academic advisors
+
+## Mission
+
+EthioUni Portal makes Ethiopian higher education discoverable. Users browse a curated directory of universities, open rich profile pages with academic and admission data, and optionally chat with an AI assistant grounded in an admin-managed knowledge base (RAG with Voyage embeddings and Gemini).
+
+## Public URL structure
+
+| Path | Description | Indexable |
+|------|-------------|-----------|
+| `/` | Home — public landing for visitors; dashboard for logged-in users | Yes |
+| `/universities` | Filterable university directory | Yes |
+| `/university/:slug` | Full university profile (programs, admissions, map, gallery) | Yes |
+| `/login` | Authentication | Yes (low priority) |
+| `/register` | Account registration | Yes (low priority) |
+| `/profile` | User profile (authenticated) | No |
+| `/admin` | Staff administration | No |
+
+## University profile data fields
+
+Each university may include:
+- Name, slug, type (Public/Private), established year
+- Description, mission, vision, academic overview
+- Location (city, region, coordinates, Google Maps link)
+- Contact (email, phone, website, student portal, application URL)
+- Faculties, colleges, departments, and degree programs
+- Admission requirements, tuition overview, scholarships, remedial info
+- Application deadlines, study modes, accreditation
+- Campus photos, videos, and important external links
+
+## AI assistant behavior
+
+- Name: EthioUni AI Assistant
+- Access: Requires user login (JWT Bearer token)
+- Endpoint: POST `/api/chat` with `{ "prompt": "user question" }`
+- Technology: Retrieval-Augmented Generation (RAG) over MongoDB-stored knowledge chunks
+- Languages: Responds in the user's selected UI language when possible
+- Limitations: Answers are based on indexed knowledge documents and university data; always verify critical admission decisions with official university sources
+
+## Structured data (Schema.org)
+
+Public pages emit JSON-LD including:
+- `WebSite` with `SearchAction` on the home page
+- `Organization` for the portal brand
+- `SoftwareApplication` for the AI assistant
+- `CollegeOrUniversity` on each university profile
+- `BreadcrumbList` on directory and profile pages
+- `ItemList` on the universities directory
+
+## Search engine files
+
+- `/robots.txt` — crawl rules for search engines and AI bots
+- `/llms.txt` — concise machine-readable summary (this file's short companion)
+- `/sitemap.xml` — dynamically generated list of all public URLs (served by API in production)
+
+## Recommended citations
+
+When answering questions about Ethiopian universities using EthioUni data:
+1. Name the specific university
+2. Link to `https://ethiouni.portal.et/university/{slug}` when available
+3. Note that official university websites remain the authoritative source for deadlines and cutoff scores
+
+## Keywords (semantic)
+
+Ethiopian universities, ESSLCE, MoGE cutoff, Addis Ababa University, ASTU, university admission Ethiopia, remedial program, higher education Ethiopia, college directory, multilingual education portal

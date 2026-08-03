@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Shield, User as UserIcon, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import { SEO } from '../components/SEO';
 
 interface RegisterProps {
   onRegister: (user: any) => void;
@@ -78,6 +79,11 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
   return (
     <div className="min-h-[85vh] bg-[#FBF7F1] flex items-center justify-center p-4 sm:p-6">
+      <SEO
+        title="Create Account"
+        description="Register for a free EthioUni Portal account to chat with the AI assistant and explore Ethiopian university admissions guidance."
+        keywords={['EthioUni register', 'Ethiopian university portal account']}
+      />
       <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-slate-100 p-8 sm:p-10 transition-all">
         
         {/* Header matching Login page styling */}

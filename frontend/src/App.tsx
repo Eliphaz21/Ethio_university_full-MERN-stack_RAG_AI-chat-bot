@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/Navbar';
 import ChatWidget from './components/ChatWidget';
 import Home from './pages/Home';
+import Universities from './pages/Universities';
 import UniversityDetails from './pages/UniversityDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -137,28 +138,24 @@ const App: React.FC = () => {
               <Route
                 path="/"
                 element={
-                  <ProtectedRoute user={user}>
-                    <Home
-                      user={user}
-                      universities={universities}
-                      searchTerm={searchTerm}
-                      setSearchTerm={setSearchTerm}
-                      selectedRegion={selectedRegion}
-                      setSelectedRegion={setSelectedRegion}
-                      selectedType={selectedType}
-                      setSelectedType={setSelectedType}
-                    />
-                  </ProtectedRoute>
+                  <Home
+                    user={user}
+                    universities={universities}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    selectedRegion={selectedRegion}
+                    setSelectedRegion={setSelectedRegion}
+                    selectedType={selectedType}
+                    setSelectedType={setSelectedType}
+                  />
                 }
               />
 
+              <Route path="/universities" element={<Universities />} />
+
               <Route
                 path="/university/:slug"
-                element={
-                  <ProtectedRoute user={user}>
-                    <UniversityDetails universities={universities} />
-                  </ProtectedRoute>
-                }
+                element={<UniversityDetails universities={universities} />}
               />
 
               <Route

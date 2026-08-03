@@ -7,6 +7,12 @@ import { Search, MapPin, ArrowRight, Filter, Globe, School } from 'lucide-react'
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
+import {
+  SEO,
+  buildWebSiteSchema,
+  buildUniversityListSchema,
+  buildBreadcrumbSchema,
+} from '../components/SEO';
 
 const Universities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +53,22 @@ const Universities: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-20">
+      <SEO
+        title="Universities Directory"
+        description="Search and filter accredited public and private universities across all regions of Ethiopia. Compare programs, locations, and admission details."
+        keywords={['Ethiopian universities list', 'public universities Ethiopia', 'private universities Ethiopia']}
+        url={typeof window !== 'undefined' ? `${window.location.origin}/universities` : undefined}
+        structuredData={[
+          buildWebSiteSchema(),
+          buildBreadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Universities', path: '/universities' },
+          ]),
+          buildUniversityListSchema(
+            universities.map((u) => ({ name: u.name, slug: u.slug, description: u.description }))
+          ),
+        ]}
+      />
       {/* Header Section */}
       <div className="bg-[#2d6a4f] pt-20 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
