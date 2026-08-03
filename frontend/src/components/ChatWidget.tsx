@@ -383,6 +383,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                         <input
                           type="text"
                           value={input}
+                          maxLength={2000}
                           onChange={(e) => setInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                           placeholder={t('chatPlaceholder')}

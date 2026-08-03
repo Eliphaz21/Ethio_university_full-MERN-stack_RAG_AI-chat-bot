@@ -34,6 +34,10 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
       setError('Password must be at least 8 characters long.');
       return;
     }
+    if (!/[A-Za-z]/.test(formData.password) || !/[0-9]/.test(formData.password)) {
+      setError('Password must include at least one letter and one number.');
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
