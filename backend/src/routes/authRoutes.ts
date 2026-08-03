@@ -10,6 +10,7 @@ import {
   clearAuthCookies,
   createCsrfToken,
 } from '../utils/authTokens.js';
+import { sanitizeText, validatePassword } from '../middleware/errorHandler.js';
 
 const router = Router();
 
@@ -48,6 +49,10 @@ router.post('/register', async (req: Request, res: Response) => {
     }
     if (password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({ error: passwordError });
     }
 
     const existing = await User.findOne({ email: normalizedEmail });
@@ -136,13 +141,19 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (username) user.username = username.trim();
-    if (phone !== undefined) user.phone = phone.trim();
-    if (institution !== undefined) user.institution = institution.trim();
-    if (department !== undefined) user.department = department.trim();
-    if (bio !== undefined) user.bio = bio.trim();
-    if (academicTitle !== undefined) user.academicTitle = academicTitle.trim();
-    if (avatarUrl !== undefined) user.avatarUrl = avatarUrl.trim();
+    if (username) user.username = sanitizeText(username, 80);
+    if (phone !== undefined) user.phone = sanitizeText(phone, 30);
+    if (institution !== undefined) user.institution = sanitizeText(institution, 120);
+    if (department !== undefined) user.department = sanitizeText(department, 120);
+    if (bio !== undefined) user.bio = sanitizeText(bio, 1000);
+    if (academicTitle !== undefined) user.academicTitle = sanitizeText(academicTitle, 120);
+    if (avatarUrl !== undefined) {
+      const safeUrl = sanitizeText(avatarUrl, 500);
+      if (safeUrl && !/^https?:\/\//i.test(safeUrl)) {
+        return res.status(400).json({ error: 'Avatar URL must use http or https' });
+      }
+      user.avatarUrl = safeUrl;
+    }
 
     await user.save();
 

@@ -5,6 +5,7 @@ import { connectDB } from './config/db.js';
 import { PORT, CORS_ORIGINS } from './config/env.js';
 import { csrfProtection } from './middleware/csrf.js';
 import { applySecurityHeaders, apiRateLimiter, authRateLimiter } from './middleware/security.js';
+import { secureErrorHandler } from './middleware/errorHandler.js';
 import { assertJwtSecretConfigured } from './utils/authTokens.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -47,6 +48,7 @@ async function start() {
   const chatRoutes = (await import('./routes/chatRoutes.js')).default;
   app.use('/api/admin', knowledgeRoutes);
   app.use('/api', chatRoutes);
+  app.use(secureErrorHandler);
 
   app.listen(PORT, () => {
     console.log(` Server running on port ${PORT}`);
