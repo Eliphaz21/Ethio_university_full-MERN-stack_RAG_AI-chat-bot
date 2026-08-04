@@ -12,6 +12,8 @@ import {
 } from '../utils/authTokens.js';
 import { sanitizeText, validatePassword } from '../middleware/errorHandler.js';
 
+import { recordAudit } from '../services/audit.js';
+
 const router = Router();
 
 function serializeUser(user: InstanceType<typeof User>) {
@@ -66,6 +68,14 @@ router.post('/register', async (req: Request, res: Response) => {
     const user = new User({ username: normalizedUsername, email: normalizedEmail, password: hashedPassword, role });
     await user.save();
 
+    await recordAudit(req, {
+      action: 'auth.register',
+      resourceType: 'user',
+      resourceId: String(user._id),
+      resourceLabel: user.email,
+      status: 'success',
+    });
+
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -80,12 +90,27 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email: normalizedEmail });
     if (!user || !(await bcrypt.compare(password, user.password))) {
+      await recordAudit(req, {
+        action: 'auth.login',
+        resourceType: 'user',
+        resourceLabel: normalizedEmail,
+        status: 'failure',
+        details: { reason: 'Invalid credentials' },
+      });
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const token = signAuthToken({ id: String(user._id), role: user.role });
     const csrfToken = createCsrfToken();
     setAuthCookies(res, token, csrfToken);
+
+    await recordAudit(req, {
+      action: 'auth.login',
+      resourceType: 'user',
+      resourceId: String(user._id),
+      resourceLabel: user.email,
+      status: 'success',
+    });
 
     res.json({ user: serializeUser(user) });
   } catch (err: any) {
@@ -94,7 +119,13 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 // POST /api/auth/logout — clears session cookies
-router.post('/logout', (_req: Request, res: Response) => {
+router.post('/logout', async (req: Request, res: Response) => {
+  await recordAudit(req, {
+    action: 'auth.logout',
+    resourceType: 'user',
+    resourceId: req.user?.id,
+    status: 'success',
+  });
   clearAuthCookies(res);
   res.json({ message: 'Logged out successfully' });
 });
@@ -156,6 +187,14 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
     }
 
     await user.save();
+
+    await recordAudit(req, {
+      action: 'auth.profile_update',
+      resourceType: 'user',
+      resourceId: String(user._id),
+      resourceLabel: user.email,
+      status: 'success',
+    });
 
     res.json({
       message: 'Profile updated successfully',

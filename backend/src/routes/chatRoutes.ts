@@ -4,6 +4,7 @@ import { requireAuth } from '../middleware/auth.js';
 import { chatRateLimiter } from '../middleware/security.js';
 import { sanitizeChatPrompt, detectPromptInjection } from '../services/promptSecurity.js';
 import { Conversation } from '../models/Conversation.js';
+import { recordAudit } from '../services/audit.js';
 
 const router = Router();
 
@@ -17,6 +18,12 @@ router.post('/chat', requireAuth, chatRateLimiter, async (req: Request, res: Res
     }
 
     if (detectPromptInjection(question)) {
+      await recordAudit(req, {
+        action: 'security.prompt_injection_blocked',
+        resourceType: 'chatbot',
+        status: 'failure',
+        details: { promptSnippet: question.substring(0, 100) },
+      });
       return res.status(400).json({ error: 'Your message contains disallowed instructions. Please rephrase your question.' });
     }
 
@@ -47,6 +54,13 @@ router.post('/chat', requireAuth, chatRateLimiter, async (req: Request, res: Res
     } catch (dbErr) {
       console.warn('Chat history save failed:', (dbErr as Error)?.message);
     }
+
+    await recordAudit(req, {
+      action: 'chat.query',
+      resourceType: 'chatbot',
+      status: 'success',
+      details: { promptLength: question.length, responseLength: assistantText.length },
+    });
 
     return res.json({ text: assistantText });
   } catch (err: any) {
