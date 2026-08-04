@@ -29,11 +29,7 @@ import type { Department, Program, University, UniversityVideo } from '../types'
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
-import {
-  SEO,
-  buildUniversitySchema,
-  buildBreadcrumbSchema,
-} from '../components/SEO';
+import { SEO, buildUniversitySchema } from '../components/SEO';
 
 interface UniversityDetailsProps {
   universities: University[];
@@ -111,18 +107,11 @@ const UniversityDetails: React.FC<UniversityDetailsProps> = ({ universities }) =
     <div className="min-h-screen bg-[#f6f4ef] text-slate-900">
       <SEO
         title={localized.name}
-        description={localized.description || `${localized.name} — programs, admissions, campus, and contact information in Ethiopia.`}
-        keywords={[localized.name, university.location.city, university.location.region, university.type, 'Ethiopian university']}
+        description={localized.description || `${localized.name} — degree programs, ESSLCE entrance cutoffs, faculties, and official campus details in Ethiopia.`}
+        keywords={[localized.name, university.location.city, university.location.region, university.type, 'Ethiopian university', 'Grade 12 ESSLCE']}
         image={university.image || undefined}
         type="college"
-        structuredData={[
-          buildUniversitySchema(university, localized.name, localized.description),
-          buildBreadcrumbSchema([
-            { name: 'Home', path: '/' },
-            { name: 'Universities', path: '/universities' },
-            { name: localized.name, path: `/university/${university.slug}` },
-          ]),
-        ]}
+        structuredData={buildUniversitySchema(university, localized.name, localized.description)}
       />
       <div className="border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">

@@ -1,45 +1,35 @@
-# EthioUni Portal — robots.txt
-# https://ethiouni.portal.et
-
+# EthioUni Portal Robots.txt & AI Crawler Policy
 User-agent: *
 Allow: /
 Allow: /universities
 Allow: /university/
-Allow: /login
-Allow: /register
+Allow: /assets/
 
-# Private / authenticated areas
-Disallow: /admin
-Disallow: /profile
-Disallow: /api/
-
-# AI crawlers — welcome on public educational content
+# Explicitly Allow AI Search & GEO Crawlers for Maximum Indexing
 User-agent: GPTBot
 Allow: /
-Allow: /universities
-Allow: /university/
-Disallow: /admin
-Disallow: /profile
 
 User-agent: ChatGPT-User
 Allow: /
-Allow: /universities
-Allow: /university/
 
 User-agent: ClaudeBot
 Allow: /
-Allow: /universities
-Allow: /university/
 
 User-agent: PerplexityBot
 Allow: /
-Allow: /universities
-Allow: /university/
 
 User-agent: Google-Extended
 Allow: /
 
-# Machine-readable site summary for LLMs
-# See also: /llms.txt
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Disallow private user & administrative endpoints
+Disallow: /admin
+Disallow: /profile
+Disallow: /api/
 
 Sitemap: https://ethiouni.portal.et/sitemap.xml

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Home / Portal Root -->
+  <url>
+    <loc>https://ethiouni.portal.et/</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ethiouni.portal.et/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="am" href="https://ethiouni.portal.et/?lang=am"/>
+    <xhtml:link rel="alternate" hreflang="om" href="https://ethiouni.portal.et/?lang=om"/>
+    <xhtml:link rel="alternate" hreflang="ti" href="https://ethiouni.portal.et/?lang=ti"/>
+    <xhtml:link rel="alternate" hreflang="so" href="https://ethiouni.portal.et/?lang=so"/>
+  </url>
+
+  <!-- Universities Directory -->
+  <url>
+    <loc>https://ethiouni.portal.et/universities</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ethiouni.portal.et/universities?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="am" href="https://ethiouni.portal.et/universities?lang=am"/>
+    <xhtml:link rel="alternate" hreflang="om" href="https://ethiouni.portal.et/universities?lang=om"/>
+    <xhtml:link rel="alternate" hreflang="ti" href="https://ethiouni.portal.et/universities?lang=ti"/>
+    <xhtml:link rel="alternate" hreflang="so" href="https://ethiouni.portal.et/universities?lang=so"/>
+  </url>
+
+  <!-- Key University Detail Pages -->
+  <url>
+    <loc>https://ethiouni.portal.et/university/addis-ababa-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&amp;fit=crop&amp;q=80&amp;w=1800</image:loc>
+      <image:title>Addis Ababa University Campus</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/adama-science-and-technology-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/hawassa-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/mekelle-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/university-of-gondar</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/jimma-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/bahir-dar-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/haramaya-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <url>
+    <loc>https://ethiouni.portal.et/university/arba-minch-university</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+</urlset>

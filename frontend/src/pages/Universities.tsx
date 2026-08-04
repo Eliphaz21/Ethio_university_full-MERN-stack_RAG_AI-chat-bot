@@ -7,12 +7,7 @@ import { Search, MapPin, ArrowRight, Filter, Globe, School } from 'lucide-react'
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
-import {
-  SEO,
-  buildWebSiteSchema,
-  buildUniversityListSchema,
-  buildBreadcrumbSchema,
-} from '../components/SEO';
+import { SEO, buildWebSiteSchema, buildFAQSchema } from '../components/SEO';
 
 const Universities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,19 +49,21 @@ const Universities: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-20">
       <SEO
-        title="Universities Directory"
-        description="Search and filter accredited public and private universities across all regions of Ethiopia. Compare programs, locations, and admission details."
-        keywords={['Ethiopian universities list', 'public universities Ethiopia', 'private universities Ethiopia']}
-        url={typeof window !== 'undefined' ? `${window.location.origin}/universities` : undefined}
+        title={t('navUniversities')}
+        description="Explore higher education institutions across Ethiopia including Addis Ababa University, ASTU, Hawassa, Mekelle, Gondar, and Jimma."
+        keywords={['Ethiopian universities directory', 'Public universities Ethiopia', 'AAU Addis Ababa', 'ASTU Adama', 'MoGE ESSLCE cutoffs']}
         structuredData={[
           buildWebSiteSchema(),
-          buildBreadcrumbSchema([
-            { name: 'Home', path: '/' },
-            { name: 'Universities', path: '/universities' },
-          ]),
-          buildUniversityListSchema(
-            universities.map((u) => ({ name: u.name, slug: u.slug, description: u.description }))
-          ),
+          buildFAQSchema([
+            {
+              question: 'How do Grade 12 students get admitted to Ethiopian public universities?',
+              answer: 'Admissions are managed through the Ministry of Education (MoGE) placement based on Grade 12 ESSLCE examination cut-off scores, choice options, and institution capacities.'
+            },
+            {
+              question: 'What languages are supported on EthioUni Portal?',
+              answer: 'The portal supports Amharic (አማርኛ), Afaan Oromoo, Tigrinya (ትግርኛ), Somali (Af-Somali), and English.'
+            }
+          ])
         ]}
       />
       {/* Header Section */}
