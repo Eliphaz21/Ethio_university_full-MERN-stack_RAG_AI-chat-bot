@@ -264,7 +264,7 @@ function contextMatchesQuestion(question: string, contextText: string, docs: any
     }
   }
 
-  console.log(`⚠️ No exact match found for unknown university: ${key}`);
+  console.log(`[WARN] No exact match found for unknown university: ${key}`);
   return false;
 }
 
@@ -272,22 +272,22 @@ export async function getRelevantContext(question: string): Promise<string> {
   let totalDocs = 0;
   let targetUniversity: string | null = null;
   try {
-    console.log('🔍 Searching for context for question:', question);
+    console.log('[INFO] Searching for context for question:', question);
 
     totalDocs = await Knowledge.countDocuments();
-    console.log('📚 Total knowledge documents in DB:', totalDocs);
+    console.log('[INFO] Total knowledge documents in DB:', totalDocs);
     if (totalDocs === 0) return '';
 
     let questionEmbedding: number[] | null = null;
     try {
       questionEmbedding = await embedText(question, 'query');
-      console.log('📊 Question embedding length:', questionEmbedding?.length ?? 0);
+      console.log('[INFO] Question embedding length:', questionEmbedding?.length ?? 0);
     } catch (e) {
-      console.warn('⚠️ Could not get query embedding, will use text search only:', (e as Error)?.message);
+      console.warn('[WARN] Could not get query embedding, will use text search only:', (e as Error)?.message);
     }
 
     targetUniversity = extractUniversityName(question);
-    console.log('🎯 Target university detected:', targetUniversity || 'any');
+    console.log('[INFO] Target university detected:', targetUniversity || 'any');
 
     let docs: any[] = [];
 
@@ -296,7 +296,7 @@ export async function getRelevantContext(question: string): Promise<string> {
       const isComparison = mentioned.length >= 2;
 
       if (isComparison && mentioned.length > 0) {
-        console.log('🔄 Comparison query: fetching context for each university:', mentioned);
+        console.log('[INFO] Comparison query: fetching context for each university:', mentioned);
         const seenIds = new Set<string>();
         for (const uni of mentioned) {
           const expandedQuery = UNIVERSITY_QUERIES[uni] || uni;
@@ -319,12 +319,12 @@ export async function getRelevantContext(question: string): Promise<string> {
               }
             }
           } catch (e) {
-            console.warn('⚠️ Comparison sub-query failed for', uni, (e as Error)?.message);
+            console.warn('[WARN] Comparison sub-query failed for', uni, (e as Error)?.message);
           }
         }
         docs.sort((a: any, b: any) => (b.content?.length ?? 0) - (a.content?.length ?? 0));
         docs = docs.slice(0, MAX_DOCS_AFTER_MERGE);
-        console.log('✅ Comparison vector search merged, found:', docs.length);
+        console.log('[SUCCESS] Comparison vector search merged, found:', docs.length);
       }
 
       // Single-university question ("tell me about ASTU"): retrieve ONLY that university's docs using its expanded query (no mixing with others).
@@ -344,15 +344,15 @@ export async function getRelevantContext(question: string): Promise<string> {
             docs = await Knowledge.aggregate([{ $vectorSearch: vectorQuery }]);
             docs.sort((a: any, b: any) => (b.content?.length ?? 0) - (a.content?.length ?? 0));
             docs = docs.slice(0, VECTOR_LIMIT_SINGLE);
-            console.log('📌 Single-topic retrieval for', uni, ', found', docs.length);
+            console.log('[INFO] Single-topic retrieval for', uni, ', found', docs.length);
           }
         } catch (e) {
-          console.warn('⚠️ Single-topic vector search failed for', uni, (e as Error)?.message);
+          console.warn('[WARN] Single-topic vector search failed for', uni, (e as Error)?.message);
         }
       }
 
       if (docs.length === 0) {
-        console.log('🔍 Vector search using user question (query-based retrieval from all docs)');
+        console.log('[INFO] Vector search using user question (query-based retrieval from all docs)');
         try {
           const vectorQuery: any = {
             index: VECTOR_INDEX_NAME,
@@ -366,12 +366,12 @@ export async function getRelevantContext(question: string): Promise<string> {
             { $vectorSearch: vectorQuery },
           ]);
           // Keep MongoDB order (by similarity score) — do NOT sort by length so the most relevant docs stay first
-          console.log('✅ $vectorSearch worked, found:', docs.length);
+          console.log('[SUCCESS] $vectorSearch worked, found:', docs.length);
         } catch (e1) {
           const errMsg = (e1 as Error).message;
-          console.log('⚠️ $vectorSearch failed, trying $search knnBeta:', errMsg);
+          console.log('[WARN] $vectorSearch failed, trying $search knnBeta:', errMsg);
           if (/1536 dimensions but queried with 1024|dimension.*mismatch/i.test(errMsg)) {
-            console.log('💡 Fix: In MongoDB Atlas, create a vector search index on the "embedding" field with numDimensions: 1024, then re-upload all documents from Admin → Knowledge.');
+            console.log('[INFO] Fix: In MongoDB Atlas, create a vector search index on the "embedding" field with numDimensions: 1024, then re-upload all documents from Admin → Knowledge.');
           }
 
           // Fallback to $search with knnBeta (correct pipeline: first stage must be { $search: { ... } })
@@ -390,9 +390,9 @@ export async function getRelevantContext(question: string): Promise<string> {
               { $project: { title: 1, content: 1, type: 1, score: { $meta: 'searchScore' } } }
             ]);
             docs = docs.slice(0, VECTOR_LIMIT_SINGLE);
-            console.log('✅ $search knnBeta worked, found:', docs.length);
+            console.log('[SUCCESS] $search knnBeta worked, found:', docs.length);
           } catch (e2) {
-            console.log('⚠️ $search knnBeta failed, trying $search vector:', (e2 as Error).message);
+            console.log('[WARN] $search knnBeta failed, trying $search vector:', (e2 as Error).message);
 
             try {
               const searchQuery: any = {
@@ -407,16 +407,16 @@ export async function getRelevantContext(question: string): Promise<string> {
                 { $search: searchQuery },
                 { $limit: VECTOR_LIMIT_SINGLE }
               ]);
-              console.log('✅ $search vector worked, found:', docs.length);
+              console.log('[SUCCESS] $search vector worked, found:', docs.length);
             } catch (e3) {
-              console.log('❌ All vector search methods failed, using text fallback:', (e3 as Error).message);
+              console.log('[ERROR] All vector search methods failed, using text fallback:', (e3 as Error).message);
             }
           }
         }
       }
     }
 
-    console.log('📋 Vector search results count:', docs.length);
+    console.log('[INFO] Vector search results count:', docs.length);
 
     // For comparison: ensure we have at least one doc per university (text fallback if vector missed one)
     const mentioned = getMentionedUniversities(question);
@@ -430,7 +430,7 @@ export async function getRelevantContext(question: string): Promise<string> {
       const seenIds = new Set(docs.map((d: any) => String(d._id)));
       for (const u of mentioned) {
         if ((byUni[u]?.length ?? 0) === 0) {
-          console.log('🔄 Comparison: no vector docs for', u, '— fetching by text search');
+          console.log('[INFO] Comparison: no vector docs for', u, '— fetching by text search');
           const extra = await fetchDocsForUniversity(u, seenIds, 8);
           for (const d of extra) {
             seenIds.add(String(d._id));
@@ -446,12 +446,12 @@ export async function getRelevantContext(question: string): Promise<string> {
       const filtered = docs.filter((d: any) => docUniversity(d) === want);
       if (filtered.length > 0) {
         docs = filtered;
-        console.log('📌 Single-topic filter: kept', docs.length, 'docs for', want);
+        console.log('[INFO] Single-topic filter: kept', docs.length, 'docs for', want);
       } else {
         const fallback = await fetchDocsForUniversity(want, new Set(), 10);
         if (fallback.length > 0) {
           docs = fallback;
-          console.log('📌 Single-topic: used text search for', want, ', found', docs.length);
+          console.log('[INFO] Single-topic: used text search for', want, ', found', docs.length);
         }
       }
     }
@@ -461,17 +461,17 @@ export async function getRelevantContext(question: string): Promise<string> {
     if (docs.length > 0) {
       const contextText = buildContextText(docs, question);
       if (!contextMatchesQuestion(question, contextText, docs)) {
-        console.log('⚠️ User asked about a different institution than retrieved — returning no context to avoid wrong answer');
+        console.log('[WARN] User asked about a different institution than retrieved — returning no context to avoid wrong answer');
         return '';
       }
-      console.log('✅ Found context via vector search, length:', contextText.length);
+      console.log('[SUCCESS] Found context via vector search, length:', contextText.length);
       return contextText;
     } else {
-      console.log('⚠️ Vector search returned no results, trying text search fallback');
+      console.log('[WARN] Vector search returned no results, trying text search fallback');
     }
 
     // Fallback: text search (match question or any word from question)
-    console.log('🔍 Using text search fallback');
+    console.log('[INFO] Using text search fallback');
     const askedInst = extractAskedInstitution(question);
     const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -494,12 +494,12 @@ export async function getRelevantContext(question: string): Promise<string> {
         ]
       }).limit(15).lean();
       if (directMatch.length === 0) {
-        console.log('⚠️ No documents mention asked institution:', askedInst, '— returning no context');
+        console.log('[WARN] No documents mention asked institution:', askedInst, '— returning no context');
         return '';
       }
       // Use only docs that mention the asked institution so we don't return wrong university (e.g. AAU when user asked about Hawassa)
       textDocs = directMatch;
-      console.log('📌 Text fallback: using', textDocs.length, 'docs that mention', askedInst);
+      console.log('[INFO] Text fallback: using', textDocs.length, 'docs that mention', askedInst);
     }
 
     if (textDocs.length === 0) {
@@ -532,20 +532,20 @@ export async function getRelevantContext(question: string): Promise<string> {
 
     // Never use "most recent docs" — only return context that matches the user's query (query-based retrieval)
     if (textDocs.length === 0) {
-      console.log('📋 No docs matched the question; returning no context');
+      console.log('[INFO] No docs matched the question; returning no context');
       return '';
     }
 
-    console.log('📋 Text search results count:', textDocs.length);
+    console.log('[INFO] Text search results count:', textDocs.length);
     const contextText = textDocs.map((d: any) => (d.title ? `[${d.title}]\n` : '') + (d.content || '')).join('\n\n');
     if (textDocs.length > 0 && askedInst && !contextMatchesQuestion(question, contextText, textDocs)) {
-      console.log('⚠️ Text fallback docs do not match asked institution:', askedInst);
+      console.log('[WARN] Text fallback docs do not match asked institution:', askedInst);
       return '';
     }
-    console.log('📝 Final context length:', contextText.length);
+    console.log('[INFO] Final context length:', contextText.length);
     return contextText;
   } catch (err) {
-    console.error('❌ getRelevantContext error:', err);
+    console.error('[ERROR] getRelevantContext error:', err);
     return '';
   }
 }

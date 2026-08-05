@@ -30,7 +30,7 @@ async function ensureVoyageClient() {
 }
 
 if (!VOYAGE_API_KEY) {
-  console.warn('⚠️ VOYAGE_API_KEY not set — using local fallback embeddings');
+  console.warn('[WARN] VOYAGE_API_KEY not set - using local fallback embeddings');
 }
 
 function deterministicEmbedding(text: string, dims = DIMENSIONS): number[] {
@@ -88,7 +88,7 @@ export function chunkText(text: string, maxChunkSize = RAG_CHUNK_SIZE, overlap =
 export async function embedText(text: string, inputType: 'document' | 'query' = 'document'): Promise<number[]> {
   const MAX_LENGTH = EMBED_MAX_CHARS;
   if (text.length > MAX_LENGTH) {
-    console.warn('⚠️ Text too long for embedding, truncating from', text.length, 'to', MAX_LENGTH);
+    console.warn('[WARN] Text too long for embedding, truncating from', text.length, 'to', MAX_LENGTH);
     text = text.substring(0, MAX_LENGTH);
   }
 
@@ -165,7 +165,7 @@ async function generateAnswerWithGemini(context: string, question: string): Prom
       console.warn('Gemini RAG:', msg);
       if (status === 429 && attempt < GEMINI_MAX_RETRIES) {
         const delay = GEMINI_RETRY_DELAY_MS * attempt;
-        console.log(`⏳ Gemini rate limited (429), retrying in ${delay}ms (attempt ${attempt + 1}/${GEMINI_MAX_RETRIES})...`);
+        console.log(`[INFO] Gemini rate limited (429), retrying in ${delay}ms (attempt ${attempt + 1}/${GEMINI_MAX_RETRIES})...`);
         await new Promise(r => setTimeout(r, delay));
         continue;
       }

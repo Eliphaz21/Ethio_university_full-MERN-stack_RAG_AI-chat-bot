@@ -22,16 +22,16 @@ const mongooseOptions: mongoose.ConnectOptions = isLocal
 
 export async function connectDB() {
   if (!MONGO_URI) {
-    console.error('❌ MONGO_URI is not defined');
+    console.error('[ERROR] MONGO_URI is not defined');
     process.exit(1);
   }
 
   const usesSrv = MONGO_URI.startsWith('mongodb+srv://');
 
   if (isLocal) {
-    console.log('🖥️  Using LOCAL MongoDB at', MONGO_URI.split('?')[0]);
+    console.log('[INFO] Using LOCAL MongoDB at', MONGO_URI.split('?')[0]);
   } else {
-    console.log('☁️   Using REMOTE MongoDB');
+    console.log('[INFO] Using REMOTE MongoDB');
   }
 
   let lastErr: any;
@@ -39,11 +39,11 @@ export async function connectDB() {
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      if (!isLocal) console.log(`🔌 Connecting to MongoDB (attempt ${attempt}/${maxRetries})...`);
+      if (!isLocal) console.log(`[INFO] Connecting to MongoDB (attempt ${attempt}/${maxRetries})...`);
       await mongoose.connect(MONGO_URI, mongooseOptions);
       const host = mongoose.connection.host;
       const name = mongoose.connection.name;
-      console.log(`✅ Connected to MongoDB → ${host} / db: ${name}`);
+      console.log(`[SUCCESS] Connected to MongoDB -> ${host} / db: ${name}`);
       return;
     } catch (err: any) {
       lastErr = err;
@@ -64,22 +64,22 @@ export async function connectDB() {
 
       if (attempt < maxRetries) {
         const waitSec = 3 * attempt;
-        console.warn(`⚠️  Attempt ${attempt} failed: ${msg}`);
+        console.warn(`[WARN] Attempt ${attempt} failed: ${msg}`);
         if (isDnsIssue && usesSrv) {
-          console.warn('💡 Tip: mongodb+srv:// requires DNS SRV lookup. See .env for alternative options.');
+          console.warn('[INFO] Tip: mongodb+srv:// requires DNS SRV lookup. See .env for alternative options.');
         }
-        console.warn(`⏳ Retrying in ${waitSec}s...\n`);
+        console.warn(`[INFO] Retrying in ${waitSec}s...\n`);
         await new Promise((r) => setTimeout(r, waitSec * 1000));
         continue;
       }
 
-      console.error('❌ MongoDB connection error:', msg);
+      console.error('[ERROR] MongoDB connection error:', msg);
       console.error('');
 
       if (isLocalRefused) {
-        console.error('──────────────────────────────────────────────────');
+        console.error('--------------------------------------------------');
         console.error('  Local MongoDB is NOT running on port 27017.');
-        console.error('──────────────────────────────────────────────────');
+        console.error('--------------------------------------------------');
         console.error('  Fix (pick one):');
         console.error('  1. Install + start MongoDB Community Server:');
         console.error('     https://www.mongodb.com/try/download/community');
@@ -89,11 +89,11 @@ export async function connectDB() {
         console.error('     & "C:\\Program Files\\MongoDB\\Server\\7.0\\bin\\mongod.exe"');
         console.error('');
         console.error('  3. Or use Atlas instead (see OPTION B in .env).');
-        console.error('──────────────────────────────────────────────────');
+        console.error('--------------------------------------------------');
       } else if (isDnsIssue) {
-        console.error('──────────────────────────────────────────────────');
+        console.error('--------------------------------------------------');
         console.error('  This is a DNS / network issue with mongodb+srv://');
-        console.error('──────────────────────────────────────────────────');
+        console.error('--------------------------------------------------');
         console.error('  Fix 1: Change Windows DNS to 8.8.8.8 / 1.1.1.1');
         console.error('         then restart terminal / PC.');
         console.error('');
@@ -105,9 +105,9 @@ export async function connectDB() {
         console.error('  Fix 4: Get a FRESH Atlas URI (old one is DEAD):');
         console.error('         Atlas → Connect → Drivers → copy new URI,');
         console.error('         paste as OPTION B in .env.');
-        console.error('──────────────────────────────────────────────────');
+        console.error('--------------------------------------------------');
       } else if (usesSrv) {
-        console.error('💡 Hint: If Atlas cluster is paused → resume it at cloud.mongodb.com');
+        console.error('[INFO] Hint: If Atlas cluster is paused -> resume it at cloud.mongodb.com');
         console.error('         Or switch to local MongoDB (OPTION A in .env).');
       }
       process.exit(1);

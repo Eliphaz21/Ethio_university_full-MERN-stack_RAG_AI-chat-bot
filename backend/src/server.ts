@@ -51,21 +51,21 @@ async function start() {
   app.use(secureErrorHandler);
 
   app.listen(PORT, () => {
-    console.log(` Server running on port ${PORT}`);
+    console.log(`[INFO] Server running on port ${PORT}`);
   });
 
   try {
     await connectDB();
   } catch (error) {
-    console.warn('⚠️  Database initialization failed:', error);
+    console.warn('[WARN] Database initialization failed:', error);
   }
 }
 
 start().catch((err) => {
   if (err?.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use. Stop the other process or set PORT in .env`);
+    console.error(`[ERROR] Port ${PORT} is already in use. Stop the other process or set PORT in .env`);
   } else {
-    console.error('Start failed:', err);
+    console.error('[ERROR] Start failed:', err);
   }
   process.exit(1);
 });

@@ -17,7 +17,7 @@ if (GEMINI_API_KEY) {
       maxOutputTokens: 2048,
     });
   } catch (err) {
-    console.warn('⚠️ Could not initialize ChatGoogleGenerativeAI:', (err as Error)?.message);
+    console.warn('[WARN] Could not initialize ChatGoogleGenerativeAI:', (err as Error)?.message);
   }
 }
 
@@ -27,7 +27,7 @@ export async function executeRagChain(question: string): Promise<string> {
     const context = docs.map((d: { pageContent: string }) => d.pageContent).join('\n\n');
 
     if (!context || !context.trim()) {
-      return `I don't have information about that in the uploaded documents. Add PDFs, text, or website URLs about it in Admin → Knowledge, or check the institution's official website.`;
+      return `I don't have information about that in the uploaded documents. Add PDFs, text, or website URLs about it in Admin -> Knowledge, or check the institution's official website.`;
     }
 
     if (llm) {
@@ -47,14 +47,14 @@ export async function executeRagChain(question: string): Promise<string> {
           return result.trim();
         }
       } catch (chainErr) {
-        console.warn('⚠️ LangChain RunnableSequence execution failed, invoking fallback:', (chainErr as Error)?.message);
+        console.warn('[WARN] LangChain RunnableSequence execution failed, invoking fallback:', (chainErr as Error)?.message);
       }
     }
 
     // Fallback answer generator if Gemini API fails or rate-limits
     return await fallbackGenerateAnswer(context, question);
   } catch (err) {
-    console.error('❌ executeRagChain error:', err);
+    console.error('[ERROR] executeRagChain error:', err);
     return `I couldn't process that question right now. Please try again or rephrase.`;
   }
 }
