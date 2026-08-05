@@ -8,7 +8,8 @@ import { lookup } from 'dns/promises';
 import { Knowledge } from '../models/knowledge.js';
 import { requireAuth, requireStaff, requireAdmin } from '../middleware/auth.js';
 import { IS_PRODUCTION } from '../config/env.js';
-import { embedText, chunkText, RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP } from '../services/voyage.js';
+import { embedText, RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP } from '../services/voyage.js';
+import { chunkTextStrings } from '../langchain/textSplitters/documentChunker.js';
 import { recordAudit } from '../services/audit.js';
 
 // Chunk when content exceeds this (each chunk embedded separately for precise retrieval)
@@ -26,7 +27,7 @@ async function indexContent(title: string, content: string, type: 'text' | 'pdf'
   if (!trimmed) return { documentId: '', count: 0, totalLength: 0 };
 
   const chunks = trimmed.length > CHUNK_THRESHOLD
-    ? chunkText(trimmed, RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP)
+    ? await chunkTextStrings(trimmed, { chunkSize: RAG_CHUNK_SIZE, chunkOverlap: RAG_CHUNK_OVERLAP })
     : [trimmed];
 
   const documentId = randomUUID();

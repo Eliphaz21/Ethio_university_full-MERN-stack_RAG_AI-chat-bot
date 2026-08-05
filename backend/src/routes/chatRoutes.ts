@@ -32,25 +32,16 @@ router.post('/chat', requireAuth, chatRateLimiter, async (req: Request, res: Res
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { getRelevantContext } = await import('../services/rag.js');
-    const { generateAnswer } = await import('../services/voyage.js');
-    const contextText = await getRelevantContext(question);
-    const assistantText = await generateAnswer(contextText, question);
+    const { executeRagChain } = await import('../langchain/chains/ragChain.js');
+    const { MongoDBChatMessageHistory } = await import('../langchain/memory/chatMemory.js');
+
+    const assistantText = await executeRagChain(question);
 
     try {
-      await Conversation.findOneAndUpdate(
-        { userId },
-        {
-          $push: {
-            messages: [
-              { role: 'user', content: question },
-              { role: 'assistant', content: assistantText },
-            ],
-          },
-          $set: { lastUpdated: new Date() },
-        },
-        { upsert: true }
-      );
+      const memory = new MongoDBChatMessageHistory(userId);
+      const { HumanMessage, AIMessage } = await import('@langchain/core/messages');
+      await memory.addMessage(new HumanMessage(question));
+      await memory.addMessage(new AIMessage(assistantText));
     } catch (dbErr) {
       console.warn('Chat history save failed:', (dbErr as Error)?.message);
     }
