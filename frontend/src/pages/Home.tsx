@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { University, User } from '../types';
-import { Search, MapPin, BookOpen, ArrowRight, Award, School } from 'lucide-react';
+import { Search, MapPin, ArrowRight } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
 import { SEO, buildWebSiteSchema } from '../components/SEO';
+import HeroVideoBackground from '../components/HeroVideoBackground';
+import Interactive3DCanvas from '../components/Interactive3DCanvas';
+import ScrollAnimatedSections from '../components/ScrollAnimatedSections';
 
 interface HomeProps {
   user: User | null;
@@ -46,98 +49,33 @@ const Home: React.FC<HomeProps> = ({
       <SEO
         title={user ? t('navHome') : undefined}
         description={t('heroSubtitle')}
-        keywords={['Ethiopian university portal', 'ESSLCE admission', 'university directory Ethiopia', 'AAU', 'ASTU']}
+        keywords={['Ethiopian university portal', 'ESSLCE admission', 'university directory Ethiopia', 'AAU', 'ASTU', 'Private Colleges Ethiopia']}
         structuredData={buildWebSiteSchema()}
       />
+
       {!user ? (
         <>
-          {/* Public Landing Hero for Unauthenticated Visitors */}
-          <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0">
-              <img
-                src="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=1600"
-                className="w-full h-full object-cover"
-                alt="Ethiopian University Campus"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/90 via-emerald-900/70 to-emerald-800/50"></div>
-            </div>
+          {/* 1. Ultra-Professional Video Hero Background */}
+          <HeroVideoBackground />
 
-            <div className="relative z-10 max-w-5xl mx-auto px-4 text-center text-white">
-              <h1 className="text-4xl md:text-7xl font-serif font-bold mb-4 leading-tight">
-                {t('heroTitle')}
-              </h1>
-
-              <p className="text-lg md:text-xl text-slate-200 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-                {t('heroSubtitle')}
+          {/* 2. Interactive 3D WebGL Canvas Section */}
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center mb-10">
+              <span className="text-xs font-black uppercase tracking-widest text-[#059669] bg-emerald-100 px-3.5 py-1 rounded-full">
+                Interactive Visual Explorer
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 mt-3">
+                3D Ethiopian University Network & Regions
+              </h2>
+              <p className="text-slate-600 mt-2 max-w-xl mx-auto text-sm sm:text-base">
+                Rotate and inspect key educational hubs spanning Addis Ababa, Oromia, Amhara, Sidama, Tigray, SNNP, Dire Dawa, and Harari.
               </p>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link
-                  to="/register"
-                  className="bg-[#059669] text-white px-10 py-4 rounded-xl font-bold flex items-center gap-2 hover:bg-[#047857] transition-all shadow-xl group cursor-pointer"
-                >
-                  {t('navRegister')} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  to="/login"
-                  className="px-10 py-4 rounded-xl font-bold border border-white/40 hover:bg-white/10 backdrop-blur-sm transition-all text-white cursor-pointer"
-                >
-                  {t('navLogin')}
-                </Link>
-              </div>
             </div>
+            <Interactive3DCanvas />
           </section>
 
-          <section className="py-24 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-20">
-                <h2 className="text-4xl font-serif font-bold text-slate-900 uppercase tracking-tight">{t('whyChooseTitle')}</h2>
-                <div className="h-1.5 w-24 bg-[#059669] mx-auto mt-4 rounded-full"></div>
-                <p className="text-slate-500 mt-6 max-w-2xl mx-auto text-lg">
-                  {t('whyChooseSub')}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                <div className="relative">
-                  <div className="absolute -top-4 -left-4 w-24 h-24 bg-emerald-50 rounded-full z-0"></div>
-                  <img
-                    src="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=1200"
-                    alt="Campus Library"
-                    className="relative z-10 rounded-[3rem] shadow-2xl border-8 border-white"
-                  />
-                  <div className="absolute -bottom-8 -right-8 bg-[#059669] text-white p-8 rounded-3xl shadow-xl z-20 hidden lg:block">
-                    <Award className="w-10 h-10 mb-2 text-[#e9c46a]" />
-                    <p className="font-bold text-xl leading-tight">{t('heroStatAI')}</p>
-                  </div>
-                </div>
-                <div className="space-y-8">
-                  <div className="flex gap-6">
-                    <div className="shrink-0 bg-emerald-50 p-4 rounded-2xl h-fit text-[#059669]">
-                      <School className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-2">{t('feature1Title')}</h3>
-                      <p className="text-slate-600 leading-relaxed">
-                        {t('feature1Desc')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-6">
-                    <div className="shrink-0 bg-emerald-50 p-4 rounded-2xl h-fit text-[#059669]">
-                      <BookOpen className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-2">{t('feature2Title')}</h3>
-                      <p className="text-slate-600 leading-relaxed">
-                        {t('feature2Desc')}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          {/* 3. Rich Scroll Animated Sections (Public & Private Pathways, Master's, AI Guidance, Testimonials) */}
+          <ScrollAnimatedSections />
         </>
       ) : (
         /* Authenticated Dashboard View */
@@ -163,7 +101,6 @@ const Home: React.FC<HomeProps> = ({
 
           {/* Universities Grid Section */}
           <section id="unis-grid">
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredUnis.map((u) => {
                 const localized = getLocalizedUniversityContent(u, language);
