@@ -71,7 +71,7 @@ const Home: React.FC<HomeProps> = ({
                 Rotate and inspect key educational hubs spanning Addis Ababa, Oromia, Amhara, Sidama, Tigray, SNNP, Dire Dawa, and Harari.
               </p>
             </div>
-            <Interactive3DCanvas />
+            <Interactive3DCanvas universities={universities} />
           </section>
 
           {/* 3. Rich Scroll Animated Sections (Public & Private Pathways, Master's, AI Guidance, Testimonials) */}

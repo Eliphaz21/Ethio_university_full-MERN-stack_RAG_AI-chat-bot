@@ -1,20 +1,71 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { University } from '../types';
+import { MapPin, ArrowRight, ExternalLink } from 'lucide-react';
+import { getOptimizedImageUrl } from '../utils/imageUtils';
 
-const CITY_NODES = [
-  { name: 'Addis Ababa (AAU)', lat: 9.03, lon: 38.74, color: 0x10b981 },
-  { name: 'Adama (ASTU)', lat: 8.54, lon: 39.27, color: 0x3b82f6 },
-  { name: 'Hawassa (HU)', lat: 7.05, lon: 38.47, color: 0xf59e0b },
-  { name: 'Bahir Dar (BDU)', lat: 11.59, lon: 37.39, color: 0xec4899 },
-  { name: 'Jimma (JU)', lat: 7.67, lon: 36.83, color: 0x8b5cf6 },
-  { name: 'Mekelle (MU)', lat: 13.49, lon: 39.47, color: 0x06b6d4 },
-  { name: 'Dire Dawa (DDU)', lat: 9.60, lon: 41.86, color: 0x10b981 },
-  { name: 'Gondar (UOG)', lat: 12.60, lon: 37.46, color: 0xf97316 },
-  { name: 'Haramaya (HU)', lat: 9.42, lon: 42.01, color: 0x6366f1 }
+interface Interactive3DCanvasProps {
+  universities?: University[];
+}
+
+const FALLBACK_UNIS = [
+  {
+    name: 'Addis Ababa University (AAU)',
+    city: 'Addis Ababa',
+    region: 'Addis Ababa',
+    type: 'Public',
+    image: 'https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    name: 'Adama Science & Tech (ASTU)',
+    city: 'Adama',
+    region: 'Oromia',
+    type: 'Public',
+    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    name: 'Hawassa University (HU)',
+    city: 'Hawassa',
+    region: 'Sidama',
+    type: 'Public',
+    image: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    name: 'Bahir Dar University (BDU)',
+    city: 'Bahir Dar',
+    region: 'Amhara',
+    type: 'Public',
+    image: 'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    name: "St. Mary's University",
+    city: 'Addis Ababa',
+    region: 'Addis Ababa',
+    type: 'Private',
+    image: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    name: 'Unity University',
+    city: 'Addis Ababa',
+    region: 'Addis Ababa',
+    type: 'Private',
+    image: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&q=80&w=800'
+  }
 ];
 
-export const Interactive3DCanvas: React.FC = () => {
+export const Interactive3DCanvas: React.FC<Interactive3DCanvasProps> = ({ universities = [] }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [activeUniIndex, setActiveUniIndex] = useState(0);
+
+  const displayUnis = universities.length > 0
+    ? universities.slice(0, 6).map(u => ({
+        name: u.name,
+        city: u.location?.city || 'Ethiopia',
+        region: u.location?.region || 'Ethiopia',
+        type: u.type,
+        image: getOptimizedImageUrl(u.image, 800)
+      }))
+    : FALLBACK_UNIS;
 
   useEffect(() => {
     const container = mountRef.current;
@@ -26,138 +77,71 @@ export const Interactive3DCanvas: React.FC = () => {
     // Scene, Camera, Renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 220;
+    camera.position.z = 200;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // Group for rotation
-    const globeGroup = new THREE.Group();
-    scene.add(globeGroup);
+    // Main 3D Group
+    const mainGroup = new THREE.Group();
+    scene.add(mainGroup);
 
-    // Wireframe Sphere (Globe Wireframe)
-    const sphereGeometry = new THREE.IcosahedronGeometry(60, 3);
-    const sphereMaterial = new THREE.MeshBasicMaterial({
+    // Central Wireframe Mesh Sphere
+    const sphereGeo = new THREE.IcosahedronGeometry(55, 3);
+    const sphereMat = new THREE.MeshBasicMaterial({
       color: 0x059669,
       wireframe: true,
       transparent: true,
-      opacity: 0.25
+      opacity: 0.2
     });
-    const globeMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    globeGroup.add(globeMesh);
+    const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    mainGroup.add(sphereMesh);
 
-    // Inner Glowing Core Sphere
-    const coreGeometry = new THREE.IcosahedronGeometry(58, 2);
-    const coreMaterial = new THREE.MeshBasicMaterial({
-      color: 0x064e3b,
-      transparent: true,
-      opacity: 0.15
-    });
-    const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
-    globeGroup.add(coreMesh);
-
-    // Atmosphere Ring Outer Orbit
-    const ringGeo = new THREE.RingGeometry(75, 77, 64);
+    // Outer Orbit Ring
+    const ringGeo = new THREE.RingGeometry(72, 74, 64);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0x34d399,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.3
+      opacity: 0.35
     });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.rotation.x = Math.PI / 3;
-    globeGroup.add(ringMesh);
+    ringMesh.rotation.x = Math.PI / 3.5;
+    mainGroup.add(ringMesh);
 
-    // Floating Star Particles
-    const particlesCount = 250;
+    // Particle Stars
+    const particlesCount = 200;
     const positions = new Float32Array(particlesCount * 3);
     for (let i = 0; i < particlesCount * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 300;
-      positions[i + 1] = (Math.random() - 0.5) * 300;
-      positions[i + 2] = (Math.random() - 0.5) * 300;
+      positions[i] = (Math.random() - 0.5) * 280;
+      positions[i + 1] = (Math.random() - 0.5) * 280;
+      positions[i + 2] = (Math.random() - 0.5) * 280;
     }
     const particlesGeo = new THREE.BufferGeometry();
     particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const particlesMat = new THREE.PointsMaterial({
       size: 1.8,
-      color: 0xa7f3d0,
+      color: 0x6ee7b7,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.5
     });
     const particleSystem = new THREE.Points(particlesGeo, particlesMat);
-    globeGroup.add(particleSystem);
+    mainGroup.add(particleSystem);
 
-    // Convert Lat/Lon to 3D Coordinates
-    const convertLatLonToVector3 = (lat: number, lon: number, radius: number) => {
-      const phi = (90 - lat) * (Math.PI / 180);
-      const theta = (lon + 180) * (Math.PI / 180);
-      const x = -(radius * Math.sin(phi) * Math.cos(theta));
-      const z = radius * Math.sin(phi) * Math.sin(theta);
-      const y = radius * Math.cos(phi);
-      return new THREE.Vector3(x, y, z);
-    };
-
-    // Node Markers & Connecting Arc Lines
-    const nodeVectors: THREE.Vector3[] = [];
-    CITY_NODES.forEach((node) => {
-      const vec = convertLatLonToVector3(node.lat, node.lon, 61);
-      nodeVectors.push(vec);
-
-      // Node Marker Point
-      const nodeGeo = new THREE.SphereGeometry(2.2, 16, 16);
-      const nodeMat = new THREE.MeshBasicMaterial({ color: node.color });
-      const nodeMesh = new THREE.Mesh(nodeGeo, nodeMat);
-      nodeMesh.position.copy(vec);
-      globeGroup.add(nodeMesh);
-
-      // Pulsing Halo Outer Sphere
-      const haloGeo = new THREE.SphereGeometry(3.5, 16, 16);
-      const haloMat = new THREE.MeshBasicMaterial({
-        color: node.color,
-        transparent: true,
-        opacity: 0.35
-      });
-      const haloMesh = new THREE.Mesh(haloGeo, haloMat);
-      haloMesh.position.copy(vec);
-      globeGroup.add(haloMesh);
-    });
-
-    // Connecting Arcs between Addis Ababa and other cities
-    const hubVec = nodeVectors[0]; // Addis Ababa
-    for (let i = 1; i < nodeVectors.length; i++) {
-      const targetVec = nodeVectors[i];
-      const midPoint = new THREE.Vector3()
-        .addVectors(hubVec, targetVec)
-        .multiplyScalar(0.5)
-        .normalize()
-        .multiplyScalar(78); // Arc height above globe surface
-
-      const curve = new THREE.QuadraticBezierCurve3(hubVec, midPoint, targetVec);
-      const points = curve.getPoints(30);
-      const arcGeometry = new THREE.BufferGeometry().setFromPoints(points);
-      const arcMaterial = new THREE.LineBasicMaterial({
-        color: 0x34d399,
-        transparent: true,
-        opacity: 0.5
-      });
-      const arcLine = new THREE.Line(arcGeometry, arcMaterial);
-      globeGroup.add(arcLine);
-    }
-
-    // Mouse Parallax Interaction
+    // Mouse Parallax Controls
     let mouseX = 0;
     let mouseY = 0;
-    let targetRotationX = 0;
-    let targetRotationY = 0;
+    let targetX = 0;
+    let targetY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left - width / 2;
       const y = e.clientY - rect.top - height / 2;
-      mouseX = x * 0.0005;
-      mouseY = y * 0.0005;
+      mouseX = x * 0.0006;
+      mouseY = y * 0.0006;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -167,21 +151,19 @@ export const Interactive3DCanvas: React.FC = () => {
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      // Rotation & Inertia
-      globeGroup.rotation.y += 0.003;
+      mainGroup.rotation.y += 0.003;
       ringMesh.rotation.z -= 0.002;
 
-      targetRotationX += (mouseY - targetRotationX) * 0.05;
-      targetRotationY += (mouseX - targetRotationY) * 0.05;
+      targetX += (mouseY - targetX) * 0.05;
+      targetY += (mouseX - targetY) * 0.05;
 
-      globeGroup.rotation.x = targetRotationX;
+      mainGroup.rotation.x = targetX;
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // Handle Window Resize
     const handleResize = () => {
       if (!container) return;
       const newW = container.clientWidth;
@@ -205,30 +187,83 @@ export const Interactive3DCanvas: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[450px] lg:h-[550px] flex items-center justify-center overflow-hidden bg-slate-950 text-white rounded-3xl border border-emerald-500/20 shadow-2xl">
-      {/* Background Radial Glow */}
-      <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/40 via-slate-950/80 to-slate-950 pointer-events-none"></div>
-
-      {/* Interactive Canvas Mount Container */}
-      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing"></div>
-
-      {/* Floating Info Overlay Header */}
-      <div className="absolute top-6 left-6 right-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pointer-events-none bg-slate-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-lg">
-        <div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Interactive 3D Network</span>
-          <h3 className="text-lg font-extrabold text-white">Ethiopian University Hubs & Academic Mesh</h3>
+    <div className="relative w-full overflow-hidden bg-slate-950 text-white rounded-3xl border border-emerald-500/20 shadow-2xl p-6 sm:p-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        {/* Left Column: 3D WebGL Canvas Sphere & Particles */}
+        <div className="lg:col-span-6 relative h-[380px] sm:h-[450px] flex items-center justify-center rounded-2xl overflow-hidden bg-slate-900/60 border border-white/10">
+          <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing"></div>
+          
+          <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-emerald-500/30 text-xs font-bold text-emerald-400">
+            ✨ Interactive 3D Mesh & Nodes
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-300 font-medium bg-emerald-950/70 border border-emerald-500/30 px-3 py-1.5 rounded-xl">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span>Addis Ababa, Adama, Hawassa, Bahir Dar, Mekelle & More</span>
-        </div>
-      </div>
 
-      {/* Floating Bottom Legend */}
-      <div className="absolute bottom-6 left-6 right-6 pointer-events-none flex items-center justify-center">
-        <p className="text-xs text-slate-400 bg-slate-950/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-          ✨ Move your mouse across the canvas to tilt & inspect Ethiopia's academic network mesh
-        </p>
+        {/* Right Column: Moving 3D University Image Cards */}
+        <div className="lg:col-span-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider bg-emerald-950 px-3 py-1 rounded-full border border-emerald-800">
+              Featured University Photos ({activeUniIndex + 1}/{displayUnis.length})
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveUniIndex((prev) => (prev > 0 ? prev - 1 : displayUnis.length - 1))}
+                className="w-8 h-8 rounded-full bg-slate-800 hover:bg-emerald-600 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer"
+              >
+                ←
+              </button>
+              <button
+                onClick={() => setActiveUniIndex((prev) => (prev < displayUnis.length - 1 ? prev + 1 : 0))}
+                className="w-8 h-8 rounded-full bg-slate-800 hover:bg-emerald-600 text-white flex items-center justify-center font-bold text-xs transition cursor-pointer"
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          {/* Active 3D Photo Card Preview */}
+          <div className="relative group rounded-2xl overflow-hidden border border-slate-700 shadow-2xl transition-all duration-500 hover:border-emerald-500">
+            <div className="h-64 sm:h-72 w-full overflow-hidden relative">
+              <img
+                src={displayUnis[activeUniIndex].image}
+                alt={displayUnis[activeUniIndex].name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-90"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+              
+              <div className="absolute top-4 right-4 bg-emerald-600 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider shadow">
+                {displayUnis[activeUniIndex].type} Institution
+              </div>
+
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold mb-1">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>{displayUnis[activeUniIndex].city}, {displayUnis[activeUniIndex].region}</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold font-serif leading-tight">
+                  {displayUnis[activeUniIndex].name}
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          {/* Mini Thumbnail Row */}
+          <div className="grid grid-cols-6 gap-2 pt-2">
+            {displayUnis.map((uni, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveUniIndex(idx)}
+                className={`relative h-14 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                  activeUniIndex === idx ? 'border-emerald-400 scale-105 shadow-md' : 'border-slate-800 opacity-60 hover:opacity-100'
+                }`}
+              >
+                <img src={uni.image} alt={uni.name} className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+
+        </div>
+
       </div>
     </div>
   );
