@@ -6,15 +6,12 @@ import {
   GraduationCap,
   BookOpen,
   Award,
-  Sparkles,
-  Bot,
   Search,
   CheckCircle2,
   ArrowRight,
   ChevronRight,
   ChevronLeft,
   UserCheck,
-  Globe2,
   Layers,
   FileCheck
 } from 'lucide-react';
@@ -25,8 +22,6 @@ const PUBLIC_UNIS_LIST = [
     name: 'Addis Ababa University (AAU)',
     badge: 'First-Tier Public',
     city: 'Addis Ababa',
-    icon: '🎓',
-    color: 'emerald',
     desc: 'Ethiopia’s flagship research university offering top Medicine, Law, Engineering, Business, and Computer Science degrees with autonomous governance.',
     bullets: ['MoGE ESSLCE Cutoff Admission', 'Full Campus Dormitory & Meal Services', 'Master & PhD Research Programs']
   },
@@ -34,8 +29,6 @@ const PUBLIC_UNIS_LIST = [
     name: 'Adama Science & Tech (ASTU)',
     badge: 'Science & Tech Hub',
     city: 'Adama, Oromia',
-    icon: '⚡',
-    color: 'blue',
     desc: 'Specialized STEM university dedicated to Applied Engineering, Software Engineering, Robotics, and Advanced Biotechnology.',
     bullets: ['STEM Entrance Examination Criteria', 'High-Tech Labs & Innovation Hubs', 'Industry Partnered Placements']
   },
@@ -43,8 +36,6 @@ const PUBLIC_UNIS_LIST = [
     name: 'Hawassa University (HU)',
     badge: 'Health & Agriculture',
     city: 'Hawassa, Sidama',
-    icon: '🌿',
-    color: 'amber',
     desc: 'Premier Sidama regional university leading in Medicine, Health Sciences, Agriculture, and Natural Resource Management.',
     bullets: ['State-of-the-Art Referral Hospital', 'Agricultural Research Center', 'Over 80 Degree Programs']
   },
@@ -52,8 +43,6 @@ const PUBLIC_UNIS_LIST = [
     name: 'Bahir Dar University (BDU)',
     badge: 'Maritime & Tech',
     city: 'Bahir Dar, Amhara',
-    icon: '🌊',
-    color: 'sky',
     desc: 'Renowned university featuring Ethiopia’s Maritime Academy, Civil Engineering, Textile Engineering, and Law faculties.',
     bullets: ['Ethiopian Maritime Academy', 'Textile & Fashion Institute', 'Lake Tana Research Center']
   },
@@ -61,8 +50,6 @@ const PUBLIC_UNIS_LIST = [
     name: 'Jimma University (JU)',
     badge: 'Community Health',
     city: 'Jimma, Oromia',
-    icon: '🏥',
-    color: 'indigo',
     desc: 'Famous for Community-Based Education (CBE), top Medical School, Bio-Medical Engineering, and Agricultural Sciences.',
     bullets: ['Community-Based Medical Model', 'Institute of Technology (JIT)', 'Nationwide Placement Leader']
   },
@@ -70,8 +57,6 @@ const PUBLIC_UNIS_LIST = [
     name: 'Mekelle University (MU)',
     badge: 'Technology & Law',
     city: 'Mekelle, Tigray',
-    icon: '🏛️',
-    color: 'purple',
     desc: 'Pioneer center for Dryland Agriculture, Veterinary Medicine, Law, Health Sciences, and Computer Engineering.',
     bullets: ['Dryland Resource Management', 'Top Ranked Law Faculty', 'Ayder Comprehensive Hospital']
   }
@@ -82,8 +67,6 @@ const PRIVATE_UNIS_LIST = [
     name: "St. Mary's University",
     badge: 'Accredited Private',
     city: 'Addis Ababa',
-    icon: '🏢',
-    color: 'purple',
     desc: 'A pioneer private higher education institution in Addis Ababa offering accredited undergraduate and master’s degree programs.',
     bullets: ['Distance & Regular Degree Modes', 'Business Administration & Computer Science', 'Flexible Evening & Weekend Classes']
   },
@@ -91,8 +74,6 @@ const PRIVATE_UNIS_LIST = [
     name: 'Unity University',
     badge: 'First Private Uni',
     city: 'Addis Ababa & Regions',
-    icon: '🏛️',
-    color: 'rose',
     desc: 'First private university in Ethiopia providing high-quality Accounting, Management, Architecture, and Information Technology degrees.',
     bullets: ['Modern Campuses across Regional Hubs', 'Recognized MoGE Certification', 'Practical Internship Connections']
   },
@@ -100,8 +81,6 @@ const PRIVATE_UNIS_LIST = [
     name: 'Rift Valley University',
     badge: '40+ Regional Hubs',
     city: 'Oromia, SNNP & Addis',
-    icon: '📍',
-    color: 'teal',
     desc: 'Widespread private campus networks across Oromia, Amhara, SNNP, and Addis Ababa for affordable higher education access.',
     bullets: ['40+ Regional Branch Campuses', 'Health Science & Nursing Diplomas', 'Direct Transfer & Extension Programs']
   },
@@ -109,8 +88,6 @@ const PRIVATE_UNIS_LIST = [
     name: 'Alpha University College',
     badge: 'Distance Leader',
     city: 'Addis Ababa & Amhara',
-    icon: '📜',
-    color: 'orange',
     desc: 'Leader in distance higher education, flexible evening degree programs, leadership management, and accounting degrees.',
     bullets: ['Nationwide Distance Centers', 'Flexible Extension Degrees', 'Business & Leadership Programs']
   },
@@ -118,8 +95,6 @@ const PRIVATE_UNIS_LIST = [
     name: 'CPU College',
     badge: 'Computer Science Hub',
     city: 'Addis Ababa',
-    icon: '💻',
-    color: 'cyan',
     desc: 'Specialized IT and Business College focusing on hands-on Software Engineering, Database Administration, and Marketing Management.',
     bullets: ['Practical Software Development', 'Cisco & Tech Certifications', 'Accredited Degree Programs']
   },
@@ -127,8 +102,6 @@ const PRIVATE_UNIS_LIST = [
     name: 'Microlink Information Tech',
     badge: 'IT & Software Diploma',
     city: 'Addis Ababa',
-    icon: '🌐',
-    color: 'blue',
     desc: 'Focused technical college providing accredited Bachelor of Science in Information Technology and TVET Level 1-5 diplomas.',
     bullets: ['Networking & Software Diplomas', 'Practical IT Lab Training', 'Flexible Admission Schedules']
   }
@@ -194,16 +167,13 @@ export const ScrollAnimatedSections: React.FC = () => {
               {currentPublicList.map((uni, idx) => (
                 <div key={idx} className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
                   <div>
-                    <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
-                      {uni.icon}
-                    </div>
-                    <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center justify-between gap-2 mb-3">
                       <span className="text-[10px] font-black uppercase tracking-widest text-[#059669] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                         {uni.badge}
                       </span>
                       <span className="text-xs font-semibold text-slate-400">{uni.city}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 mt-2 mb-2">{uni.name}</h3>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">{uni.name}</h3>
                     <p className="text-slate-600 text-xs leading-relaxed mb-6">
                       {uni.desc}
                     </p>
@@ -220,28 +190,28 @@ export const ScrollAnimatedSections: React.FC = () => {
               ))}
             </div>
 
-            {/* Public Unis Pagination Controls */}
+            {/* Public Unis Left (<) & Right (>) Navigation Controls */}
             <div className="mt-10 flex items-center justify-center gap-4">
               <button
                 disabled={publicPage === 0}
                 onClick={() => setPublicPage(prev => Math.max(prev - 1, 0))}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-xs bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-sm"
+                aria-label="Previous Page"
+                className="w-11 h-11 rounded-2xl bg-white border border-slate-300 text-slate-700 hover:bg-[#059669] hover:text-white hover:border-[#059669] disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-slate-700 disabled:hover:border-slate-300 disabled:cursor-not-allowed flex items-center justify-center transition cursor-pointer shadow-md"
               >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Previous</span>
+                <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
               </button>
 
-              <span className="text-xs font-bold text-slate-500">
-                Page {publicPage + 1} of {totalPublicPages}
+              <span className="text-xs font-extrabold text-slate-600 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
+                {publicPage + 1} / {totalPublicPages}
               </span>
 
               <button
                 disabled={publicPage >= totalPublicPages - 1}
                 onClick={() => setPublicPage(prev => Math.min(prev + 1, totalPublicPages - 1))}
-                className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl font-bold text-xs bg-[#059669] text-white hover:bg-[#047857] disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-md"
+                aria-label="Next Page"
+                className="w-11 h-11 rounded-2xl bg-[#059669] text-white hover:bg-[#047857] disabled:opacity-30 disabled:hover:bg-[#059669] disabled:cursor-not-allowed flex items-center justify-center transition cursor-pointer shadow-md"
               >
-                <span>Next Page</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-6 h-6 stroke-[2.5]" />
               </button>
             </div>
           </div>
@@ -251,16 +221,13 @@ export const ScrollAnimatedSections: React.FC = () => {
               {currentPrivateList.map((uni, idx) => (
                 <div key={idx} className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
                   <div>
-                    <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
-                      {uni.icon}
-                    </div>
-                    <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center justify-between gap-2 mb-3">
                       <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
                         {uni.badge}
                       </span>
                       <span className="text-xs font-semibold text-slate-400">{uni.city}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 mt-2 mb-2">{uni.name}</h3>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">{uni.name}</h3>
                     <p className="text-slate-600 text-xs leading-relaxed mb-6">
                       {uni.desc}
                     </p>
@@ -277,28 +244,28 @@ export const ScrollAnimatedSections: React.FC = () => {
               ))}
             </div>
 
-            {/* Private Unis Pagination Controls */}
+            {/* Private Unis Left (<) & Right (>) Navigation Controls */}
             <div className="mt-10 flex items-center justify-center gap-4">
               <button
                 disabled={privatePage === 0}
                 onClick={() => setPrivatePage(prev => Math.max(prev - 1, 0))}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-xs bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-sm"
+                aria-label="Previous Page"
+                className="w-11 h-11 rounded-2xl bg-white border border-slate-300 text-slate-700 hover:bg-[#059669] hover:text-white hover:border-[#059669] disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-slate-700 disabled:hover:border-slate-300 disabled:cursor-not-allowed flex items-center justify-center transition cursor-pointer shadow-md"
               >
-                <ChevronLeft className="w-4 h-4" />
-                <span>Previous</span>
+                <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
               </button>
 
-              <span className="text-xs font-bold text-slate-500">
-                Page {privatePage + 1} of {totalPrivatePages}
+              <span className="text-xs font-extrabold text-slate-600 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
+                {privatePage + 1} / {totalPrivatePages}
               </span>
 
               <button
                 disabled={privatePage >= totalPrivatePages - 1}
                 onClick={() => setPrivatePage(prev => Math.min(prev + 1, totalPrivatePages - 1))}
-                className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl font-bold text-xs bg-[#059669] text-white hover:bg-[#047857] disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-md"
+                aria-label="Next Page"
+                className="w-11 h-11 rounded-2xl bg-[#059669] text-white hover:bg-[#047857] disabled:opacity-30 disabled:hover:bg-[#059669] disabled:cursor-not-allowed flex items-center justify-center transition cursor-pointer shadow-md"
               >
-                <span>Next Page</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-6 h-6 stroke-[2.5]" />
               </button>
             </div>
           </div>

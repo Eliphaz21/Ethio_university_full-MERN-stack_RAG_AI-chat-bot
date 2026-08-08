@@ -82,24 +82,25 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
   }
 
   return (
-    <div className="min-h-[85vh] bg-[#FBF7F1] flex flex-col items-center justify-center p-4 sm:p-6">
+    <div className="min-h-[85vh] bg-[#FBF7F1] flex flex-col justify-center py-6 px-4 sm:px-6">
       <SEO
         title="Create Account"
         description="Register for a free EthioUni Portal account to chat with the AI assistant and explore Ethiopian university admissions guidance."
         keywords={['EthioUni register', 'Ethiopian university portal account']}
       />
 
-      {/* Simple Professional Back to Home Button */}
-      <div className="w-full max-w-md mb-4">
+      {/* Top-Left Back to Home Button below navbar logo */}
+      <div className="w-full max-w-4xl mx-auto mb-6">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-xs font-bold text-[#059669] hover:text-[#047857] bg-emerald-50 hover:bg-emerald-100 px-4 py-2.5 rounded-xl border border-emerald-200/80 transition-all cursor-pointer shadow-sm"
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#059669] hover:text-[#047857] bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-xl border border-emerald-200/80 transition-all cursor-pointer shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
       </div>
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-slate-100 p-8 sm:p-10 transition-all">
+
+      <div className="w-full max-w-md mx-auto bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-slate-100 p-8 sm:p-10 transition-all">
         
         {/* Header matching Login page styling */}
         <div className="mb-8">
