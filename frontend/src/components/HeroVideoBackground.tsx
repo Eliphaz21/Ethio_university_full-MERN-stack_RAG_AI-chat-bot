@@ -1,36 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, GraduationCap, Users, BookOpen, Award, ShieldCheck, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const HeroVideoBackground: React.FC = () => {
   const { t } = useLanguage();
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 py-20 text-white">
-      {/* Parallax Animated Background Video Stream */}
-      <div
-        className="absolute inset-0 z-0 transition-transform duration-300 ease-out pointer-events-none"
-        style={{
-          transform: `translateY(${scrollY * 0.25}px) scale(${1.05 + Math.min(scrollY * 0.0002, 0.15)})`
-        }}
-      >
+    <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 py-16 lg:py-24 text-white">
+      {/* Clear, High-Definition Background Video Container */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <video
           autoPlay
           loop
           muted
           playsInline
           poster="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=1600"
-          className="w-full h-full object-cover filter brightness-[0.75] contrast-[1.05] transition-all duration-1000"
+          className="w-full h-full object-cover object-center filter brightness-95 contrast-105 transition-all duration-700 scale-100"
         >
           <source src="/assets/landing_page_video.mp4" type="video/mp4" />
           <source src="./assets/landing_page_video.mp4" type="video/mp4" />
@@ -40,12 +26,12 @@ export const HeroVideoBackground: React.FC = () => {
           />
         </video>
 
-        {/* High-Tech Dark Emerald Glassmorphism Mask */}
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/85 via-slate-950/80 to-slate-950 backdrop-blur-[1px]"></div>
+        {/* Crisp Glassmorphism Overlay (Lighter Opacity so Video is Super Clear) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/55 via-emerald-950/45 to-slate-950/90 backdrop-blur-[0.5px]"></div>
 
-        {/* Subtle Animated Glowing Grid Overlay */}
+        {/* Subtle Ambient Glowing Pattern Overlay */}
         <div
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-10 pointer-events-none"
           style={{
             backgroundImage: `radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.4) 1px, transparent 1px)`,
             backgroundSize: '36px 36px'
@@ -54,8 +40,8 @@ export const HeroVideoBackground: React.FC = () => {
       </div>
 
       {/* Floating Interactive Badges */}
-      <div className="hidden lg:block absolute top-28 left-12 z-10 animate-bounce duration-[4000ms]">
-        <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-3 rounded-2xl shadow-2xl">
+      <div className="hidden lg:block absolute top-24 left-10 z-10 animate-bounce duration-[4000ms]">
+        <div className="flex items-center gap-3 bg-slate-900/60 backdrop-blur-md border border-white/20 px-4 py-3 rounded-2xl shadow-2xl">
           <div className="bg-emerald-500/30 p-2.5 rounded-xl text-emerald-400">
             <GraduationCap className="w-5 h-5" />
           </div>
@@ -66,8 +52,8 @@ export const HeroVideoBackground: React.FC = () => {
         </div>
       </div>
 
-      <div className="hidden lg:block absolute bottom-32 right-12 z-10 animate-pulse duration-[5000ms]">
-        <div className="flex items-center gap-3 bg-emerald-950/80 backdrop-blur-md border border-emerald-500/30 px-4 py-3 rounded-2xl shadow-2xl">
+      <div className="hidden lg:block absolute bottom-24 right-10 z-10 animate-pulse duration-[5000ms]">
+        <div className="flex items-center gap-3 bg-slate-900/70 backdrop-blur-md border border-emerald-500/40 px-4 py-3 rounded-2xl shadow-2xl">
           <div className="bg-amber-400/20 p-2.5 rounded-xl text-amber-400">
             <Sparkles className="w-5 h-5" />
           </div>
@@ -78,22 +64,22 @@ export const HeroVideoBackground: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Hero Container */}
+      {/* Main Hero Content Container */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
         
         {/* Top Tagline Pill */}
-        <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 backdrop-blur-md text-emerald-300 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-8 shadow-inner hover:border-emerald-400/70 transition-all cursor-default">
+        <div className="inline-flex items-center gap-2 bg-slate-900/70 border border-emerald-400/50 backdrop-blur-md text-emerald-300 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-8 shadow-lg cursor-default">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <span>Ethio University — Official Higher Education Portal</span>
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-emerald-300 drop-shadow-lg">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black tracking-tight mb-6 leading-[1.15] text-white [text-shadow:_0_2px_12px_rgba(0,0,0,0.8)]">
           {t('heroTitle')}
         </h1>
 
         {/* Hero Subtitle */}
-        <p className="text-base sm:text-lg lg:text-xl text-slate-200 mb-10 max-w-3xl leading-relaxed font-light drop-shadow">
+        <p className="text-base sm:text-lg lg:text-xl text-slate-100 mb-10 max-w-3xl leading-relaxed font-normal [text-shadow:_0_2px_8px_rgba(0,0,0,0.9)]">
           Explore accredited Ethiopian universities, degree & master programs, Grade 12 ESSLCE criteria, and get instant guidance with our AI Academic Advisor.
         </p>
 
@@ -101,7 +87,7 @@ export const HeroVideoBackground: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md sm:max-w-none mb-16">
           <Link
             to="/register"
-            className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-9 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all transform hover:-translate-y-0.5 shadow-xl shadow-emerald-950/60 group cursor-pointer border border-emerald-400/30"
+            className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-9 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all transform hover:-translate-y-0.5 shadow-2xl shadow-black/80 group cursor-pointer border border-emerald-400/40"
           >
             <span>{t('navRegister')}</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -109,44 +95,44 @@ export const HeroVideoBackground: React.FC = () => {
 
           <Link
             to="/login"
-            className="w-full sm:w-auto px-9 py-4 rounded-2xl font-bold text-base border border-white/30 hover:border-white/60 bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all text-white flex items-center justify-center cursor-pointer shadow-lg"
+            className="w-full sm:w-auto px-9 py-4 rounded-2xl font-bold text-base border border-white/40 hover:border-white/70 bg-slate-900/60 hover:bg-slate-900/80 backdrop-blur-md transition-all text-white flex items-center justify-center cursor-pointer shadow-xl"
           >
             {t('navLogin')}
           </Link>
         </div>
 
         {/* Quick Stat Counter Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full max-w-5xl border-t border-emerald-500/20 pt-10">
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center hover:bg-white/10 transition-colors">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full max-w-5xl border-t border-white/20 pt-10">
+          <div className="bg-slate-900/65 backdrop-blur-md rounded-2xl p-4 border border-white/15 text-center hover:bg-slate-900/80 transition-colors shadow-lg">
             <div className="flex items-center justify-center text-emerald-400 mb-1">
               <GraduationCap className="w-5 h-5 mr-1" />
               <span className="text-2xl sm:text-3xl font-black">50+</span>
             </div>
-            <p className="text-xs text-slate-300 font-medium">Public & Private Unis</p>
+            <p className="text-xs text-slate-200 font-medium">Public & Private Unis</p>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center hover:bg-white/10 transition-colors">
+          <div className="bg-slate-900/65 backdrop-blur-md rounded-2xl p-4 border border-white/15 text-center hover:bg-slate-900/80 transition-colors shadow-lg">
             <div className="flex items-center justify-center text-emerald-400 mb-1">
               <Users className="w-5 h-5 mr-1" />
               <span className="text-2xl sm:text-3xl font-black">250K+</span>
             </div>
-            <p className="text-xs text-slate-300 font-medium">Active Students</p>
+            <p className="text-xs text-slate-200 font-medium">Active Students</p>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center hover:bg-white/10 transition-colors">
+          <div className="bg-slate-900/65 backdrop-blur-md rounded-2xl p-4 border border-white/15 text-center hover:bg-slate-900/80 transition-colors shadow-lg">
             <div className="flex items-center justify-center text-emerald-400 mb-1">
               <BookOpen className="w-5 h-5 mr-1" />
               <span className="text-2xl sm:text-3xl font-black">1,200+</span>
             </div>
-            <p className="text-xs text-slate-300 font-medium">Degree & Master Programs</p>
+            <p className="text-xs text-slate-200 font-medium">Degree & Master Programs</p>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center hover:bg-white/10 transition-colors">
+          <div className="bg-slate-900/65 backdrop-blur-md rounded-2xl p-4 border border-white/15 text-center hover:bg-slate-900/80 transition-colors shadow-lg">
             <div className="flex items-center justify-center text-amber-400 mb-1">
               <Award className="w-5 h-5 mr-1" />
               <span className="text-2xl sm:text-3xl font-black">24/7</span>
             </div>
-            <p className="text-xs text-slate-300 font-medium">Ethiopian AI Advisor</p>
+            <p className="text-xs text-slate-200 font-medium">Ethiopian AI Advisor</p>
           </div>
         </div>
 
