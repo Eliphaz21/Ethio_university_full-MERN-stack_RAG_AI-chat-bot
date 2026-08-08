@@ -7,7 +7,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
 import { SEO, buildWebSiteSchema } from '../components/SEO';
 import HeroVideoBackground from '../components/HeroVideoBackground';
-import Interactive3DCanvas from '../components/Interactive3DCanvas';
 import ScrollAnimatedSections from '../components/ScrollAnimatedSections';
 
 interface HomeProps {
@@ -58,23 +57,7 @@ const Home: React.FC<HomeProps> = ({
           {/* 1. Ultra-Professional Video Hero Background */}
           <HeroVideoBackground />
 
-          {/* 2. Interactive 3D WebGL Canvas Section */}
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="text-center mb-10">
-              <span className="text-xs font-black uppercase tracking-widest text-[#059669] bg-emerald-100 px-3.5 py-1 rounded-full">
-                Interactive Visual Explorer
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 mt-3">
-                3D Ethiopian University Network & Regions
-              </h2>
-              <p className="text-slate-600 mt-2 max-w-xl mx-auto text-sm sm:text-base">
-                Rotate and inspect key educational hubs spanning Addis Ababa, Oromia, Amhara, Sidama, Tigray, SNNP, Dire Dawa, and Harari.
-              </p>
-            </div>
-            <Interactive3DCanvas universities={universities} />
-          </section>
-
-          {/* 3. Rich Scroll Animated Sections (Public & Private Pathways, Master's, AI Guidance, Testimonials) */}
+          {/* 2. Rich Scroll Animated Sections (Public & Private Pathways, Master's, AI Guidance, Testimonials) */}
           <ScrollAnimatedSections />
         </>
       ) : (
