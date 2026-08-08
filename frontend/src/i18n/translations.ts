@@ -139,6 +139,16 @@ export const translations = {
     prompt3: 'How does the Grade 12 ESSLCE remedial program work?',
     prompt4: 'Tell me about Adama Science and Technology University (ASTU).',
 
+    // NLP Voice Features
+    voiceInput: 'Voice Input',
+    listening: 'Listening... Speak now',
+    speakResponse: 'Listen to response',
+    stopSpeaking: 'Stop voice playback',
+    autoSpeakOn: 'Auto-Read Voice ON',
+    autoSpeakOff: 'Auto-Read Voice OFF',
+    speechNotSupported: 'Speech recognition is not supported in this browser.',
+    micPermissionDenied: 'Microphone permission was denied. Please allow mic access.',
+
     // Authentication
     loginTitle: 'Welcome Back',
     loginSubtitle: 'Sign in to access your saved universities and AI chat history.',
@@ -289,6 +299,16 @@ export const translations = {
     prompt2: 'በኢንጂነሪንግ እና ቴክኖሎጂ የታወቁት የኢትዮጵያ የመንግስት ዩኒቨርሲቲዎች የትኞቹ ናቸው?',
     prompt3: 'የ12ኛ ክፍል ESSLCE የማካሻ (Remedial) ፕሮግራም እንዴት ይሰራል?',
     prompt4: 'ስለ አዳማ ሳይንስ እና ቴክኖሎጂ ዩኒቨርሲቲ (ASTU) መረጃ ስጠኝ።',
+
+    // NLP Voice Features
+    voiceInput: 'የድምፅ ፍለጋ',
+    listening: 'በማዳመጥ ላይ... አሁን ይናገሩ',
+    speakResponse: 'መልሱን ያዳምጡ',
+    stopSpeaking: 'ድምፁን አቁም',
+    autoSpeakOn: 'የድምፅ ንባብ ክፍት',
+    autoSpeakOff: 'የድምፅ ንባብ ዝግ',
+    speechNotSupported: 'የድምፅ ማዳመጫ በዚሁ ብራውዘር አይደገፍም።',
+    micPermissionDenied: 'የማይክሮፎን ፈቃድ ተከልክሏል። እባክዎን ማይክሮፎን ይፍቀዱ።',
 
     // Authentication
     loginTitle: 'እንኳን ደህና መጡ',
@@ -441,6 +461,16 @@ export const translations = {
     prompt3: 'Sagantaan maakaashaa (Remedial) kutaa 12ffaa ESSLCE akkamitti hojjeta?',
     prompt4: 'Odeeffannoo Yuunivarsiitii Sayinsiifi Teknoologyii Adaamaa (ASTU) naa kenni.',
 
+    // NLP Voice Features
+    voiceInput: 'Sagaleen Barbaadi',
+    listening: 'Dhaggeeffataa jira... Amma dubbadhu',
+    speakResponse: 'Deebii dhaggeeffadhu',
+    stopSpeaking: 'Sagalee dhaabi',
+    autoSpeakOn: 'Dubbisa Sagalee Banamaa',
+    autoSpeakOff: 'Dubbisa Sagalee Cufamaa',
+    speechNotSupported: 'Tajaajilli sagalee biraawzerii kana irratti hin hojjetu.',
+    micPermissionDenied: 'Eeyyamni maayikiroofoonii dhorkameera.',
+
     // Authentication
     loginTitle: 'Baga Nagaan Dhuftan',
     loginSubtitle: 'Yuunivarsiitiiwwan olkaawataman fi seenaa maree AI argachuuf seeni.',
@@ -592,6 +622,16 @@ export const translations = {
     prompt3: 'ናይ 12 ክፍሊ ESSLCE የማካሻ (Remedial) ፕሮግራም ብኸመይ ይሰርሕ?',
     prompt4: 'ብዛዕባ አዳማ ሳይንስ እና ቴክኖሎጂ ዩኒቨርሲቲ (ASTU) ሓበሬታ ሀበኒ።',
 
+    // NLP Voice Features
+    voiceInput: 'ብድምፂ ድለዩ',
+    listening: 'ይስምዕ ኣሎ... ሐዚ ተናገሩ',
+    speakResponse: 'መልሲ ስምዑ',
+    stopSpeaking: 'ድምፂ ኣቁም',
+    autoSpeakOn: 'ናይ ድምፂ ንባብ ክፍቲ',
+    autoSpeakOff: 'ናይ ድምፂ ንባብ ዕፁው',
+    speechNotSupported: 'ናይ ድምፂ ኣገልግሎት ኣብዚ ብራውዘር ኣይሰርሕን።',
+    micPermissionDenied: 'ናይ ማይክሮፎን ፈቓድ ተኸልኪሉ።',
+
     // Authentication
     loginTitle: 'እንቋዕ ብደሓን መጻእኹም',
     loginSubtitle: 'ዝተቐመጡ ዩኒቨርሲቲታትን ናይ ኤአይ ምይይጣትን ንምርካብ እተዉ።',
@@ -742,6 +782,16 @@ export const translations = {
     prompt2: 'Waa kuwee jaamacadaha dowladda ee lagu yaqaano Injineernimada iyo Tiknoolajiyada?',
     prompt3: 'Sida uu u shaqeeyo barnaamijka Remedial ee fasalka 12aad ESSLCE?',
     prompt4: 'Iiga waran Jaamacadda Sayniska iyo Tiknoolajiyada ee Adama (ASTU).',
+
+    // NLP Voice Features
+    voiceInput: 'Raadinta Codka',
+    listening: 'Waa dhunteysanayaa... Hada labad',
+    speakResponse: 'Dhageyso jawaabta',
+    stopSpeaking: 'Jooji codka',
+    autoSpeakOn: 'Akhriska Codka On',
+    autoSpeakOff: 'Akhriska Codka Off',
+    speechNotSupported: 'Nidaamka codka laguma taageero browser-kan.',
+    micPermissionDenied: 'Ruhsadda makarafoonka waa la diiday.',
 
     // Authentication
     loginTitle: 'Kusoo Dhawoow',

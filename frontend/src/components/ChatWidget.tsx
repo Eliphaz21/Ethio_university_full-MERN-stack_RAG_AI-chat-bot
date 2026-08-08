@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChatMessage, KnowledgeDoc, University, User, ChatSession } from '../types';
@@ -8,9 +7,11 @@ import {
   Send, X, Bot, Plus, Trash2, MessageSquare,
   ChevronRight, Info, ShieldCheck, History,
   PanelLeftClose, PanelLeftOpen, Clock,
-  Utensils, PartyPopper, GraduationCap
+  Utensils, PartyPopper, GraduationCap,
+  Mic, MicOff, Volume2, VolumeX, AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useVoice } from '../hooks/useVoice';
 
 // Custom SVG Avatar based on the provided EthioUni Bot design
 const EthioUniBotAvatar = ({ size = 40, showStatus = false }: { size?: number, showStatus?: boolean }) => (
@@ -76,8 +77,21 @@ interface ChatWidgetProps {
 const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, user }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [autoReadVoice, setAutoReadVoice] = useState(false);
 
   const { t, language, currentLanguageOption } = useLanguage();
+
+  const {
+    isListening,
+    hasRecognitionSupport,
+    speakingIndex,
+    voiceError,
+    startListening,
+    stopListening,
+    speakText,
+    stopSpeaking,
+    clearVoiceError
+  } = useVoice();
 
   const welcomeMessage: ChatMessage = {
     role: 'assistant',
@@ -113,12 +127,16 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
   };
 
   const startNewChat = () => {
+    stopSpeaking();
+    stopListening();
     setMessages([welcomeMessage]);
     setCurrentSessionId(null);
     setIsSidebarOpen(false);
   };
 
   const loadSession = (session: ChatSession) => {
+    stopSpeaking();
+    stopListening();
     setMessages(session.messages);
     setCurrentSessionId(session.id);
     setIsSidebarOpen(false);
@@ -142,6 +160,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
 
   const confirmClearAllHistory = () => {
     if (!user) return;
+    stopSpeaking();
+    stopListening();
     localStorage.removeItem(`chat_history_${user.id}`);
     setSessions([]);
     startNewChat();
@@ -178,6 +198,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
   const handleSend = async (text: string = input) => {
     if (!text.trim() || isLoading || !user) return;
 
+    if (isListening) {
+      stopListening();
+    }
+
     const userMsg: ChatMessage = { role: 'user', content: text, timestamp: new Date().toISOString() };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
@@ -196,6 +220,11 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
       const finalMessages = [...newMessages, assistantMsg];
       setMessages(finalMessages);
       saveCurrentSession(finalMessages);
+
+      // Auto-read voice synthesis if toggled on
+      if (autoReadVoice) {
+        speakText(assistantText, language, finalMessages.length - 1);
+      }
     } catch (error: any) {
       const fallback = "Sorry, I couldn't reach the EthioUni Portal AI. Please check your connection and try again.";
       const assistantMsg: ChatMessage = { role: 'assistant', content: error?.message || fallback, timestamp: new Date().toISOString() };
@@ -272,7 +301,6 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                       {session.messages[1]?.content || 'Empty Session'}
                     </p>
                   </div>
-                  {/* Added individual delete button for the conversation */}
                   <button
                     onClick={(e) => deleteSession(e, session.id)}
                     className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/20 hover:text-red-500 rounded-lg transition-all text-slate-500"
@@ -287,7 +315,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
 
           <div className="flex-1 flex flex-col bg-[#0f172a] relative">
 
-            {/* More compact Header */}
+            {/* Header with Auto-Read Voice Toggle */}
             <header className="px-6 py-4 bg-[#1e293b]/40 backdrop-blur-3xl border-b border-slate-800/50">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
@@ -307,14 +335,52 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-10 h-10 rounded-full bg-slate-800/50 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+
+                <div className="flex items-center gap-2">
+                  {/* Auto-Read Voice Toggle Button */}
+                  <button
+                    onClick={() => {
+                      const next = !autoReadVoice;
+                      setAutoReadVoice(next);
+                      if (!next) stopSpeaking();
+                    }}
+                    className={`px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 ${
+                      autoReadVoice
+                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700'
+                        : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:text-slate-200'
+                    }`}
+                    title={autoReadVoice ? t('autoSpeakOn') : t('autoSpeakOff')}
+                  >
+                    {autoReadVoice ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5" />}
+                    <span className="hidden sm:inline">{autoReadVoice ? 'Voice ON' : 'Voice OFF'}</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      stopSpeaking();
+                      stopListening();
+                      setIsOpen(false);
+                    }}
+                    className="w-10 h-10 rounded-full bg-slate-800/50 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </header>
+
+            {/* Voice Notice Toast Banner */}
+            {voiceError && (
+              <div className="bg-red-950/90 border-b border-red-800 px-4 py-2 text-red-200 text-xs flex items-center justify-between z-10 animate-in slide-in-from-top-2">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span>{voiceError}</span>
+                </div>
+                <button onClick={clearVoiceError} className="text-red-400 hover:text-white font-bold text-xs p-1">
+                  ✕
+                </button>
+              </div>
+            )}
 
             {/* Content Area - Maximized Space */}
             {!user ? (
@@ -326,7 +392,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
               </div>
             ) : (
               <>
-                {/* Scrollable conversation area - increased text visibility */}
+                {/* Scrollable conversation area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-thin bg-[radial-gradient(circle_at_bottom_left,#1e293b,transparent_30%)]">
                   {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -341,8 +407,38 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                           : 'bg-[#1e293b] border border-slate-700/50 text-slate-100 rounded-tl-none'
                           }`}>
                           <div className="whitespace-pre-wrap">{msg.content}</div>
-                          <div className={`text-[8px] mt-2 font-black uppercase tracking-widest opacity-30 ${msg.role === 'user' ? 'text-white' : 'text-slate-400'}`}>
-                            {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+
+                          <div className="mt-3 flex items-center justify-between gap-4 border-t border-white/10 pt-2 text-[10px]">
+                            <span className={`font-black uppercase tracking-widest opacity-40 ${msg.role === 'user' ? 'text-white' : 'text-slate-400'}`}>
+                              {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+
+                            {/* Text-to-Speech Speaker Button on Assistant Bubbles */}
+                            {msg.role === 'assistant' && (
+                              <button
+                                onClick={() => {
+                                  if (speakingIndex === i) {
+                                    stopSpeaking();
+                                  } else {
+                                    speakText(msg.content, language, i);
+                                  }
+                                }}
+                                className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 transition cursor-pointer border border-slate-700/50"
+                                title={speakingIndex === i ? t('stopSpeaking') : t('speakResponse')}
+                              >
+                                {speakingIndex === i ? (
+                                  <>
+                                    <VolumeX className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                                    <span className="text-emerald-400">Stop Voice</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Volume2 className="w-3.5 h-3.5" />
+                                    <span>Listen</span>
+                                  </>
+                                )}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -358,13 +454,24 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                       </div>
                     </div>
                   )}
+
+                  {/* Listening Indicator Toast inside conversation scroll */}
+                  {isListening && (
+                    <div className="flex justify-center my-2 animate-pulse">
+                      <div className="bg-emerald-950/90 border border-emerald-500/80 text-emerald-300 px-5 py-2.5 rounded-2xl flex items-center gap-3 text-xs font-bold shadow-xl">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>{t('listening')} ({currentLanguageOption.name})</span>
+                      </div>
+                    </div>
+                  )}
+
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* More compact footer area */}
+                {/* Footer area with Microphone and Input Controls */}
                 <footer className="p-6 bg-[#0f172a] border-t border-slate-800/50">
                   <div className="space-y-4">
-                    {/* Quick Action Chips - compact */}
+                    {/* Quick Action Chips */}
                     <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                       {quickActions.map((action, idx) => (
                         <button
@@ -377,8 +484,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                       ))}
                     </div>
 
-                    {/* Chat Input - sleek and centered */}
-                    <div className="relative flex items-center gap-3">
+                    {/* Chat Input Bar with NLP Speech-to-Text Button */}
+                    <div className="relative flex items-center gap-2 sm:gap-3">
                       <div className="flex-1 relative">
                         <input
                           type="text"
@@ -386,21 +493,51 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ knowledgeDocs, universities, us
                           maxLength={2000}
                           onChange={(e) => setInput(e.target.value)}
                           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                          placeholder={t('chatPlaceholder')}
-                          className="w-full bg-[#111827] border-2 border-slate-800/50 rounded-2xl py-4 pl-6 pr-6 text-white outline-none focus:border-blue-500/30 transition-all text-sm shadow-inner placeholder:text-slate-600"
+                          placeholder={isListening ? t('listening') : t('chatPlaceholder')}
+                          className={`w-full bg-[#111827] border-2 rounded-2xl py-4 pl-6 pr-6 text-white outline-none transition-all text-sm shadow-inner placeholder:text-slate-500 ${
+                            isListening
+                              ? 'border-emerald-500 ring-2 ring-emerald-500/20'
+                              : 'border-slate-800/50 focus:border-blue-500/30'
+                          }`}
                         />
                       </div>
+
+                      {/* Microphone Voice Input Button */}
+                      {hasRecognitionSupport && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isListening) {
+                              stopListening();
+                            } else {
+                              startListening(language, (transcriptText) => {
+                                setInput(transcriptText);
+                              });
+                            }
+                          }}
+                          title={isListening ? t('listening') : t('voiceInput')}
+                          className={`p-4 rounded-2xl transition-all flex items-center justify-center cursor-pointer shadow-xl border shrink-0 ${
+                            isListening
+                              ? 'bg-red-600 text-white animate-pulse border-red-400 shadow-red-600/30'
+                              : 'bg-[#1e293b] hover:bg-slate-700 text-slate-300 border-slate-700/60'
+                          }`}
+                        >
+                          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5 text-emerald-400" />}
+                        </button>
+                      )}
+
+                      {/* Send Button */}
                       <button
                         disabled={!input.trim() || isLoading}
                         onClick={() => handleSend()}
-                        className="bg-blue-600 hover:bg-blue-500 disabled:opacity-20 p-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center shadow-xl shadow-blue-600/20 cursor-pointer"
+                        className="bg-blue-600 hover:bg-blue-500 disabled:opacity-20 p-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center shadow-xl shadow-blue-600/20 cursor-pointer shrink-0"
                       >
                         <Send className="w-5 h-5 text-white" />
                       </button>
                     </div>
 
                     <div className="flex items-center justify-center gap-2 text-[8px] text-slate-600 font-black uppercase tracking-[0.3em] pt-1">
-                      <GraduationCap className="w-3 h-3 opacity-30" /> RAG-Intelligence Service Active
+                      <GraduationCap className="w-3 h-3 opacity-30" /> NLP Voice & RAG Intelligence Active
                     </div>
                   </div>
                 </footer>
