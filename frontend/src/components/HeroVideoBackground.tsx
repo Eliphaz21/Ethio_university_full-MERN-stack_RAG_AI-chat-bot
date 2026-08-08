@@ -1,39 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, GraduationCap, Users, BookOpen, Award, ShieldCheck, Sparkles, Search, Bot } from 'lucide-react';
+import { ArrowRight, GraduationCap, Users, BookOpen, Award, ShieldCheck, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const HeroVideoBackground: React.FC = () => {
   const { t } = useLanguage();
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 py-20 text-white">
-      {/* Smooth Ambient Background Video Stream */}
-      <div className="absolute inset-0 z-0">
+      {/* Parallax Animated Background Video Stream */}
+      <div
+        className="absolute inset-0 z-0 transition-transform duration-300 ease-out pointer-events-none"
+        style={{
+          transform: `translateY(${scrollY * 0.25}px) scale(${1.05 + Math.min(scrollY * 0.0002, 0.15)})`
+        }}
+      >
         <video
           autoPlay
           loop
           muted
           playsInline
           poster="https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&q=80&w=1600"
-          className="w-full h-full object-cover scale-105 filter brightness-70 transition-all duration-1000"
+          className="w-full h-full object-cover filter brightness-[0.75] contrast-[1.05] transition-all duration-1000"
         >
+          <source src="/assets/landing_page_video.mp4" type="video/mp4" />
+          <source src="./assets/landing_page_video.mp4" type="video/mp4" />
           <source
             src="https://assets.mixkit.co/videos/preview/mixkit-students-walking-in-a-university-campus-41440-large.mp4"
             type="video/mp4"
           />
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-group-of-students-studying-together-41443-large.mp4"
-            type="video/mp4"
-          />
         </video>
 
-        {/* Dynamic Dark Emerald / Slate Gradient Mask with Glassmorphism */}
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/90 via-slate-950/85 to-slate-950"></div>
+        {/* High-Tech Dark Emerald Glassmorphism Mask */}
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/85 via-slate-950/80 to-slate-950 backdrop-blur-[1px]"></div>
 
-        {/* Subtle Animated Glowing Pattern Overlay */}
+        {/* Subtle Animated Glowing Grid Overlay */}
         <div
-          className="absolute inset-0 opacity-15 pointer-events-none"
+          className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
             backgroundImage: `radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.4) 1px, transparent 1px)`,
             backgroundSize: '36px 36px'
@@ -41,7 +53,7 @@ export const HeroVideoBackground: React.FC = () => {
         ></div>
       </div>
 
-      {/* Floating Interactive Live Badges */}
+      {/* Floating Interactive Badges */}
       <div className="hidden lg:block absolute top-28 left-12 z-10 animate-bounce duration-[4000ms]">
         <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-3 rounded-2xl shadow-2xl">
           <div className="bg-emerald-500/30 p-2.5 rounded-xl text-emerald-400">
@@ -70,13 +82,13 @@ export const HeroVideoBackground: React.FC = () => {
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
         
         {/* Top Tagline Pill */}
-        <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 backdrop-blur-md text-emerald-300 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-8 shadow-inner">
+        <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 backdrop-blur-md text-emerald-300 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-8 shadow-inner hover:border-emerald-400/70 transition-all cursor-default">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <span>Ethio University — Official Higher Education Portal</span>
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-emerald-300 drop-shadow-md">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-100 to-emerald-300 drop-shadow-lg">
           {t('heroTitle')}
         </h1>
 
