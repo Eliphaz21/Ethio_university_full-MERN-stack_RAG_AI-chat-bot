@@ -14,7 +14,8 @@ import {
   UserCheck,
   Globe2,
   Layers,
-  FileCheck
+  FileCheck,
+  Send
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -313,43 +314,102 @@ export const ScrollAnimatedSections: React.FC = () => {
           </div>
 
           <div className="relative">
-            <div className="absolute -top-6 -left-6 w-32 h-32 bg-emerald-200/50 rounded-full filter blur-2xl z-0"></div>
-            <div className="relative z-10 bg-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-slate-800">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+            <div className="absolute -top-6 -left-6 w-32 h-32 bg-emerald-500/20 rounded-full filter blur-2xl z-0"></div>
+            
+            {/* Real ChatWidget Replica Window */}
+            <div className="relative z-10 bg-[#0B132B] rounded-3xl overflow-hidden text-white shadow-2xl border border-slate-800">
+              
+              {/* Chat Window Top Bar Header */}
+              <div className="bg-[#1C2541] px-5 py-4 flex items-center justify-between border-b border-slate-700/60">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
-                  <span className="font-mono text-xs text-emerald-400">EthioUni AI Advisor Demo</span>
+                  <div className="relative">
+                    <img src="/assets/ai_bot_avatar.svg" alt="EthioUni Bot" className="w-10 h-10 object-contain rounded-full shadow-lg" />
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1C2541] rounded-full"></span>
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-tight">EthioUni AI Academic Advisor</h3>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">ONLINE • ENGLISH & AMHARIC</span>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-[10px] bg-emerald-950 text-emerald-300 px-3 py-1 rounded-full border border-emerald-800 font-bold">RAG Live</span>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] bg-emerald-950 text-emerald-300 px-3 py-1 rounded-full border border-emerald-800 font-bold">RAG Live</span>
+                </div>
               </div>
 
-              {/* Chat Simulation */}
-              <div className="space-y-4 font-sans text-xs sm:text-sm">
-                <div className="bg-slate-800/80 p-4 rounded-2xl max-w-[85%] border border-slate-700/60 text-slate-200">
-                  <p className="font-semibold text-emerald-400 text-xs mb-1">Student Inquiry:</p>
-                  "ለአዲስ አበባ ዩኒቨርሲቲ (AAU) ሶፍትዌር ኢንጂነሪንግ የመግቢያ ነጥብ ስንት ነው?"
-                </div>
-
-                <div className="bg-emerald-950/90 p-4 rounded-2xl max-w-[90%] ml-auto border border-emerald-500/40 text-emerald-100 shadow-inner">
-                  <div className="flex items-center gap-2 mb-1.5 text-xs text-emerald-400 font-bold">
-                    <Bot className="w-4 h-4" />
-                    <span>EthioUni AI Assistant:</span>
-                  </div>
-                  <p className="leading-relaxed">
-                    በ2016/17 የትምህርት ዘመን የትምህርት ሚኒስቴር (MoGE) መስፈርት መሠረት ለአዲስ አበባ ዩኒቨርሲቲ የሶፍትዌር ኢንጂነሪንግ ፕሮግራም የመግቢያ ነጥብ እንደ ተፈጥሮ ሳይንስ ተማሪነቶ እና እንደ ክልሎ ይለያያል። አጠቃላይ የተፈጥሮ ሳይንስ ወንዶች 415+፣ ሴቶች 395+፣ እና ለታዳጊ ክልሎች ልዩ ነጥብ ተቀምጧል...
+              {/* Chat Simulation Area */}
+              <div className="p-5 sm:p-6 space-y-4 font-sans text-xs sm:text-sm bg-[#0B132B]/90">
+                
+                {/* 1. Welcome RAG Context Banner */}
+                <div className="bg-[#1C2541]/80 p-3.5 rounded-2xl border border-slate-700/60 text-slate-300 text-xs flex items-center gap-2.5">
+                  <img src="/assets/ai_bot_avatar.svg" alt="Bot Avatar" className="w-7 h-7 object-contain shrink-0" />
+                  <p className="leading-snug">
+                    <strong className="text-emerald-400">EthioUni AI Academic Advisor</strong> — Powered by RAG Vector Search on Ethiopian University Data & Ministry of Education Criteria.
                   </p>
                 </div>
+
+                {/* 2. User Message (Right Aligned) */}
+                <div className="flex justify-end">
+                  <div className="bg-slate-800/90 text-slate-100 p-3.5 px-4 rounded-2xl rounded-tr-sm max-w-[85%] border border-slate-700/80 shadow-sm">
+                    <p className="font-semibold text-[#34d399] text-[11px] mb-1">Student Inquiry:</p>
+                    <p className="text-xs sm:text-sm font-medium leading-relaxed">
+                      "ለአዲስ አበባ ዩኒቨርሲቲ (AAU) ሶፍትዌር ኢንጂነሪንግ የመግቢያ ነጥብ ስንት ነው?"
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. AI Assistant Response (Left Aligned with Avatar) */}
+                <div className="flex items-start gap-3">
+                  <img src="/assets/ai_bot_avatar.svg" alt="EthioUni Bot" className="w-8 h-8 object-contain shrink-0 mt-1 shadow-md" />
+                  <div className="bg-[#059669]/20 border border-[#059669]/50 text-emerald-100 p-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-inner">
+                    <div className="flex items-center gap-2 mb-1.5 text-xs text-emerald-400 font-bold">
+                      <span>EthioUni AI Assistant:</span>
+                    </div>
+                    <p className="leading-relaxed text-xs sm:text-sm">
+                      በ2016/17 የትምህርት ዘመን የትምህርት ሚኒስቴር (MoGE) መስፈርት መሠረት ለአዲስ አበባ ዩኒቨርሲቲ የሶፍትዌር ኢንጂነሪንግ ፕሮግራም የመግቢያ ነጥብ እንደ ተፈጥሮ ሳይንስ ተማሪነቶ እና እንደ ክልሎ ይለያያል። አጠቃላይ የተፈጥሮ ሳይንስ ወንዶች 415+፣ ሴቶች 395+፣ እና ለታዳጊ ክልሎች ልዩ ነጥብ ተቀምጧል...
+                    </p>
+                  </div>
+                </div>
+
+                {/* Suggested Questions Chips Row */}
+                <div className="pt-2 flex flex-wrap gap-2">
+                  <span className="text-[11px] bg-[#1C2541] hover:bg-[#253259] text-slate-300 px-3 py-1.5 rounded-xl border border-slate-700 cursor-pointer transition">
+                    What are the admission requirements for AAU?
+                  </span>
+                  <span className="text-[11px] bg-[#1C2541] hover:bg-[#253259] text-slate-300 px-3 py-1.5 rounded-xl border border-slate-700 cursor-pointer transition hidden sm:inline-block">
+                    Which public unis excel in Engineering?
+                  </span>
+                </div>
+
+                {/* Chat Input Bar Preview */}
+                <div className="pt-2 flex items-center gap-2 bg-[#1C2541]/90 p-2.5 rounded-2xl border border-slate-700">
+                  <input
+                    type="text"
+                    disabled
+                    placeholder="Ask about university requirements, Grade 12 cut-offs..."
+                    className="bg-transparent text-xs text-slate-300 placeholder-slate-500 w-full focus:outline-none px-2"
+                  />
+                  <div className="w-8 h-8 rounded-xl bg-[#059669] text-white flex items-center justify-center shrink-0">
+                    <Send className="w-4 h-4" />
+                  </div>
+                </div>
+
               </div>
 
-              <div className="mt-8 pt-4 border-t border-slate-800 text-center">
+              {/* Bottom Call to Action */}
+              <div className="p-4 bg-[#1C2541]/60 border-t border-slate-800 text-center">
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center gap-2 bg-[#059669] hover:bg-[#047857] text-white px-6 py-3 rounded-xl font-bold text-xs transition shadow-lg w-full cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 bg-[#059669] hover:bg-[#047857] text-white px-6 py-3 rounded-xl font-extrabold text-xs transition shadow-lg w-full cursor-pointer"
                 >
                   <span>Start Chatting with AI Advisor</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
+
             </div>
           </div>
         </div>
