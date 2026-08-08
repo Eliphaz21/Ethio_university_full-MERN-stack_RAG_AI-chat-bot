@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { GraduationCap, Phone, Mail, MapPin } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export const Footer: React.FC = () => {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -22,34 +24,34 @@ export const Footer: React.FC = () => {
             </Link>
 
             <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-sm font-light">
-              Official higher education portal connecting Ethiopian students with accredited public & private universities, programs, and AI academic guidance.
+              {t('footerTagline')}
             </p>
           </div>
 
           {/* Column 2: Quick Links */}
           <div className="space-y-2">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">
-              Quick Links
+              {t('quickLinks')}
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li>
                 <Link to="/" className="hover:text-emerald-400 transition-colors">
-                  Home Overview
+                  {t('navHome')}
                 </Link>
               </li>
               <li>
                 <Link to="/universities" className="hover:text-emerald-400 transition-colors">
-                  Universities Directory
+                  {t('navUniversities')}
                 </Link>
               </li>
               <li>
                 <Link to="/register" className="hover:text-emerald-400 transition-colors">
-                  Student Registration
+                  {t('navRegister')}
                 </Link>
               </li>
               <li>
                 <Link to="/login" className="hover:text-emerald-400 transition-colors">
-                  Student & Staff Log In
+                  {t('navLogin')}
                 </Link>
               </li>
             </ul>
@@ -58,7 +60,7 @@ export const Footer: React.FC = () => {
           {/* Column 3: Direct Contact Information */}
           <div className="space-y-3">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">
-              Direct Contact
+              {t('directContact')}
             </h4>
             <ul className="space-y-2.5 text-xs text-slate-300">
               <li className="flex items-center gap-2.5">
@@ -85,7 +87,7 @@ export const Footer: React.FC = () => {
         {/* Footer Copyright Bar */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p className="text-center sm:text-left">
-            © {currentYear} <span className="text-slate-300 font-semibold">Ethio University</span>. All rights reserved.
+            © {currentYear} <span className="text-slate-300 font-semibold">Ethio University</span>. {t('allRightsReserved')}
           </p>
 
           <div className="flex items-center gap-4 text-slate-400 text-xs">

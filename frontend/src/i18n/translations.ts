@@ -28,10 +28,11 @@ export const translations = {
     navProfile: 'My Profile',
     navLogout: 'Sign Out',
     searchPlaceholderNav: 'Search Ethiopian universities, programs, locations...',
+    backToHome: 'Back to Home',
 
     // Hero & Home
     heroTitle: 'Discover Ethiopia’s Top Higher Education Institutions',
-    heroSubtitle: 'Explore accredited Ethiopian universities, degree programs, admission criteria, and chat with our RAG AI Assistant in your local language.',
+    heroSubtitle: 'Explore accredited Ethiopian universities, degree & master programs, Grade 12 ESSLCE criteria, and get instant guidance with our AI Academic Advisor.',
     heroSearchPlaceholder: 'Search by university name, region, or field of study...',
     heroSearchBtn: 'Search Portal',
     heroStatUniversities: 'Public & Private Universities',
@@ -48,6 +49,47 @@ export const translations = {
     feature2Desc: 'Ask questions about cut-off scores, Grade 12 ESSLCE admissions, remedial programs, and campus facilities.',
     feature3Title: 'Multi-Lingual Ethiopian Experience',
     feature3Desc: 'Navigate and chat fluently in Amharic (አማርኛ), Afaan Oromoo, Tigrinya (ትግርኛ), Somali (Af-Somali), or English.',
+
+    // Hero AI Badge
+    ragAiBadge: 'RAG AI Advisor',
+    ragAiLangs: 'Amharic & English Support',
+    ragAiAdvisorTitle: '24/7 Ethiopian AI Academic Advisor',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'Ethiopian Public & Private Universities',
+    publicPrivateSubtitle: 'Whether you are aiming for government-assigned public universities or top accredited private colleges, explore comprehensive admission details.',
+    publicUniversitiesTab: 'Public Universities',
+    privateUniversitiesTab: 'Private Colleges & Universities',
+
+    pathwaysHeadline: 'Higher Education Pathways in Ethiopia',
+    pathwaysSubtitle: 'Whether you are preparing for Grade 12 ESSLCE, entering university, advancing to a Master\'s degree, or pursuing technical TVET skills.',
+    pathway1Title: 'Grade 12 ESSLCE & Remedial',
+    pathway1Desc: 'Access official MoGE cut-off criteria, placement calculator, and remedial program eligibility rules across natural & social streams.',
+    pathway1Link: 'Undergraduate Admissions',
+    pathway2Title: 'Bachelor Programs (B.Sc / B.A)',
+    pathway2Desc: 'Explore engineering, software development, medicine, law, economics, management, and agriculture curriculum across public & private unis.',
+    pathway2Link: '500+ Fields of Study',
+    pathway3Title: 'Master\'s & PhD Degrees',
+    pathway3Desc: 'Find post-graduate programs (M.Sc, MBA, MPH, PhD) with entrance exam guidelines (NGAT), thesis advisory, and evening/extension schedules.',
+    pathway3Link: 'Postgraduate Portal',
+    pathway4Title: 'TVET & Skill Colleges',
+    pathway4Desc: 'Practical level 1-5 diplomas in Information Technology, Construction, Electrical Works, Automotive, and Business Services.',
+    pathway4Link: 'Technical Diplomas',
+
+    aiSectionTitle: 'Ask Anything About Ethiopian Universities in Your Native Language',
+    aiSectionDesc: 'Our AI Academic Advisor uses Retrieval-Augmented Generation (RAG) powered by Google Gemini and official Ethiopian Ministry of Education datasets to give instant, precise answers.',
+    aiFeature1Title: 'Amharic & Multilingual RAG Search',
+    aiFeature1Desc: 'Chat seamlessly in Amharic (አማርኛ), Afaan Oromoo, Tigrinya, or English.',
+    aiFeature2Title: 'Verified Ethiopian Document Context',
+    aiFeature2Desc: 'Vector embeddings index official curriculum docs, cut-offs, and campus facts.',
+    aiFeature3Title: 'Personalized Admission Scoring',
+    aiFeature3Desc: 'Calculates your eligibility for AAU, ASTU, Hawassa, and private institutions.',
+
+    // Footer
+    footerTagline: 'Official higher education portal connecting Ethiopian students with accredited public & private universities, programs, and AI academic guidance.',
+    quickLinks: 'Quick Links',
+    directContact: 'Direct Contact',
+    allRightsReserved: 'All rights reserved.',
 
     // Filters & Universities Page
     allRegions: 'All Regions',
@@ -137,13 +179,14 @@ export const translations = {
     navProfile: 'ፕሮፋይሌ',
     navLogout: 'ውጣ',
     searchPlaceholderNav: 'የኢትዮጵያ ዩኒቨርሲቲዎችን፣ ትምህርቶችን፣ ቦታዎችን ይፈልጉ...',
+    backToHome: 'ወደ ዋናው ገጽ ተመለስ',
 
     // Hero & Home
     heroTitle: 'የኢትዮጵያ ከፍተኛ ትምህርት ተቋማትን ያግኙ',
-    heroSubtitle: 'በኢትዮጵያ የሚገኙ ዕውቅና ያላቸውን ዩኒቨርሲቲዎች፣ የትምህርት ዘርፎች፣ የቅበላ መስፈርቶች እና የRAG ኤአይ ረዳታችንን በአማርኛ ይገልግሉ::',
+    heroSubtitle: 'በኢትዮጵያ የሚገኙ ዕውቅና ያላቸውን ዩኒቨርሲቲዎች፣ የትምህርት ዘርፎች፣ የ12ኛ ክፍል ESSLCE መስፈርቶች እና የኤአይ ረዳታችንን ይገልግሉ::',
     heroSearchPlaceholder: 'በዩኒቨርሲቲ ስም፣ በክልል ወይም በትምህርት መስክ ይፈልጉ...',
     heroSearchBtn: 'ፖርታሉን ፈልግ',
-    heroStatUniversities: 'የመንግስት እና የPopup ዩኒቨርሲቲዎች',
+    heroStatUniversities: 'የመንግስት እና የግል ዩኒቨርሲቲዎች',
     heroStatPrograms: 'የዲግሪ መርሃ ግብሮች እና የትምህርት መስኮች',
     heroStatRegions: 'በመላ ኢትዮጵያ የተሸፈኑ ክልሎች',
     heroStatAI: '24/7 የኢትዮጵያ RAG ኤአይ ረዳት',
@@ -157,6 +200,47 @@ export const translations = {
     feature2Desc: 'ስለ 12ኛ ክፍል ESSLCE የቅበላ ነጥብ፣ የሪሚዲያል (ማካሻ) ፕሮግራም እና የካምፓስ አቀማመጥ ጥያቄዎችን ይጠይቁ።',
     feature3Title: 'በብዙ የኢትዮጵያ ቋንቋዎች የቀረበ',
     feature3Desc: 'በአማርኛ፣ በአፋን ኦሮሞ፣ በትግርኛ፣ በሶማሊኛ ወይም በእንግሊዝኛ ቋንቋዎች በነጻነት ይጠቀሙ።',
+
+    // Hero AI Badge
+    ragAiBadge: 'RAG ኤአይ አማካሪ',
+    ragAiLangs: 'በአማርኛ እና በእንግሊዝኛ ድጋፍ',
+    ragAiAdvisorTitle: '24/7 የኢትዮጵያ ኤአይ የአካዳሚክ አማካሪ',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'የኢትዮጵያ የመንግስት እና የግል ዩኒቨርሲቲዎች',
+    publicPrivateSubtitle: 'በመንግስት የሚመደቡ ዩኒቨርሲቲዎችን ወይም በግል ዕውቅና ያላቸውን ኮሌጆች ለመቀላቀል ሲፈልጉ፣ አጠቃላይ የቅበላ መረጃዎችን እዚህ ያግኙ።',
+    publicUniversitiesTab: 'የመንግስት ዩኒቨርሲቲዎች',
+    privateUniversitiesTab: 'የግል ዩኒቨርሲቲዎች እና ኮሌጆች',
+
+    pathwaysHeadline: 'የከፍተኛ ትምህርት የዕድገት መንገዶች በኢትዮጵያ',
+    pathwaysSubtitle: 'ለ12ኛ ክፍል ESSLCE እየተዘጋጁ ከሆነ፣ ወደ ዩኒቨርሲቲ እየገቡ፣ ሁለተኛ ዲግሪ (Master\'s) ወይም የቴክኒክና ሙያ (TVET) ስልጠና።',
+    pathway1Title: 'የ12ኛ ክፍል ESSLCE እና ማካሻ (Remedial)',
+    pathway1Desc: 'የትምህርት ሚኒስቴር ይፋዊ መቁረጫ ነጥብ፣ የምደባ ስሌት እና የማካሻ ፕሮግራም መስፈርቶችን ያግኙ።',
+    pathway1Link: 'የመጀመሪያ ዲግሪ ቅበላ',
+    pathway2Title: 'የመጀመሪያ ዲግሪ ፕሮግራሞች (B.Sc / B.A)',
+    pathway2Desc: 'በኢንጂነሪንግ፣ በሶፍትዌር፣ በሕክምና፣ በሕግ፣ በኢኮኖሚክስ እና በግብርና ትምህርቶች ዙሪያ ይመርምሩ።',
+    pathway2Link: '500+ የትምህርት ዘርፎች',
+    pathway3Title: 'ሁለተኛ እና ሦስተኛ ዲግሪ (Master\'s & PhD)',
+    pathway3Desc: 'የሁለተኛ ዲግሪ (M.Sc, MBA, MPH) እና የNGAT ፈተና መመሪያዎችን፣ የምሽት እና የኤክስቴንሽን መርሃ ግብሮችን ያግኙ።',
+    pathway3Link: 'የድህረ ምረቃ ፖርታል',
+    pathway4Title: 'የቴክኒክና ሙያ (TVET) ኮሌጆች',
+    pathway4Desc: 'ከደረጃ 1 እስከ 5 ተግባራዊ የቴክኖሎጂ፣ የኮንስትራክሽን፣ የኤሌክትሪክ እና የንግድ ስልጠና ዲፕሎማዎች።',
+    pathway4Link: 'የቴክኒክ ዲፕሎማዎች',
+
+    aiSectionTitle: 'ስለ ኢትዮጵያ ዩኒቨርሲቲዎች በማንኛውም የአገራችን ቋንቋ ይጠይቁ',
+    aiSectionDesc: 'የእኛ የኤአይ አካዳሚክ አማካሪ በትምህርት ሚኒስቴር ሰነዶች እና በGoogle Gemini RAG ቴክኖሎጂ ፈጣን እና ትክክለኛ ምላሽ ይሰጣል።',
+    aiFeature1Title: 'አማርኛ እና የብዙ ቋንቋዎች የRAG ፍለጋ',
+    aiFeature1Desc: 'በአማርኛ፣ በአፋን ኦሮሞ፣ በትግርኛ ወይም በእንግሊዝኛ በነፃነት ይወያዩ።',
+    aiFeature2Title: 'የተረጋገጡ የኢትዮጵያ ሰነዶች መረጃ',
+    aiFeature2Desc: 'የተቀመጡ የቬክተር መረጃዎች ይፋዊ የትምህርት ሰነዶችን እና የመቁረጫ ነጥቦችን ያካትታሉ።',
+    aiFeature3Title: 'ግላዊ የቅበላ ውጤት ስሌት',
+    aiFeature3Desc: 'ለአዲስ አበባ፣ ለአዳማ፣ ለሐዋሳ እና ለግል ተቋማት የቅበላ ብቁነትዎን ያሰላል።',
+
+    // Footer
+    footerTagline: 'የኢትዮጵያ ተማሪዎችን ከዕውቅና ከተሰጣቸው የመንግስት እና የግል ዩኒቨርሲቲዎች፣ የትምህርት ፕሮግራሞች እና የኤአይ አማካሪ ጋር የሚያገናኝ ይፋዊ የከፍተኛ ትምህርት ፖርታል::',
+    quickLinks: 'ፈጣን አገናኞች',
+    directContact: 'ቀጥታ ግንኙነት',
+    allRightsReserved: 'መብቱ በህግ የተጠበቀ ነው።',
 
     // Filters & Universities Page
     allRegions: 'ሁሉም ክልሎች',
@@ -246,10 +330,11 @@ export const translations = {
     navProfile: 'Piroofaayilii Koo',
     navLogout: 'Ba’i',
     searchPlaceholderNav: 'Yuunivarsiitiiwwan Itoophiyaa, sagantaawwan, bakka barbaadi...',
+    backToHome: 'Deebi\'i Fuula Duraatti',
 
     // Hero & Home
     heroTitle: 'Dhaabbilee Barnoota Olaanoo Itoophiyaa Beakamoo Argadhu',
-    heroSubtitle: 'Yuunivarsiitiiwwan Itoophiyaa beekamtii qaban, sagantaawwan digirii, ulaagaalee seensa fi gargaaraa AI keenya afaan keetiin dhihaate sakatta’i.',
+    heroSubtitle: 'Yuunivarsiitiiwwan Itoophiyaa beekamtii qaban, sagantaawwan digirii, ulaagaalee ESSLCE kutaa 12ffaa fi gargaaraa AI keenyaan qajeelfama argadhu.',
     heroSearchPlaceholder: 'Maqaa yuunivarsiitiin, naannoodhaan, ykn koolleejjiin barbaadi...',
     heroSearchBtn: 'Poortaalii Barbaadi',
     heroStatUniversities: 'Yuunivarsiitiiwwan Mootummaa fi Dhuunfaa',
@@ -266,6 +351,47 @@ export const translations = {
     feature2Desc: 'Qabxii seensa qormaata kutaa 12ffaa ESSLCE, sagantaa riimidiyaalii fi tajaajila kaampasii irratti gaaffii gaafadhu.',
     feature3Title: 'Tajaajila Afaanota Itoophiyaa Baay’ee',
     feature3Desc: 'Afaan Oromoo, Amharic (አማርኛ), Tigrinya (ትግርኛ), Somali (Af-Somali), ykn Afaan Ingiliziitiin fayyadami.',
+
+    // Hero AI Badge
+    ragAiBadge: 'Gorsa RAG AI',
+    ragAiLangs: 'Deeggirsa Afaan Oromoo, Amharic fi Ingiliffaa',
+    ragAiAdvisorTitle: '24/7 Gorsa Barnoota AI Itoophiyaa',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'Yuunivarsiitiiwwan Mootummaa fi Dhuunfaa Itoophiyaa',
+    publicPrivateSubtitle: 'Yuunivarsiitiiwwan mootummaan ramadaman ykn koolleejjiiwwan dhuunfaa beekamtii qaban sakatta\'uuf odeeffannoo seensaa guutuu argadhu.',
+    publicUniversitiesTab: 'Yuunivarsiitiiwwan Mootummaa',
+    privateUniversitiesTab: 'Koolleejjiiwwan fi Yuunivarsiitiiwwan Dhuunfaa',
+
+    pathwaysHeadline: 'Tarkaanfiilee Barnoota Olaanoo Itoophiyaa Keessatti',
+    pathwaysSubtitle: 'Qormaata kutaa 12ffaa ESSLCE’f qophaawaa jirta, yuunivarsiitii seenaa jirta, digirii lammaffaa ykn TVET hordofaa jirta.',
+    pathway1Title: 'Kutaa 12ffaa ESSLCE fi Remedial',
+    pathway1Desc: 'Ulaagaaleen seensaa MoGE, kalkuleetarii ramaddii fi seera riimidiyaalii sakatta\'i.',
+    pathway1Link: 'Seensa Digirii Jalqabaa',
+    pathway2Title: 'Sagantaawwan Digirii (B.Sc / B.A)',
+    pathway2Desc: 'Injiinariingii, sooftiweerii, qoricha, seera, ikonoomiiksii fi qonna sakatta\'i.',
+    pathway2Link: 'Dirreewwan Barnootaa 500+',
+    pathway3Title: 'Digirii Lammaffaa fi Sadaffaa (Master\'s & PhD)',
+    pathway3Desc: 'Sagantaawwan digirii lammaffaa (M.Sc, MBA, MPH), qormaata NGAT fi sagantaa galgalaa argadhu.',
+    pathway3Link: 'Poortaalii Digirii Lammaffaa',
+    pathway4Title: 'Koolleejjiiwwan TVET fi Ogummaa',
+    pathway4Desc: 'Sadarkaa 1-5 dippiloomaa hojii teeknoolojii, ijaarsa, elektirikaalaa fi daldalaa.',
+    pathway4Link: 'Dippiloomaa Teeknikaa',
+
+    aiSectionTitle: 'Waee Yuunivarsiitiiwwan Itoophiyaa Afaan Keetiin Gaafadhu',
+    aiSectionDesc: 'Gorsaan AI keenya RAG fi data Ministeera Barnootaatiin deeggaramuun deebii ariifachiisaa fi sirrii siif kennama.',
+    aiFeature1Title: 'Barbaacha RAG Afaan Oromoo fi Afaanota Baay’ee',
+    aiFeature1Desc: 'Afaan Oromoo, Amharic (አማርኛ), Tigrinya (ትግርኛ), ykn Afaan Ingiliziitiin mari\'adhu.',
+    aiFeature2Title: 'Sanadoota Itoophiyaa Mirkanaa’an',
+    aiFeature2Desc: 'Sanadoonni barnootaa mootummaa fi qabxiin seensaa galmee keessa jiru.',
+    aiFeature3Title: 'Safartuu Qabxii Seensaa Dhuunfaa',
+    aiFeature3Desc: 'Ulaagaa seensaa AAU, ASTU, Hawaasaa fi dhaabbilee dhuunfaa siif calculates godha.',
+
+    // Footer
+    footerTagline: 'Poortaalii barnoota olaanoo rasmmii barattoota Itoophiyaa yuunivarsiitiiwwan mootummaa fi dhuunfaa beekamtii qaban waliin qunnamsiisu.',
+    quickLinks: 'Geessituuwwan Ariifachiisoo',
+    directContact: 'Qunnamtii Kallattii',
+    allRightsReserved: 'Mirgi mirkanaa’aadha.',
 
     // Filters & Universities Page
     allRegions: 'Naannoolee Hundumaa',
@@ -355,10 +481,11 @@ export const translations = {
     navProfile: 'ፕሮፋይለይ',
     navLogout: 'ውፅእ',
     searchPlaceholderNav: 'ናይ ኢትዮጵያ ዩኒቨርሲቲታት፣ ትምህርትታት፣ ቦታታት ድለዩ...',
+    backToHome: 'ናብ ቀንዲ ገፅ ተመለስ',
 
     // Hero & Home
     heroTitle: 'ናይ ኢትዮጵያ ላዕለዎት ትካል ትምህርቲ ረክቡ',
-    heroSubtitle: 'ኣብ ኢትዮጵያ ዝርከቡ ፍሉጣት ዩኒቨርሲቲታት፣ ናይ ዲግሪ መርሃ ግብርታት፣ ናይ ምእታው መስፈርትን ናይ RAG ኤአይ ሓጋዚናን ብትግርኛ ተጠቐሙ።',
+    heroSubtitle: 'ኣብ ኢትዮጵያ ዝርከቡ ፍሉጣት ዩኒቨርሲቲታት፣ ናይ ዲግሪ መርሃ ግብርታት፣ ናይ 12 ክፍሊ ESSLCE መስፈርትን ብኤአይ ሓጋዚናን ሓበሬታ ረክቡ።',
     heroSearchPlaceholder: 'ብሽም ዩኒቨርሲቲ፣ ብክልል ወይ ብትምህርቲ ዓውዲ ድለዩ...',
     heroSearchBtn: 'ፖርታል ድለይ',
     heroStatUniversities: 'ናይ መንግስትን የግልን ዩኒቨርሲቲታት',
@@ -375,6 +502,47 @@ export const translations = {
     feature2Desc: 'ብዛዕባ 12 ክፍሊ ESSLCE ናይ ምእታው ነጥቢ፣ ናይ ሪሚዲያል (ማካሻ) ፕሮግራምን ናይ ካምፓስ ሓበሬታን ሕተቱ።',
     feature3Title: 'ብብዙሓት ናይ ኢትዮጵያ ቋንቋታት ዝቐረበ',
     feature3Desc: 'ብትግርኛ፣ በአማርኛ፣ በአፋን ኦሮሞ፣ ብሶማሊኛ ወይ ብእንግሊዝኛ ቋንቋታት ብነፃነት ተጠቐሙ።',
+
+    // Hero AI Badge
+    ragAiBadge: 'RAG ኤአይ ኣማኻሪ',
+    ragAiLangs: 'ብትግርኛ፣ በአማርኛን ብእንግሊዝኛን ሓገዝ',
+    ragAiAdvisorTitle: '24/7 ናይ ኢትዮጵያ ኤአይ ናይ ኣካዳሚክ ኣማኻሪ',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'ናይ ኢትዮጵያ ናይ መንግስትን ናይ ብሕቲን ዩኒቨርሲቲታት',
+    publicPrivateSubtitle: 'ብመንግስቲ ዝምደቡ ዩኒቨርሲቲታት ወይ ናይ ብሕቲ ፍሉጣት ኮሌጃት ንምእታው እንተደሊኹም፣ ምሉእ ናይ ምእታው ሓበሬታታት ኣብዚ ረክቡ።',
+    publicUniversitiesTab: 'ናይ መንግስቲ ዩኒቨርሲቲታት',
+    privateUniversitiesTab: 'ናይ ብሕቲ ኮሌጃትን ዩኒቨርሲቲታትን',
+
+    pathwaysHeadline: 'ናይ ላዕለዋይ ትምህርቲ ናይ ዕብየት መገድታት ኣብ ኢትዮጵያ',
+    pathwaysSubtitle: 'ን12 ክፍሊ ESSLCE ትዳሎ እንተለኻ፣ ናብ ዩኒቨርሲቲ ትኣቱ፣ ካልኣይ ዲግሪ ወይ ናይ ቴክኒክን ሙያን (TVET) ትምህርቲ።',
+    pathway1Title: '12 ክፍሊ ESSLCE እና ማካሻ (Remedial)',
+    pathway1Desc: 'ናይ ትምህርቲ ሚኒስቴር ወጋዒ መቑረፂ ነጥቢ፣ ናይ ምደባ ሓበሬታን ናይ ማካሻ ፕሮግራም መስፈርትታትን ረክቡ።',
+    pathway1Link: 'ቀዳማይ ዲግሪ ምእታው',
+    pathway2Title: 'ቀዳማይ ዲግሪ ፕሮግራማት (B.Sc / B.A)',
+    pathway2Desc: 'ብኢንጂነሪንግ፣ ብሶፍትዌር፣ ብሕክምና፣ ብሕጊ፣ ብኢኮኖሚክስን ብሕርሻን ትምህርትታት ዝርዝር ርኣዩ።',
+    pathway2Link: '500+ ዓውደ ትምህርትታት',
+    pathway3Title: 'ካልኣይን ሳልሳይን ዲግሪ (Master\'s & PhD)',
+    pathway3Desc: 'ናይ ካልኣይ ዲግሪ (M.Sc, MBA, MPH)ን ናይ NGAT መፈተኒ መምርሒታትን ናይ ምሸት መርሃ ግብርታትን ረክቡ።',
+    pathway3Link: 'ናይ ድሕረ ምረቓ ፖርታል',
+    pathway4Title: 'ናይ ቴክኒክን ሙያን (TVET) ኮሌጃት',
+    pathway4Desc: 'ካብ ብርኪ 1 ክሳብ 5 ተግባራዊ ናይ ቴክኖሎጂ፣ ናይ ኮንስትራክሽን፣ ናይ ኤሌክትሪክን ናይ ንግድን ዲፕሎማታት።',
+    pathway4Link: 'ናይ ቴክኒክ ዲፕሎማታት',
+
+    aiSectionTitle: 'ብዛዕባ ናይ ኢትዮጵያ ዩኒቨርሲቲታት ብቋንቋኹም ሕተቱ',
+    aiSectionDesc: 'ናይና ኤአይ ኣካዳሚክ ኣማኻሪ ብናይ ትምህርቲ ሚኒስቴር ሰነዳትን ብGoogle Gemini RAG ቴክኖሎጂን ቕልጡፍን ሓቀኛን መልሲ ይሰጥ።',
+    aiFeature1Title: 'ትግርኛ፣ አማርኛን ናይ ብዙሓት ቋንቋታት RAG ድለይ',
+    aiFeature1Desc: 'ብትግርኛ፣ በአማርኛ፣ በአፋን ኦሮሞ ወይ ብእንግሊዝኛ ብነፃነት ተመያየጡ።',
+    aiFeature2Title: 'ዝተረጋገፁ ናይ ኢትዮጵያ ሰነዳት ሓበሬታ',
+    aiFeature2Desc: 'ወጋዒ ናይ ትምህርቲ ሰነዳትን ናይ ምእታው ነጥብታትን ተኻቲቶም ኣለው።',
+    aiFeature3Title: 'ግላዊ ናይ ምእታው ነጥቢ ስሌት',
+    aiFeature3Desc: 'ንአዲስ አበባ፣ ንአዳማ፣ ንሓዋሳን ንናይ ብሕቲ ትካላትን ናይ ምእታው ብቑዕነትኩም ይሕስብ።',
+
+    // Footer
+    footerTagline: 'ንኢትዮጵያ ተማሃሮ ምስ ብቑዓት ናይ መንግስትን ናይ ብሕቲን ዩኒቨርሲቲታት፣ ናይ ትምህርቲ ፕሮግራማትን ናይ ኤአይ ኣማኻሪን ዘራኽብ ወጋዒ ናይ ላዕለዋይ ትምህርቲ ፖርታል::',
+    quickLinks: 'ቕልጡፋት መላገቢታት',
+    directContact: 'ቀጥታ ርክብ',
+    allRightsReserved: 'መብቱ ብሕጊ ዝተሓለወ እዩ።',
 
     // Filters & Universities Page
     allRegions: 'ኩሎም ክልላት',
@@ -464,10 +632,11 @@ export const translations = {
     navProfile: 'Profile-kayga',
     navLogout: 'Ka bax',
     searchPlaceholderNav: 'Raadi jaamacadaha Itoobiya, barnaamijyada, goobaha...',
+    backToHome: 'U noqo Bogga Hore',
 
     // Hero & Home
     heroTitle: 'Cilmi Baadhis iyo Jaamacadaha Ugu Sareeya Itoobiya',
-    heroSubtitle: 'Sahamso jaamacadaha la aqoonsan yahay ee Itoobiya, barnaamijyada shahaadada, shuruudaha qabulka iyo kaaliyaha AI oo ku hadla luqadaada.',
+    heroSubtitle: 'Sahamso jaamacadaha la aqoonsan yahay ee Itoobiya, barnaamijyada shahaadada, shuruudaha ESSLCE fasalka 12aad iyo kaaliyaha AI.',
     heroSearchPlaceholder: 'Ku raadi magaca jaamacadda, deegaanka, ama sahanka...',
     heroSearchBtn: 'Raadi Portal-ka',
     heroStatUniversities: 'Jaamacadaha Dowladda & Kuwa Gaarka Ah',
@@ -484,6 +653,47 @@ export const translations = {
     feature2Desc: 'Weydiiso su\'aalo ku saabsan dhibcaha fasalka 12aad ESSLCE, barnaamijka Remedial iyo kaampaska.',
     feature3Title: 'Luuqadaha Kala Duwan ee Itoobiya',
     feature3Desc: 'U isticmaal Af-Somali, Amharic (አማርኛ), Afaan Oromoo, Tigrinya (ትግርኛ), ama Ingiriis.',
+
+    // Hero AI Badge
+    ragAiBadge: 'Taliyaha RAG AI',
+    ragAiLangs: 'Taageerada Af-Somali, Amharic & Ingiriis',
+    ragAiAdvisorTitle: '24/7 Taliyaha Waxbarashada AI ee Itoobiya',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'Jaamacadaha Dowladda & Kuwa Gaarka Ah ee Itoobiya',
+    publicPrivateSubtitle: 'Haddii aad hiigsaneyso jaamacadaha dowladda ama kuliyadaha gaarka ah ee la aqoonsan yahay, sahamso macluumaadka qabulka.',
+    publicUniversitiesTab: 'Jaamacadaha Dowladda',
+    privateUniversitiesTab: 'Kuliyadaha & Jaamacadaha Gaarka Ah',
+
+    pathwaysHeadline: 'Dhabada Waxbarashada Sare ee Itoobiya',
+    pathwaysSubtitle: 'Haddii aad u diyaar garoobeyso fasalka 12aad ESSLCE, jaamacadda galayso, Master\'s ama xirfada TVET.',
+    pathway1Title: 'Fasalka 12aad ESSLCE & Remedial',
+    pathway1Desc: 'Hel shuruudaha jarista MoGE, kalkuleetarka meelaynta iyo shuruudaha Remedial.',
+    pathway1Link: 'Qabulka Bachelor-ka',
+    pathway2Title: 'Barnaamijyada Bachelor (B.Sc / B.A)',
+    pathway2Desc: 'Sahamso injineernimada, software-ka, caafimaadka, sharciga, dhaqaalaha iyo beeraha.',
+    pathway2Link: '500+ Qaybaha Waxbarashada',
+    pathway3Title: 'Barnaamijyada Master\'s & PhD',
+    pathway3Desc: 'Hel barnaamijyada Master\'s (M.Sc, MBA, MPH), imtixaanka NGAT iyo jadwalka fiidkii.',
+    pathway3Link: 'Portal-ka Master-ka',
+    pathway4Title: 'Kuliyadaha TVET & Xirfadaha',
+    pathway4Desc: 'Doplomaatada heerka 1-5 ee IT-ga, dhismaha, korontada iyo ganacsiga.',
+    pathway4Link: 'Diplomaatada Xirfadaha',
+
+    aiSectionTitle: 'Waa Maxay Waxaad Ka Weydiin Kartaa Jaamacadaha Luqadaada',
+    aiSectionDesc: 'Kaaliyaha AI wuxuu isticmaalaa RAG iyo xogta Wasaaradda Waxbarashada si uu kuugu siiyo jawaabo sax ah.',
+    aiFeature1Title: 'Raadinta RAG ee Af-Somali & Luqadaha Kala Duwan',
+    aiFeature1Desc: 'U sheekeyso Af-Somali, Amharic, Afaan Oromoo, Tigrinya ama Ingiriis.',
+    aiFeature2Title: 'Xogta Dokumintiyada La Xaqiijiyay ee Itoobiya',
+    aiFeature2Desc: 'Qoraalada Wasaaradda Waxbarashada iyo dhibcaha jarista ayaa la kaydiyay.',
+    aiFeature3Title: 'Xisaabinta Dhibcaha Qabulka Personal-ka',
+    aiFeature3Desc: 'Wuxuu xisaabiyaa u haysashadaada AAU, ASTU, Hawassa iyo kuwa gaarka ah.',
+
+    // Footer
+    footerTagline: 'Portal-ka rasmiga ah ee waxbarashada sare ee ku xira ardayda Itoobiya jaamacadaha dowladda & kuwa gaarka ah.',
+    quickLinks: 'Linkiyada Dhaqsaha Ah',
+    directContact: 'Xiriirka Tooska Ah',
+    allRightsReserved: 'Hantida dhowran.',
 
     // Filters & Universities Page
     allRegions: 'Dhammaan Deegaanada',

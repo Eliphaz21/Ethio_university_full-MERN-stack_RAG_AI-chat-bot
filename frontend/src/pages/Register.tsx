@@ -96,7 +96,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
           className="inline-flex items-center gap-2 text-xs font-bold text-[#059669] hover:text-[#047857] bg-white hover:bg-emerald-50 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition-all cursor-pointer shadow-sm group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          <span>Back to Home</span>
+          <span>{t('backToHome')}</span>
         </Link>
       </div>
 

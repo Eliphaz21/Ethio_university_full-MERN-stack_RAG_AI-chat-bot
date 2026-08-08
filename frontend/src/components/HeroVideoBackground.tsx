@@ -40,7 +40,7 @@ export const HeroVideoBackground: React.FC = () => {
 
         {/* Hero Subtitle */}
         <p className="text-base sm:text-lg lg:text-xl text-slate-100 mb-10 max-w-3xl leading-relaxed font-medium [text-shadow:_0_2px_12px_rgba(0,0,0,0.95)]">
-          Explore accredited Ethiopian universities, degree & master programs, Grade 12 ESSLCE criteria, and get instant guidance with our AI Academic Advisor.
+          {t('heroSubtitle')}
         </p>
 
         {/* Action Buttons */}
@@ -72,9 +72,9 @@ export const HeroVideoBackground: React.FC = () => {
             className="w-9 h-9 object-contain shrink-0 drop-shadow"
           />
           <div className="text-left">
-            <p className="text-[11px] font-black uppercase tracking-wider text-emerald-300 leading-tight">RAG AI Advisor</p>
-            <p className="text-xs font-extrabold text-white leading-tight">Amharic & English Support</p>
-            <p className="text-[10px] font-black text-amber-400 mt-0.5 leading-tight">24/7 Ethiopian AI Academic Advisor</p>
+            <p className="text-[11px] font-black uppercase tracking-wider text-emerald-300 leading-tight">{t('ragAiBadge')}</p>
+            <p className="text-xs font-extrabold text-white leading-tight">{t('ragAiLangs')}</p>
+            <p className="text-[10px] font-black text-amber-400 mt-0.5 leading-tight">{t('ragAiAdvisorTitle')}</p>
           </div>
         </div>
       </div>
