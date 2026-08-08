@@ -11,27 +11,147 @@ import {
   Search,
   CheckCircle2,
   ArrowRight,
+  ChevronRight,
+  ChevronLeft,
   UserCheck,
   Globe2,
   Layers,
-  FileCheck,
-  Send
+  FileCheck
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+
+const PUBLIC_UNIS_LIST = [
+  {
+    name: 'Addis Ababa University (AAU)',
+    badge: 'First-Tier Public',
+    city: 'Addis Ababa',
+    icon: '🎓',
+    color: 'emerald',
+    desc: 'Ethiopia’s flagship research university offering top Medicine, Law, Engineering, Business, and Computer Science degrees with autonomous governance.',
+    bullets: ['MoGE ESSLCE Cutoff Admission', 'Full Campus Dormitory & Meal Services', 'Master & PhD Research Programs']
+  },
+  {
+    name: 'Adama Science & Tech (ASTU)',
+    badge: 'Science & Tech Hub',
+    city: 'Adama, Oromia',
+    icon: '⚡',
+    color: 'blue',
+    desc: 'Specialized STEM university dedicated to Applied Engineering, Software Engineering, Robotics, and Advanced Biotechnology.',
+    bullets: ['STEM Entrance Examination Criteria', 'High-Tech Labs & Innovation Hubs', 'Industry Partnered Placements']
+  },
+  {
+    name: 'Hawassa University (HU)',
+    badge: 'Health & Agriculture',
+    city: 'Hawassa, Sidama',
+    icon: '🌿',
+    color: 'amber',
+    desc: 'Premier Sidama regional university leading in Medicine, Health Sciences, Agriculture, and Natural Resource Management.',
+    bullets: ['State-of-the-Art Referral Hospital', 'Agricultural Research Center', 'Over 80 Degree Programs']
+  },
+  {
+    name: 'Bahir Dar University (BDU)',
+    badge: 'Maritime & Tech',
+    city: 'Bahir Dar, Amhara',
+    icon: '🌊',
+    color: 'sky',
+    desc: 'Renowned university featuring Ethiopia’s Maritime Academy, Civil Engineering, Textile Engineering, and Law faculties.',
+    bullets: ['Ethiopian Maritime Academy', 'Textile & Fashion Institute', 'Lake Tana Research Center']
+  },
+  {
+    name: 'Jimma University (JU)',
+    badge: 'Community Health',
+    city: 'Jimma, Oromia',
+    icon: '🏥',
+    color: 'indigo',
+    desc: 'Famous for Community-Based Education (CBE), top Medical School, Bio-Medical Engineering, and Agricultural Sciences.',
+    bullets: ['Community-Based Medical Model', 'Institute of Technology (JIT)', 'Nationwide Placement Leader']
+  },
+  {
+    name: 'Mekelle University (MU)',
+    badge: 'Technology & Law',
+    city: 'Mekelle, Tigray',
+    icon: '🏛️',
+    color: 'purple',
+    desc: 'Pioneer center for Dryland Agriculture, Veterinary Medicine, Law, Health Sciences, and Computer Engineering.',
+    bullets: ['Dryland Resource Management', 'Top Ranked Law Faculty', 'Ayder Comprehensive Hospital']
+  }
+];
+
+const PRIVATE_UNIS_LIST = [
+  {
+    name: "St. Mary's University",
+    badge: 'Accredited Private',
+    city: 'Addis Ababa',
+    icon: '🏢',
+    color: 'purple',
+    desc: 'A pioneer private higher education institution in Addis Ababa offering accredited undergraduate and master’s degree programs.',
+    bullets: ['Distance & Regular Degree Modes', 'Business Administration & Computer Science', 'Flexible Evening & Weekend Classes']
+  },
+  {
+    name: 'Unity University',
+    badge: 'First Private Uni',
+    city: 'Addis Ababa & Regions',
+    icon: '🏛️',
+    color: 'rose',
+    desc: 'First private university in Ethiopia providing high-quality Accounting, Management, Architecture, and Information Technology degrees.',
+    bullets: ['Modern Campuses across Regional Hubs', 'Recognized MoGE Certification', 'Practical Internship Connections']
+  },
+  {
+    name: 'Rift Valley University',
+    badge: '40+ Regional Hubs',
+    city: 'Oromia, SNNP & Addis',
+    icon: '📍',
+    color: 'teal',
+    desc: 'Widespread private campus networks across Oromia, Amhara, SNNP, and Addis Ababa for affordable higher education access.',
+    bullets: ['40+ Regional Branch Campuses', 'Health Science & Nursing Diplomas', 'Direct Transfer & Extension Programs']
+  },
+  {
+    name: 'Alpha University College',
+    badge: 'Distance Leader',
+    city: 'Addis Ababa & Amhara',
+    icon: '📜',
+    color: 'orange',
+    desc: 'Leader in distance higher education, flexible evening degree programs, leadership management, and accounting degrees.',
+    bullets: ['Nationwide Distance Centers', 'Flexible Extension Degrees', 'Business & Leadership Programs']
+  },
+  {
+    name: 'CPU College',
+    badge: 'Computer Science Hub',
+    city: 'Addis Ababa',
+    icon: '💻',
+    color: 'cyan',
+    desc: 'Specialized IT and Business College focusing on hands-on Software Engineering, Database Administration, and Marketing Management.',
+    bullets: ['Practical Software Development', 'Cisco & Tech Certifications', 'Accredited Degree Programs']
+  },
+  {
+    name: 'Microlink Information Tech',
+    badge: 'IT & Software Diploma',
+    city: 'Addis Ababa',
+    icon: '🌐',
+    color: 'blue',
+    desc: 'Focused technical college providing accredited Bachelor of Science in Information Technology and TVET Level 1-5 diplomas.',
+    bullets: ['Networking & Software Diplomas', 'Practical IT Lab Training', 'Flexible Admission Schedules']
+  }
+];
 
 export const ScrollAnimatedSections: React.FC = () => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'public' | 'private'>('public');
+  const [publicPage, setPublicPage] = useState(0);
+  const [privatePage, setPrivatePage] = useState(0);
+
+  const pageSize = 3;
+  const currentPublicList = PUBLIC_UNIS_LIST.slice(publicPage * pageSize, (publicPage + 1) * pageSize);
+  const currentPrivateList = PRIVATE_UNIS_LIST.slice(privatePage * pageSize, (privatePage + 1) * pageSize);
+
+  const totalPublicPages = Math.ceil(PUBLIC_UNIS_LIST.length / pageSize);
+  const totalPrivatePages = Math.ceil(PRIVATE_UNIS_LIST.length / pageSize);
 
   return (
     <div className="space-y-24 py-12">
       {/* SECTION 1: Public vs Private Universities Showcase */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-emerald-100 text-[#059669] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-            <School className="w-4 h-4" />
-            <span>Accredited Institutions</span>
-          </div>
           <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 tracking-tight">
             Ethiopian Public & Private Universities
           </h2>
@@ -69,121 +189,117 @@ export const ScrollAnimatedSections: React.FC = () => {
 
         {/* Dynamic Card Display */}
         {activeTab === 'public' ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 transform transition-all duration-500 animate-fadeIn">
-            {/* Card 1: AAU */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-[#059669] mb-6 group-hover:scale-110 transition-transform">
-                  <GraduationCap className="w-8 h-8" />
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 transform transition-all duration-500 animate-fadeIn">
+              {currentPublicList.map((uni, idx) => (
+                <div key={idx} className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
+                  <div>
+                    <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                      {uni.icon}
+                    </div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#059669] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                        {uni.badge}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-400">{uni.city}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 mt-2 mb-2">{uni.name}</h3>
+                    <p className="text-slate-600 text-xs leading-relaxed mb-6">
+                      {uni.desc}
+                    </p>
+                  </div>
+                  <ul className="space-y-2 text-xs text-slate-700 pt-4 border-t border-slate-100">
+                    {uni.bullets.map((b, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#059669] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">First-Tier Public</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-3 mb-2">Addis Ababa University (AAU)</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                  Ethiopia’s flagship research university offering top Medicine, Law, Engineering, Business, and Computer Science degrees with autonomous governance.
-                </p>
-              </div>
-              <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> MoGE ESSLCE Cutoff Admission</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Full Campus Dormitory & Meal Services</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Master & PhD Research Programs</li>
-              </ul>
+              ))}
             </div>
 
-            {/* Card 2: ASTU */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform">
-                  <Sparkles className="w-8 h-8" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">Science & Tech Hub</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-3 mb-2">Adama Science & Tech (ASTU)</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                  Specialized STEM university dedicated to Applied Engineering, Software Engineering, Robotics, and Advanced Biotechnology.
-                </p>
-              </div>
-              <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600" /> STEM Entrance Examination Criteria</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600" /> High-Tech Labs & Innovation Hubs</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-600" /> Industry Partnered Placements</li>
-              </ul>
-            </div>
+            {/* Public Unis Pagination Controls */}
+            <div className="mt-10 flex items-center justify-center gap-4">
+              <button
+                disabled={publicPage === 0}
+                onClick={() => setPublicPage(prev => Math.max(prev - 1, 0))}
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-xs bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-sm"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
+              </button>
 
-            {/* Card 3: Regional Hubs */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 mb-6 group-hover:scale-110 transition-transform">
-                  <Globe2 className="w-8 h-8" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">Regional Public Unis</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-3 mb-2">Jimma, Hawassa, BDU & MU</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                  Premier regional public universities offering health sciences, agriculture, civil engineering, natural sciences, and humanities.
-                </p>
-              </div>
-              <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-600" /> Nationwide MoGE Student Placements</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-600" /> Remedial Program Allocation Support</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-amber-600" /> Community Outreach & Field Labs</li>
-              </ul>
+              <span className="text-xs font-bold text-slate-500">
+                Page {publicPage + 1} of {totalPublicPages}
+              </span>
+
+              <button
+                disabled={publicPage >= totalPublicPages - 1}
+                onClick={() => setPublicPage(prev => Math.min(prev + 1, totalPublicPages - 1))}
+                className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl font-bold text-xs bg-[#059669] text-white hover:bg-[#047857] disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-md"
+              >
+                <span>Next Page</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 transform transition-all duration-500 animate-fadeIn">
-            {/* Card 1: St. Mary's */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
-                  <Building2 className="w-8 h-8" />
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 transform transition-all duration-500 animate-fadeIn">
+              {currentPrivateList.map((uni, idx) => (
+                <div key={idx} className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
+                  <div>
+                    <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                      {uni.icon}
+                    </div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
+                        {uni.badge}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-400">{uni.city}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 mt-2 mb-2">{uni.name}</h3>
+                    <p className="text-slate-600 text-xs leading-relaxed mb-6">
+                      {uni.desc}
+                    </p>
+                  </div>
+                  <ul className="space-y-2 text-xs text-slate-700 pt-4 border-t border-slate-100">
+                    {uni.bullets.map((b, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-purple-600 shrink-0" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">Accredited Private</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-3 mb-2">St. Mary's University</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                  A pioneer private higher education institution in Addis Ababa offering accredited undergraduate and master's degree programs.
-                </p>
-              </div>
-              <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-600" /> Distance & Regular Degree Modes</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-600" /> Business Administration & Computer Science</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-600" /> Flexible Evening & Weekend Classes</li>
-              </ul>
+              ))}
             </div>
 
-            {/* Card 2: Unity University */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-600 mb-6 group-hover:scale-110 transition-transform">
-                  <Award className="w-8 h-8" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-200">First Private Uni</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-3 mb-2">Unity University</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                  First private university in Ethiopia providing high-quality accounting, management, architecture, and information technology degrees.
-                </p>
-              </div>
-              <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-rose-600" /> Modern Campuses across Addis & Regional Hubs</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-rose-600" /> Recognized MoGE Certification</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-rose-600" /> Practical Internship Connections</li>
-              </ul>
-            </div>
+            {/* Private Unis Pagination Controls */}
+            <div className="mt-10 flex items-center justify-center gap-4">
+              <button
+                disabled={privatePage === 0}
+                onClick={() => setPrivatePage(prev => Math.max(prev - 1, 0))}
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-xs bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-sm"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
+              </button>
 
-            {/* Card 3: Rift Valley & Alpha */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 mb-6 group-hover:scale-110 transition-transform">
-                  <Layers className="w-8 h-8" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-200">Expanded Access</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-3 mb-2">Rift Valley & Alpha Colleges</h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                  Widespread private campus networks across Oromia, Amhara, SNNP, and Addis Ababa for affordable higher education access.
-                </p>
-              </div>
-              <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal-600" /> 40+ Regional Branch Campuses</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal-600" /> Health Science & Nursing Diplomas</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-teal-600" /> Direct Transfer & Extension Programs</li>
-              </ul>
+              <span className="text-xs font-bold text-slate-500">
+                Page {privatePage + 1} of {totalPrivatePages}
+              </span>
+
+              <button
+                disabled={privatePage >= totalPrivatePages - 1}
+                onClick={() => setPrivatePage(prev => Math.min(prev + 1, totalPrivatePages - 1))}
+                className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl font-bold text-xs bg-[#059669] text-white hover:bg-[#047857] disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shadow-md"
+              >
+                <span>Next Page</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         )}
@@ -193,10 +309,6 @@ export const ScrollAnimatedSections: React.FC = () => {
       <section className="bg-emerald-950 py-20 text-white relative overflow-hidden rounded-[3rem] mx-4 sm:mx-6 lg:mx-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
-              <GraduationCap className="w-4 h-4" />
-              <span>Tailored Guidance</span>
-            </div>
             <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
               Higher Education Pathways in Ethiopia
             </h2>
@@ -269,10 +381,6 @@ export const ScrollAnimatedSections: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 bg-emerald-100 text-[#059669] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
-              <Bot className="w-4 h-4" />
-              <span>Next-Gen RAG AI Advisor</span>
-            </div>
             <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 leading-tight mb-6">
               Ask Anything About Ethiopian Universities in Your Native Language
             </h2>
