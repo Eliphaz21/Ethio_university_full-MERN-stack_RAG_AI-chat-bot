@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Bot } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export const HeroVideoBackground: React.FC = () => {
@@ -63,19 +63,18 @@ export const HeroVideoBackground: React.FC = () => {
 
       </div>
 
-      {/* Solid Bold Watermark Cover Badge at Bottom Right */}
-      <div className="absolute bottom-4 right-4 z-20">
-        <div className="flex items-center gap-3 bg-slate-950/95 border-2 border-emerald-500/80 px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl">
-          <div className="bg-emerald-500/30 p-2.5 rounded-xl text-emerald-400 shrink-0">
-            <Bot className="w-6 h-6" />
-          </div>
+      {/* Refined AI Advisor Badge (Moved Upward, Compact Size, Ethiopian Bot Image Icon) */}
+      <div className="absolute bottom-10 lg:bottom-14 right-4 lg:right-6 z-20">
+        <div className="flex items-center gap-2.5 bg-slate-950/95 border-2 border-emerald-500/80 px-3.5 py-2.5 rounded-xl shadow-2xl backdrop-blur-xl">
+          <img
+            src="/assets/ai_bot_avatar.svg"
+            alt="Ethiopian AI Bot Avatar"
+            className="w-9 h-9 object-contain shrink-0 drop-shadow"
+          />
           <div className="text-left">
-            <div className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 fill-current" />
-              <p className="text-xs font-black uppercase tracking-wider text-emerald-300">RAG AI Advisor</p>
-            </div>
-            <p className="text-xs font-extrabold text-white">Amharic & English Support</p>
-            <p className="text-[11px] font-black text-amber-400 mt-0.5">24/7 Ethiopian AI Academic Advisor</p>
+            <p className="text-[11px] font-black uppercase tracking-wider text-emerald-300 leading-tight">RAG AI Advisor</p>
+            <p className="text-xs font-extrabold text-white leading-tight">Amharic & English Support</p>
+            <p className="text-[10px] font-black text-amber-400 mt-0.5 leading-tight">24/7 Ethiopian AI Academic Advisor</p>
           </div>
         </div>
       </div>
