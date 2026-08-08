@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, User as UserIcon, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { Shield, User as UserIcon, Lock, Eye, EyeOff, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 import { SEO } from '../components/SEO';
@@ -47,13 +47,26 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-[85vh] bg-[#FBF7F1] flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-[85vh] bg-[#FBF7F1] flex flex-col">
       <SEO
         title="Sign In"
         description="Sign in to EthioUni Portal to access the AI university assistant, save chat history, and explore personalized university guidance."
         keywords={['EthioUni login', 'Ethiopian university portal sign in']}
       />
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-slate-100 p-8 sm:p-10 transition-all">
+      
+      {/* Top-Left Back to Home Button directly aligned below navbar logo */}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#059669] hover:text-[#047857] bg-white hover:bg-emerald-50 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-emerald-300 transition-all cursor-pointer shadow-sm group"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-slate-100 p-8 sm:p-10 transition-all">
         
         {/* Header matching screenshot */}
         <div className="mb-8">
@@ -145,7 +158,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Login;
