@@ -13,6 +13,7 @@ import {
   Search,
   MapPin,
   GraduationCap,
+  Sparkles,
   X
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -180,6 +181,10 @@ const Navbar: React.FC<NavbarProps> = ({
                   <LayoutDashboard className="w-4 h-4" /> {t('navHome')}
                 </Link>
 
+                <Link to="/hub" className={`hidden sm:flex items-center gap-2 hover:text-[#059669] transition ${isActive('/hub') ? 'text-[#059669]' : ''}`}>
+                  <Sparkles className="w-4 h-4" /> {t('navHub')}
+                </Link>
+
                 {['admin', 'agent'].includes(user.role) && (
                   <Link to="/admin" className={`hidden sm:flex hover:text-[#059669] transition items-center gap-2 ${isActive('/admin') ? 'text-[#059669]' : ''}`}>
                     <Shield className="w-4 h-4" /> {t('navAdmin')}
@@ -261,6 +266,9 @@ const Navbar: React.FC<NavbarProps> = ({
             ) : (
               /* Unauthenticated Actions */
               <div className="flex items-center gap-3">
+                <Link to="/hub" className={`hidden sm:flex items-center gap-2 hover:text-[#059669] transition mr-2 ${isActive('/hub') ? 'text-[#059669]' : ''}`}>
+                  <Sparkles className="w-4 h-4" /> {t('navHub')}
+                </Link>
                 {isLoginPage ? (
                   <Link
                     to="/register"
