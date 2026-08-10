@@ -10,6 +10,7 @@ import { assertJwtSecretConfigured } from './utils/authTokens.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import universityRoutes from './routes/universityRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
 import seoRoutes from './routes/seoRoutes.js';
 
 assertJwtSecretConfigured();
@@ -41,6 +42,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/auth', authRateLimiter, authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', universityRoutes);
+app.use('/api', eventRoutes);
 app.use('/', seoRoutes);
 
 async function start() {

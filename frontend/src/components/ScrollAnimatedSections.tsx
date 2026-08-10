@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   School,
   Building2,
-  GraduationCap,
   BookOpen,
   Award,
   Search,
@@ -126,10 +125,10 @@ export const ScrollAnimatedSections: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 tracking-tight">
-            Ethiopian Public & Private Universities
+            {t('publicPrivateHeadline')}
           </h2>
           <p className="text-slate-600 mt-4 max-w-2xl mx-auto text-base sm:text-lg">
-            Whether you are aiming for government-assigned public universities or top accredited private colleges, explore comprehensive admission details.
+            {t('publicPrivateSubtitle')}
           </p>
 
           {/* Toggle Tab Switcher */}
@@ -143,7 +142,7 @@ export const ScrollAnimatedSections: React.FC = () => {
               }`}
             >
               <School className="w-4 h-4" />
-              <span>Public Universities</span>
+              <span>{t('publicUniversitiesTab')}</span>
             </button>
 
             <button
@@ -155,7 +154,7 @@ export const ScrollAnimatedSections: React.FC = () => {
               }`}
             >
               <Building2 className="w-4 h-4" />
-              <span>Private Colleges & Universities</span>
+              <span>{t('privateUniversitiesTab')}</span>
             </button>
           </div>
         </div>
@@ -277,10 +276,10 @@ export const ScrollAnimatedSections: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white tracking-tight">
-              Higher Education Pathways in Ethiopia
+              {t('pathwaysHeadline')}
             </h2>
             <p className="text-slate-300 mt-4 max-w-2xl mx-auto text-base sm:text-lg font-light">
-              Whether you are preparing for Grade 12 ESSLCE, entering university, advancing to a Master's degree, or pursuing technical TVET skills.
+              {t('pathwaysSubtitle')}
             </p>
           </div>
 
@@ -290,12 +289,12 @@ export const ScrollAnimatedSections: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-5 border border-emerald-400/30">
                 <FileCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Grade 12 ESSLCE & Remedial</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('pathway1Title')}</h3>
               <p className="text-slate-300 text-xs leading-relaxed mb-4">
-                Access official MoGE cut-off criteria, placement calculator, and remedial program eligibility rules across natural & social streams.
+                {t('pathway1Desc')}
               </p>
               <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
-                Undergraduate Admissions <ArrowRight className="w-3.5 h-3.5" />
+                {t('pathway1Link')} <ArrowRight className="w-3.5 h-3.5" />
               </span>
             </div>
 
@@ -304,12 +303,12 @@ export const ScrollAnimatedSections: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-5 border border-blue-400/30">
                 <BookOpen className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Bachelor Programs (B.Sc / B.A)</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('pathway2Title')}</h3>
               <p className="text-slate-300 text-xs leading-relaxed mb-4">
-                Explore engineering, software development, medicine, law, economics, management, and agriculture curriculum across public & private unis.
+                {t('pathway2Desc')}
               </p>
               <span className="text-[11px] text-blue-400 font-bold flex items-center gap-1">
-                500+ Fields of Study <ArrowRight className="w-3.5 h-3.5" />
+                {t('pathway2Link')} <ArrowRight className="w-3.5 h-3.5" />
               </span>
             </div>
 
@@ -318,12 +317,12 @@ export const ScrollAnimatedSections: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 mb-5 border border-amber-400/30">
                 <Award className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Master's & PhD Degrees</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('pathway3Title')}</h3>
               <p className="text-slate-300 text-xs leading-relaxed mb-4">
-                Find post-graduate programs (M.Sc, MBA, MPH, PhD) with entrance exam guidelines (NGAT), thesis advisory, and evening/extension schedules.
+                {t('pathway3Desc')}
               </p>
               <span className="text-[11px] text-amber-400 font-bold flex items-center gap-1">
-                Postgraduate Portal <ArrowRight className="w-3.5 h-3.5" />
+                {t('pathway3Link')} <ArrowRight className="w-3.5 h-3.5" />
               </span>
             </div>
 
@@ -332,12 +331,12 @@ export const ScrollAnimatedSections: React.FC = () => {
               <div className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-5 border border-purple-400/30">
                 <Layers className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">TVET & Skill Colleges</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('pathway4Title')}</h3>
               <p className="text-slate-300 text-xs leading-relaxed mb-4">
-                Practical level 1-5 diplomas in Information Technology, Construction, Electrical Works, Automotive, and Business Services.
+                {t('pathway4Desc')}
               </p>
               <span className="text-[11px] text-purple-400 font-bold flex items-center gap-1">
-                Technical Diplomas <ArrowRight className="w-3.5 h-3.5" />
+                {t('pathway4Link')} <ArrowRight className="w-3.5 h-3.5" />
               </span>
             </div>
           </div>
@@ -349,10 +348,10 @@ export const ScrollAnimatedSections: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 leading-tight mb-6">
-              Ask Anything About Ethiopian Universities in Your Native Language
+              {t('aiSectionTitle')}
             </h2>
             <p className="text-slate-600 text-base leading-relaxed mb-8">
-              Our AI Academic Advisor uses Retrieval-Augmented Generation (RAG) powered by Google Gemini and official Ethiopian Ministry of Education datasets to give instant, precise answers.
+              {t('aiSectionDesc')}
             </p>
 
             <div className="space-y-4">
@@ -361,8 +360,8 @@ export const ScrollAnimatedSections: React.FC = () => {
                   አማ
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Amharic & Multilingual RAG Search</h4>
-                  <p className="text-xs text-slate-600 mt-0.5">Chat seamlessly in Amharic (አማርኛ), Afaan Oromoo, Tigrinya, or English.</p>
+                  <h4 className="font-bold text-slate-900 text-sm">{t('aiFeature1Title')}</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">{t('aiFeature1Desc')}</p>
                 </div>
               </div>
 
@@ -371,8 +370,8 @@ export const ScrollAnimatedSections: React.FC = () => {
                   <Search className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Verified Ethiopian Document Context</h4>
-                  <p className="text-xs text-slate-600 mt-0.5">Vector embeddings index official curriculum docs, cut-offs, and campus facts.</p>
+                  <h4 className="font-bold text-slate-900 text-sm">{t('aiFeature2Title')}</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">{t('aiFeature2Desc')}</p>
                 </div>
               </div>
 
@@ -381,8 +380,8 @@ export const ScrollAnimatedSections: React.FC = () => {
                   <UserCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Personalized Admission Scoring</h4>
-                  <p className="text-xs text-slate-600 mt-0.5">Calculates your eligibility for AAU, ASTU, Hawassa, and private institutions.</p>
+                  <h4 className="font-bold text-slate-900 text-sm">{t('aiFeature3Title')}</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">{t('aiFeature3Desc')}</p>
                 </div>
               </div>
             </div>
@@ -402,10 +401,10 @@ export const ScrollAnimatedSections: React.FC = () => {
                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1C2541] rounded-full"></span>
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-tight">EthioUni AI Academic Advisor</h3>
+                    <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight leading-tight">{t('aiTitle')}</h3>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">ONLINE • ENGLISH & AMHARIC</span>
+                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">{t('ragAiLangs')}</span>
                     </div>
                   </div>
                 </div>
@@ -422,7 +421,7 @@ export const ScrollAnimatedSections: React.FC = () => {
                 <div className="bg-[#1C2541]/80 p-3.5 rounded-2xl border border-slate-700/60 text-slate-300 text-xs flex items-center gap-2.5">
                   <img src="/assets/ai_bot_avatar.svg" alt="Bot Avatar" className="w-7 h-7 object-contain shrink-0" />
                   <p className="leading-snug">
-                    <strong className="text-emerald-400">EthioUni AI Academic Advisor</strong> — Powered by RAG Vector Search on Ethiopian University Data & Ministry of Education Criteria.
+                    <strong className="text-emerald-400">{t('aiTitle')}</strong> — {t('aiSubtitle')}
                   </p>
                 </div>
 

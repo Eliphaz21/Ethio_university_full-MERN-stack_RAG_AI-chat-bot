@@ -21,6 +21,7 @@ export const translations = {
     // Navigation
     navHome: 'Home',
     navUniversities: 'Universities',
+    navHub: 'Hub',
     navAIAssistant: 'AI Assistant',
     navAdmin: 'Admin',
     navLogin: 'Log In',
@@ -28,10 +29,11 @@ export const translations = {
     navProfile: 'My Profile',
     navLogout: 'Sign Out',
     searchPlaceholderNav: 'Search Ethiopian universities, programs, locations...',
+    backToHome: 'Back to Home',
 
     // Hero & Home
     heroTitle: 'Discover Ethiopia’s Top Higher Education Institutions',
-    heroSubtitle: 'Explore accredited Ethiopian universities, degree programs, admission criteria, and chat with our RAG AI Assistant in your local language.',
+    heroSubtitle: 'Explore accredited Ethiopian universities, degree & master programs, Grade 12 ESSLCE criteria, and get instant guidance with our AI Academic Advisor.',
     heroSearchPlaceholder: 'Search by university name, region, or field of study...',
     heroSearchBtn: 'Search Portal',
     heroStatUniversities: 'Public & Private Universities',
@@ -48,6 +50,47 @@ export const translations = {
     feature2Desc: 'Ask questions about cut-off scores, Grade 12 ESSLCE admissions, remedial programs, and campus facilities.',
     feature3Title: 'Multi-Lingual Ethiopian Experience',
     feature3Desc: 'Navigate and chat fluently in Amharic (አማርኛ), Afaan Oromoo, Tigrinya (ትግርኛ), Somali (Af-Somali), or English.',
+
+    // Hero AI Badge
+    ragAiBadge: 'RAG AI Advisor',
+    ragAiLangs: 'Amharic & English Support',
+    ragAiAdvisorTitle: '24/7 Ethiopian AI Academic Advisor',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'Ethiopian Public & Private Universities',
+    publicPrivateSubtitle: 'Whether you are aiming for government-assigned public universities or top accredited private colleges, explore comprehensive admission details.',
+    publicUniversitiesTab: 'Public Universities',
+    privateUniversitiesTab: 'Private Colleges & Universities',
+
+    pathwaysHeadline: 'Higher Education Pathways in Ethiopia',
+    pathwaysSubtitle: 'Whether you are preparing for Grade 12 ESSLCE, entering university, advancing to a Master\'s degree, or pursuing technical TVET skills.',
+    pathway1Title: 'Grade 12 ESSLCE & Remedial',
+    pathway1Desc: 'Access official MoGE cut-off criteria, placement calculator, and remedial program eligibility rules across natural & social streams.',
+    pathway1Link: 'Undergraduate Admissions',
+    pathway2Title: 'Bachelor Programs (B.Sc / B.A)',
+    pathway2Desc: 'Explore engineering, software development, medicine, law, economics, management, and agriculture curriculum across public & private unis.',
+    pathway2Link: '500+ Fields of Study',
+    pathway3Title: 'Master\'s & PhD Degrees',
+    pathway3Desc: 'Find post-graduate programs (M.Sc, MBA, MPH, PhD) with entrance exam guidelines (NGAT), thesis advisory, and evening/extension schedules.',
+    pathway3Link: 'Postgraduate Portal',
+    pathway4Title: 'TVET & Skill Colleges',
+    pathway4Desc: 'Practical level 1-5 diplomas in Information Technology, Construction, Electrical Works, Automotive, and Business Services.',
+    pathway4Link: 'Technical Diplomas',
+
+    aiSectionTitle: 'Ask Anything About Ethiopian Universities in Your Native Language',
+    aiSectionDesc: 'Our AI Academic Advisor uses Retrieval-Augmented Generation (RAG) powered by Google Gemini and official Ethiopian Ministry of Education datasets to give instant, precise answers.',
+    aiFeature1Title: 'Amharic & Multilingual RAG Search',
+    aiFeature1Desc: 'Chat seamlessly in Amharic (አማርኛ), Afaan Oromoo, Tigrinya, or English.',
+    aiFeature2Title: 'Verified Ethiopian Document Context',
+    aiFeature2Desc: 'Vector embeddings index official curriculum docs, cut-offs, and campus facts.',
+    aiFeature3Title: 'Personalized Admission Scoring',
+    aiFeature3Desc: 'Calculates your eligibility for AAU, ASTU, Hawassa, and private institutions.',
+
+    // Footer
+    footerTagline: 'Official higher education portal connecting Ethiopian students with accredited public & private universities, programs, and AI academic guidance.',
+    quickLinks: 'Quick Links',
+    directContact: 'Direct Contact',
+    allRightsReserved: 'All rights reserved.',
 
     // Filters & Universities Page
     allRegions: 'All Regions',
@@ -97,6 +140,16 @@ export const translations = {
     prompt3: 'How does the Grade 12 ESSLCE remedial program work?',
     prompt4: 'Tell me about Adama Science and Technology University (ASTU).',
 
+    // NLP Voice Features
+    voiceInput: 'Voice Input',
+    listening: 'Listening... Speak now',
+    speakResponse: 'Listen to response',
+    stopSpeaking: 'Stop voice playback',
+    autoSpeakOn: 'Auto-Read Voice ON',
+    autoSpeakOff: 'Auto-Read Voice OFF',
+    speechNotSupported: 'Speech recognition is not supported in this browser.',
+    micPermissionDenied: 'Microphone permission was denied. Please allow mic access.',
+
     // Authentication
     loginTitle: 'Welcome Back',
     loginSubtitle: 'Sign in to access your saved universities and AI chat history.',
@@ -124,12 +177,50 @@ export const translations = {
     delete: 'Delete',
     edit: 'Edit',
     actions: 'Actions',
-    close: 'Close'
+    close: 'Close',
+
+    // Hub & Events
+    hubTitle: 'Ethiopian Higher Education Community Hub',
+    hubSubtitle: 'Share events, academic workshops, degree courses, campus announcements, and connect with university communities across Ethiopia.',
+    hubCreateEventBtn: 'Post New Event',
+    hubFilterAll: 'All Categories',
+    hubFilterCourse: 'Courses',
+    hubFilterWorkshop: 'Workshops',
+    hubFilterUniEvent: 'Campus Events',
+    hubFilterSeminar: 'Seminars',
+    hubFilterConference: 'Conferences',
+    hubFilterOther: 'Other',
+    hubSearchPlaceholder: 'Search events by title, description, or campus...',
+    hubEmptyEventsTitle: 'No events found',
+    hubEmptyEventsSub: 'Be the first to post an event or try adjusting your search filters!',
+    hubPostModalTitle: 'Publish Community Event',
+    hubFormTitle: 'Event Title',
+    hubFormTitlePlaceholder: 'e.g. AAU Tech & AI Workshop 2026',
+    hubFormType: 'Event Category',
+    hubFormUniversity: 'Associated University',
+    hubFormUniversitySelect: 'Select University (Optional)',
+    hubFormDate: 'Event Date & Time',
+    hubFormLocation: 'Location / Venue',
+    hubFormLocationPlaceholder: 'e.g. Main Campus Auditorium / Online',
+    hubFormLink: 'External Link / Registration URL',
+    hubFormLinkPlaceholder: 'https://example.edu.et/register',
+    hubFormDescription: 'Detailed Event Description',
+    hubFormDescriptionPlaceholder: 'Describe the event schedule, target audience, and key information...',
+    hubFormCoverImage: 'Event Banner / Image',
+    hubFormImageDrag: 'Drop image here or click to select cover photo',
+    hubFormSubmit: 'Publish Event',
+    hubFormPublishing: 'Publishing...',
+    hubCommentsTitle: 'Community Discussion & Feedback',
+    hubAddCommentPlaceholder: 'Write a comment or feedback...',
+    hubPostCommentBtn: 'Post Comment',
+    hubNoComments: 'No comments yet. Be the first to share your thoughts!',
+    hubLoginToPost: 'Log in to post events and leave comments.'
   },
   am: {
     // Navigation
     navHome: 'ዋና ገጽ',
     navUniversities: 'ዩኒቨርሲቲዎች',
+    navHub: 'ማዕከል',
     navAIAssistant: 'ኤአይ ረዳት',
     navAdmin: 'አስተዳዳሪ',
     navLogin: 'ግቡ',
@@ -137,13 +228,14 @@ export const translations = {
     navProfile: 'ፕሮፋይሌ',
     navLogout: 'ውጣ',
     searchPlaceholderNav: 'የኢትዮጵያ ዩኒቨርሲቲዎችን፣ ትምህርቶችን፣ ቦታዎችን ይፈልጉ...',
+    backToHome: 'ወደ ዋናው ገጽ ተመለስ',
 
     // Hero & Home
     heroTitle: 'የኢትዮጵያ ከፍተኛ ትምህርት ተቋማትን ያግኙ',
-    heroSubtitle: 'በኢትዮጵያ የሚገኙ ዕውቅና ያላቸውን ዩኒቨርሲቲዎች፣ የትምህርት ዘርፎች፣ የቅበላ መስፈርቶች እና የRAG ኤአይ ረዳታችንን በአማርኛ ይገልግሉ::',
+    heroSubtitle: 'በኢትዮጵያ የሚገኙ ዕውቅና ያላቸውን ዩኒቨርሲቲዎች፣ የትምህርት ዘርፎች፣ የ12ኛ ክፍል ESSLCE መስፈርቶች እና የኤአይ ረዳታችንን ይገልግሉ::',
     heroSearchPlaceholder: 'በዩኒቨርሲቲ ስም፣ በክልል ወይም በትምህርት መስክ ይፈልጉ...',
     heroSearchBtn: 'ፖርታሉን ፈልግ',
-    heroStatUniversities: 'የመንግስት እና የPopup ዩኒቨርሲቲዎች',
+    heroStatUniversities: 'የመንግስት እና የግል ዩኒቨርሲቲዎች',
     heroStatPrograms: 'የዲግሪ መርሃ ግብሮች እና የትምህርት መስኮች',
     heroStatRegions: 'በመላ ኢትዮጵያ የተሸፈኑ ክልሎች',
     heroStatAI: '24/7 የኢትዮጵያ RAG ኤአይ ረዳት',
@@ -157,6 +249,47 @@ export const translations = {
     feature2Desc: 'ስለ 12ኛ ክፍል ESSLCE የቅበላ ነጥብ፣ የሪሚዲያል (ማካሻ) ፕሮግራም እና የካምፓስ አቀማመጥ ጥያቄዎችን ይጠይቁ።',
     feature3Title: 'በብዙ የኢትዮጵያ ቋንቋዎች የቀረበ',
     feature3Desc: 'በአማርኛ፣ በአፋን ኦሮሞ፣ በትግርኛ፣ በሶማሊኛ ወይም በእንግሊዝኛ ቋንቋዎች በነጻነት ይጠቀሙ።',
+
+    // Hero AI Badge
+    ragAiBadge: 'RAG ኤአይ አማካሪ',
+    ragAiLangs: 'በአማርኛ እና በእንግሊዝኛ ድጋፍ',
+    ragAiAdvisorTitle: '24/7 የኢትዮጵያ ኤአይ የአካዳሚክ አማካሪ',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'የኢትዮጵያ የመንግስት እና የግል ዩኒቨርሲቲዎች',
+    publicPrivateSubtitle: 'በመንግስት የሚመደቡ ዩኒቨርሲቲዎችን ወይም በግል ዕውቅና ያላቸውን ኮሌጆች ለመቀላቀል ሲፈልጉ፣ አጠቃላይ የቅበላ መረጃዎችን እዚህ ያግኙ።',
+    publicUniversitiesTab: 'የመንግስት ዩኒቨርሲቲዎች',
+    privateUniversitiesTab: 'የግል ዩኒቨርሲቲዎች እና ኮሌጆች',
+
+    pathwaysHeadline: 'የከፍተኛ ትምህርት የዕድገት መንገዶች በኢትዮጵያ',
+    pathwaysSubtitle: 'ለ12ኛ ክፍል ESSLCE እየተዘጋጁ ከሆነ፣ ወደ ዩኒቨርሲቲ እየገቡ፣ ሁለተኛ ዲግሪ (Master\'s) ወይም የቴክኒክና ሙያ (TVET) ስልጠና።',
+    pathway1Title: 'የ12ኛ ክፍል ESSLCE እና ማካሻ (Remedial)',
+    pathway1Desc: 'የትምህርት ሚኒስቴር ይፋዊ መቁረጫ ነጥብ፣ የምደባ ስሌት እና የማካሻ ፕሮግራም መስፈርቶችን ያግኙ።',
+    pathway1Link: 'የመጀመሪያ ዲግሪ ቅበላ',
+    pathway2Title: 'የመጀመሪያ ዲግሪ ፕሮግራሞች (B.Sc / B.A)',
+    pathway2Desc: 'በኢንጂነሪንግ፣ በሶፍትዌር፣ በሕክምና፣ በሕግ፣ በኢኮኖሚክስ እና በግብርና ትምህርቶች ዙሪያ ይመርምሩ።',
+    pathway2Link: '500+ የትምህርት ዘርፎች',
+    pathway3Title: 'ሁለተኛ እና ሦስተኛ ዲግሪ (Master\'s & PhD)',
+    pathway3Desc: 'የሁለተኛ ዲግሪ (M.Sc, MBA, MPH) እና የNGAT ፈተና መመሪያዎችን፣ የምሽት እና የኤክስቴንሽን መርሃ ግብሮችን ያግኙ።',
+    pathway3Link: 'የድህረ ምረቃ ፖርታል',
+    pathway4Title: 'የቴክኒክና ሙያ (TVET) ኮሌጆች',
+    pathway4Desc: 'ከደረጃ 1 እስከ 5 ተግባራዊ የቴክኖሎጂ፣ የኮንስትራክሽን፣ የኤሌክትሪክ እና የንግድ ስልጠና ዲፕሎማዎች።',
+    pathway4Link: 'የቴክኒክ ዲፕሎማዎች',
+
+    aiSectionTitle: 'ስለ ኢትዮጵያ ዩኒቨርሲቲዎች በማንኛውም የአገራችን ቋንቋ ይጠይቁ',
+    aiSectionDesc: 'የእኛ የኤአይ አካዳሚክ አማካሪ በትምህርት ሚኒስቴር ሰነዶች እና በGoogle Gemini RAG ቴክኖሎጂ ፈጣን እና ትክክለኛ ምላሽ ይሰጣል።',
+    aiFeature1Title: 'አማርኛ እና የብዙ ቋንቋዎች የRAG ፍለጋ',
+    aiFeature1Desc: 'በአማርኛ፣ በአፋን ኦሮሞ፣ በትግርኛ ወይም በእንግሊዝኛ በነፃነት ይወያዩ።',
+    aiFeature2Title: 'የተረጋገጡ የኢትዮጵያ ሰነዶች መረጃ',
+    aiFeature2Desc: 'የተቀመጡ የቬክተር መረጃዎች ይፋዊ የትምህርት ሰነዶችን እና የመቁረጫ ነጥቦችን ያካትታሉ።',
+    aiFeature3Title: 'ግላዊ የቅበላ ውጤት ስሌት',
+    aiFeature3Desc: 'ለአዲስ አበባ፣ ለአዳማ፣ ለሐዋሳ እና ለግል ተቋማት የቅበላ ብቁነትዎን ያሰላል።',
+
+    // Footer
+    footerTagline: 'የኢትዮጵያ ተማሪዎችን ከዕውቅና ከተሰጣቸው የመንግስት እና የግል ዩኒቨርሲቲዎች፣ የትምህርት ፕሮግራሞች እና የኤአይ አማካሪ ጋር የሚያገናኝ ይፋዊ የከፍተኛ ትምህርት ፖርታል::',
+    quickLinks: 'ፈጣን አገናኞች',
+    directContact: 'ቀጥታ ግንኙነት',
+    allRightsReserved: 'መብቱ በህግ የተጠበቀ ነው።',
 
     // Filters & Universities Page
     allRegions: 'ሁሉም ክልሎች',
@@ -206,6 +339,16 @@ export const translations = {
     prompt3: 'የ12ኛ ክፍል ESSLCE የማካሻ (Remedial) ፕሮግራም እንዴት ይሰራል?',
     prompt4: 'ስለ አዳማ ሳይንስ እና ቴክኖሎጂ ዩኒቨርሲቲ (ASTU) መረጃ ስጠኝ።',
 
+    // NLP Voice Features
+    voiceInput: 'የድምፅ ፍለጋ',
+    listening: 'በማዳመጥ ላይ... አሁን ይናገሩ',
+    speakResponse: 'መልሱን ያዳምጡ',
+    stopSpeaking: 'ድምፁን አቁም',
+    autoSpeakOn: 'የድምፅ ንባብ ክፍት',
+    autoSpeakOff: 'የድምፅ ንባብ ዝግ',
+    speechNotSupported: 'የድምፅ ማዳመጫ በዚሁ ብራውዘር አይደገፍም።',
+    micPermissionDenied: 'የማይክሮፎን ፈቃድ ተከልክሏል። እባክዎን ማይክሮፎን ይፍቀዱ።',
+
     // Authentication
     loginTitle: 'እንኳን ደህና መጡ',
     loginSubtitle: 'የተቀመጡ ዩኒቨርሲቲዎችን እና የኤአይ ውይይቶችን ለማግኘት ይግቡ።',
@@ -233,12 +376,50 @@ export const translations = {
     delete: 'አጥፋ',
     edit: 'አስተካክል',
     actions: 'እርምጃዎች',
-    close: 'ዝጋ'
+    close: 'ዝጋ',
+
+    // Hub & Events
+    hubTitle: 'የኢትዮጵያ ከፍተኛ ትምህርት ማህበረሰብ ማዕከል',
+    hubSubtitle: 'ኩነቶችን፣ አካዳሚክ ዎርክሾፖችን፣ የትምህርት ኮርሶችን እና የካምፓስ ማስታወቂያዎችን ያጋሩ።',
+    hubCreateEventBtn: 'አዲስ ኩነት ለጥፍ',
+    hubFilterAll: 'ሁሉም ምድቦች',
+    hubFilterCourse: 'ኮርሶች',
+    hubFilterWorkshop: 'ዎርክሾፖች',
+    hubFilterUniEvent: 'የካምፓስ ኩነቶች',
+    hubFilterSeminar: 'ሴሚናሮች',
+    hubFilterConference: 'ኮንፈረንሶች',
+    hubFilterOther: 'ሌሎች',
+    hubSearchPlaceholder: 'ኩነቶችን በርዕስ፣ በማብራሪያ ወይም በካምፓስ ይፈልጉ...',
+    hubEmptyEventsTitle: 'ምንም ኩነት አልተገኘም',
+    hubEmptyEventsSub: 'የመጀመሪያው ኩነት ለጣፊ ይሁኑ ወይም ፍለጋዎን ያስተካክሉ!',
+    hubPostModalTitle: 'የማህበረሰብ ኩነት አትም',
+    hubFormTitle: 'የኩነቱ ርዕስ',
+    hubFormTitlePlaceholder: 'ምሳሌ፡ አአዩ ቴክኖሎጂ እና ኤአይ ዎርክሾፕ 2026',
+    hubFormType: 'የኩነት ምድብ',
+    hubFormUniversity: 'ተዛማጅ ዩኒቨርሲቲ',
+    hubFormUniversitySelect: 'ዩኒቨርሲቲ ይምረጡ (አማራጭ)',
+    hubFormDate: 'የኩነቱ ቀን እና ሰዓት',
+    hubFormLocation: 'ቦታ / አዳራሽ',
+    hubFormLocationPlaceholder: 'ምሳሌ፡ ዋናው ካምፓስ አዳራሽ / በኦንላይን',
+    hubFormLink: 'የውጭ ሊንክ / የምዝገባ URL',
+    hubFormLinkPlaceholder: 'https://example.edu.et/register',
+    hubFormDescription: 'ዝርዝር ማብራሪያ',
+    hubFormDescriptionPlaceholder: 'የኩነቱን መርሃ ግብር እና አስፈላጊ መረጃዎችን ያብራሩ...',
+    hubFormCoverImage: 'የኩነቱ ምስል / ባነር',
+    hubFormImageDrag: 'ምስል እዚህ ይጣሉ ወይም ለመምረጥ ይጫኑ',
+    hubFormSubmit: 'ኩነት አትም',
+    hubFormPublishing: 'እየታተመ ነው...',
+    hubCommentsTitle: 'የማህበረሰብ ውይይት እና አስተያየት',
+    hubAddCommentPlaceholder: 'አስተያየት ይጻፉ...',
+    hubPostCommentBtn: 'አስተያየት ለጥፍ',
+    hubNoComments: 'ምንም አስተያየት የለም። የመጀመሪያው አስተያየት ሰጪ ይሁኑ!',
+    hubLoginToPost: 'ኩነቶችን ለመለጠፍ እና አስተያየት ለመስጠት ይግቡ።'
   },
   om: {
     // Navigation
     navHome: 'Fuula Duraa',
     navUniversities: 'Yuunivarsiitiiwwan',
+    navHub: 'Wiirtuu',
     navAIAssistant: 'Gargaaraa AI',
     navAdmin: 'Bulchaa',
     navLogin: 'Seeni',
@@ -246,10 +427,11 @@ export const translations = {
     navProfile: 'Piroofaayilii Koo',
     navLogout: 'Ba’i',
     searchPlaceholderNav: 'Yuunivarsiitiiwwan Itoophiyaa, sagantaawwan, bakka barbaadi...',
+    backToHome: 'Deebi\'i Fuula Duraatti',
 
     // Hero & Home
     heroTitle: 'Dhaabbilee Barnoota Olaanoo Itoophiyaa Beakamoo Argadhu',
-    heroSubtitle: 'Yuunivarsiitiiwwan Itoophiyaa beekamtii qaban, sagantaawwan digirii, ulaagaalee seensa fi gargaaraa AI keenya afaan keetiin dhihaate sakatta’i.',
+    heroSubtitle: 'Yuunivarsiitiiwwan Itoophiyaa beekamtii qaban, sagantaawwan digirii, ulaagaalee ESSLCE kutaa 12ffaa fi gargaaraa AI keenyaan qajeelfama argadhu.',
     heroSearchPlaceholder: 'Maqaa yuunivarsiitiin, naannoodhaan, ykn koolleejjiin barbaadi...',
     heroSearchBtn: 'Poortaalii Barbaadi',
     heroStatUniversities: 'Yuunivarsiitiiwwan Mootummaa fi Dhuunfaa',
@@ -266,6 +448,47 @@ export const translations = {
     feature2Desc: 'Qabxii seensa qormaata kutaa 12ffaa ESSLCE, sagantaa riimidiyaalii fi tajaajila kaampasii irratti gaaffii gaafadhu.',
     feature3Title: 'Tajaajila Afaanota Itoophiyaa Baay’ee',
     feature3Desc: 'Afaan Oromoo, Amharic (አማርኛ), Tigrinya (ትግርኛ), Somali (Af-Somali), ykn Afaan Ingiliziitiin fayyadami.',
+
+    // Hero AI Badge
+    ragAiBadge: 'Gorsa RAG AI',
+    ragAiLangs: 'Deeggirsa Afaan Oromoo, Amharic fi Ingiliffaa',
+    ragAiAdvisorTitle: '24/7 Gorsa Barnoota AI Itoophiyaa',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'Yuunivarsiitiiwwan Mootummaa fi Dhuunfaa Itoophiyaa',
+    publicPrivateSubtitle: 'Yuunivarsiitiiwwan mootummaan ramadaman ykn koolleejjiiwwan dhuunfaa beekamtii qaban sakatta\'uuf odeeffannoo seensaa guutuu argadhu.',
+    publicUniversitiesTab: 'Yuunivarsiitiiwwan Mootummaa',
+    privateUniversitiesTab: 'Koolleejjiiwwan fi Yuunivarsiitiiwwan Dhuunfaa',
+
+    pathwaysHeadline: 'Tarkaanfiilee Barnoota Olaanoo Itoophiyaa Keessatti',
+    pathwaysSubtitle: 'Qormaata kutaa 12ffaa ESSLCE’f qophaawaa jirta, yuunivarsiitii seenaa jirta, digirii lammaffaa ykn TVET hordofaa jirta.',
+    pathway1Title: 'Kutaa 12ffaa ESSLCE fi Remedial',
+    pathway1Desc: 'Ulaagaaleen seensaa MoGE, kalkuleetarii ramaddii fi seera riimidiyaalii sakatta\'i.',
+    pathway1Link: 'Seensa Digirii Jalqabaa',
+    pathway2Title: 'Sagantaawwan Digirii (B.Sc / B.A)',
+    pathway2Desc: 'Injiinariingii, sooftiweerii, qoricha, seera, ikonoomiiksii fi qonna sakatta\'i.',
+    pathway2Link: 'Dirreewwan Barnootaa 500+',
+    pathway3Title: 'Digirii Lammaffaa fi Sadaffaa (Master\'s & PhD)',
+    pathway3Desc: 'Sagantaawwan digirii lammaffaa (M.Sc, MBA, MPH), qormaata NGAT fi sagantaa galgalaa argadhu.',
+    pathway3Link: 'Poortaalii Digirii Lammaffaa',
+    pathway4Title: 'Koolleejjiiwwan TVET fi Ogummaa',
+    pathway4Desc: 'Sadarkaa 1-5 dippiloomaa hojii teeknoolojii, ijaarsa, elektirikaalaa fi daldalaa.',
+    pathway4Link: 'Dippiloomaa Teeknikaa',
+
+    aiSectionTitle: 'Waee Yuunivarsiitiiwwan Itoophiyaa Afaan Keetiin Gaafadhu',
+    aiSectionDesc: 'Gorsaan AI keenya RAG fi data Ministeera Barnootaatiin deeggaramuun deebii ariifachiisaa fi sirrii siif kennama.',
+    aiFeature1Title: 'Barbaacha RAG Afaan Oromoo fi Afaanota Baay’ee',
+    aiFeature1Desc: 'Afaan Oromoo, Amharic (አማርኛ), Tigrinya (ትግርኛ), ykn Afaan Ingiliziitiin mari\'adhu.',
+    aiFeature2Title: 'Sanadoota Itoophiyaa Mirkanaa’an',
+    aiFeature2Desc: 'Sanadoonni barnootaa mootummaa fi qabxiin seensaa galmee keessa jiru.',
+    aiFeature3Title: 'Safartuu Qabxii Seensaa Dhuunfaa',
+    aiFeature3Desc: 'Ulaagaa seensaa AAU, ASTU, Hawaasaa fi dhaabbilee dhuunfaa siif calculates godha.',
+
+    // Footer
+    footerTagline: 'Poortaalii barnoota olaanoo rasmmii barattoota Itoophiyaa yuunivarsiitiiwwan mootummaa fi dhuunfaa beekamtii qaban waliin qunnamsiisu.',
+    quickLinks: 'Geessituuwwan Ariifachiisoo',
+    directContact: 'Qunnamtii Kallattii',
+    allRightsReserved: 'Mirgi mirkanaa’aadha.',
 
     // Filters & Universities Page
     allRegions: 'Naannoolee Hundumaa',
@@ -315,6 +538,16 @@ export const translations = {
     prompt3: 'Sagantaan maakaashaa (Remedial) kutaa 12ffaa ESSLCE akkamitti hojjeta?',
     prompt4: 'Odeeffannoo Yuunivarsiitii Sayinsiifi Teknoologyii Adaamaa (ASTU) naa kenni.',
 
+    // NLP Voice Features
+    voiceInput: 'Sagaleen Barbaadi',
+    listening: 'Dhaggeeffataa jira... Amma dubbadhu',
+    speakResponse: 'Deebii dhaggeeffadhu',
+    stopSpeaking: 'Sagalee dhaabi',
+    autoSpeakOn: 'Dubbisa Sagalee Banamaa',
+    autoSpeakOff: 'Dubbisa Sagalee Cufamaa',
+    speechNotSupported: 'Tajaajilli sagalee biraawzerii kana irratti hin hojjetu.',
+    micPermissionDenied: 'Eeyyamni maayikiroofoonii dhorkameera.',
+
     // Authentication
     loginTitle: 'Baga Nagaan Dhuftan',
     loginSubtitle: 'Yuunivarsiitiiwwan olkaawataman fi seenaa maree AI argachuuf seeni.',
@@ -342,12 +575,50 @@ export const translations = {
     delete: 'Haqi',
     edit: 'Gulaali',
     actions: 'Tarkaanfiilee',
-    close: 'Cufi'
+    close: 'Cufi',
+
+    // Hub & Events
+    hubTitle: 'Wiirtuu Hawaasa Barnoota Olaanaa Itoophiyaa',
+    hubSubtitle: 'Qophiilee, woorkishoppiiwwan akademiki, koorsiiwwan fi beeksisa kampaasii qoodadhaa.',
+    hubCreateEventBtn: 'Qophii Haaraa Maxxansi',
+    hubFilterAll: 'Gosa Hunda',
+    hubFilterCourse: 'Koorsiiwwan',
+    hubFilterWorkshop: 'Woorkishoppiiwwan',
+    hubFilterUniEvent: 'Qophiilee Kampaasii',
+    hubFilterSeminar: 'Seminaaroota',
+    hubFilterConference: 'Koonferensiiwwan',
+    hubFilterOther: 'Kan Biroo',
+    hubSearchPlaceholder: 'Qophiilee mata dureen, ibsaan ykn kampaasiin barbaadi...',
+    hubEmptyEventsTitle: 'Qophiin tokkollee hin argamne',
+    hubEmptyEventsSub: 'Qophii maxxansuuf jalqabaa ta\'aa ykn filter keessan sirreessaa!',
+    hubPostModalTitle: 'Qophii Hawaasaa Maxxansi',
+    hubFormTitle: 'Mata Duree Qophii',
+    hubFormTitlePlaceholder: 'Fkn: AAU Tech & AI Workshop 2026',
+    hubFormType: 'Gosa Qophii',
+    hubFormUniversity: 'Yuunivarsiitii Walqabatu',
+    hubFormUniversitySelect: 'Yuunivarsiitii Filadhu (Ophshoonaala)',
+    hubFormDate: 'Guyyaa & Sa\'aatii Qophii',
+    hubFormLocation: 'Bakka / Galma',
+    hubFormLocationPlaceholder: 'Fkn: Galma Kampaasii Guddaa / Onlaayinii',
+    hubFormLink: 'Liinkii Ala / URL Galmee',
+    hubFormLinkPlaceholder: 'https://example.edu.et/register',
+    hubFormDescription: 'Ibsa Qophii Bal\'aa',
+    hubFormDescriptionPlaceholder: 'Sagantaa qophii fi odeeffannoo ijoo ibsa...',
+    hubFormCoverImage: 'Fakkii Qophii / Baanarii',
+    hubFormImageDrag: 'Fakkii asitti garagalchaa ykn filachuuf cuqaasaa',
+    hubFormSubmit: 'Qophii Maxxansi',
+    hubFormPublishing: 'Maxxansamaa jira...',
+    hubCommentsTitle: 'Marei Hawaasaa & Yaada',
+    hubAddCommentPlaceholder: 'Yaada barreessaa...',
+    hubPostCommentBtn: 'Yaada Maxxansi',
+    hubNoComments: 'Yaadni tokkollee hin jiru. Jalqabaa ta\'aa!',
+    hubLoginToPost: 'Qophiilee maxxansuuf fi yaada kennuuf seeni.'
   },
   ti: {
     // Navigation
     navHome: 'ቀንዲ ገፅ',
     navUniversities: 'ዩኒቨርሲቲታት',
+    navHub: 'ማእኸል',
     navAIAssistant: 'ኤአይ ሓጋዚ',
     navAdmin: 'መሓደሪ',
     navLogin: 'እተዉ',
@@ -355,10 +626,11 @@ export const translations = {
     navProfile: 'ፕሮፋይለይ',
     navLogout: 'ውፅእ',
     searchPlaceholderNav: 'ናይ ኢትዮጵያ ዩኒቨርሲቲታት፣ ትምህርትታት፣ ቦታታት ድለዩ...',
+    backToHome: 'ናብ ቀንዲ ገፅ ተመለስ',
 
     // Hero & Home
     heroTitle: 'ናይ ኢትዮጵያ ላዕለዎት ትካል ትምህርቲ ረክቡ',
-    heroSubtitle: 'ኣብ ኢትዮጵያ ዝርከቡ ፍሉጣት ዩኒቨርሲቲታት፣ ናይ ዲግሪ መርሃ ግብርታት፣ ናይ ምእታው መስፈርትን ናይ RAG ኤአይ ሓጋዚናን ብትግርኛ ተጠቐሙ።',
+    heroSubtitle: 'ኣብ ኢትዮጵያ ዝርከቡ ፍሉጣት ዩኒቨርሲቲታት፣ ናይ ዲግሪ መርሃ ግብርታት፣ ናይ 12 ክፍሊ ESSLCE መስፈርትን ብኤአይ ሓጋዚናን ሓበሬታ ረክቡ።',
     heroSearchPlaceholder: 'ብሽም ዩኒቨርሲቲ፣ ብክልል ወይ ብትምህርቲ ዓውዲ ድለዩ...',
     heroSearchBtn: 'ፖርታል ድለይ',
     heroStatUniversities: 'ናይ መንግስትን የግልን ዩኒቨርሲቲታት',
@@ -375,6 +647,47 @@ export const translations = {
     feature2Desc: 'ብዛዕባ 12 ክፍሊ ESSLCE ናይ ምእታው ነጥቢ፣ ናይ ሪሚዲያል (ማካሻ) ፕሮግራምን ናይ ካምፓስ ሓበሬታን ሕተቱ።',
     feature3Title: 'ብብዙሓት ናይ ኢትዮጵያ ቋንቋታት ዝቐረበ',
     feature3Desc: 'ብትግርኛ፣ በአማርኛ፣ በአፋን ኦሮሞ፣ ብሶማሊኛ ወይ ብእንግሊዝኛ ቋንቋታት ብነፃነት ተጠቐሙ።',
+
+    // Hero AI Badge
+    ragAiBadge: 'RAG ኤአይ ኣማኻሪ',
+    ragAiLangs: 'ብትግርኛ፣ በአማርኛን ብእንግሊዝኛን ሓገዝ',
+    ragAiAdvisorTitle: '24/7 ናይ ኢትዮጵያ ኤአይ ናይ ኣካዳሚክ ኣማኻሪ',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'ናይ ኢትዮጵያ ናይ መንግስትን ናይ ብሕቲን ዩኒቨርሲቲታት',
+    publicPrivateSubtitle: 'ብመንግስቲ ዝምደቡ ዩኒቨርሲቲታት ወይ ናይ ብሕቲ ፍሉጣት ኮሌጃት ንምእታው እንተደሊኹም፣ ምሉእ ናይ ምእታው ሓበሬታታት ኣብዚ ረክቡ።',
+    publicUniversitiesTab: 'ናይ መንግስቲ ዩኒቨርሲቲታት',
+    privateUniversitiesTab: 'ናይ ብሕቲ ኮሌጃትን ዩኒቨርሲቲታትን',
+
+    pathwaysHeadline: 'ናይ ላዕለዋይ ትምህርቲ ናይ ዕብየት መገድታት ኣብ ኢትዮጵያ',
+    pathwaysSubtitle: 'ን12 ክፍሊ ESSLCE ትዳሎ እንተለኻ፣ ናብ ዩኒቨርሲቲ ትኣቱ፣ ካልኣይ ዲግሪ ወይ ናይ ቴክኒክን ሙያን (TVET) ትምህርቲ።',
+    pathway1Title: '12 ክፍሊ ESSLCE እና ማካሻ (Remedial)',
+    pathway1Desc: 'ናይ ትምህርቲ ሚኒስቴር ወጋዒ መቑረፂ ነጥቢ፣ ናይ ምደባ ሓበሬታን ናይ ማካሻ ፕሮግራም መስፈርትታትን ረክቡ።',
+    pathway1Link: 'ቀዳማይ ዲግሪ ምእታው',
+    pathway2Title: 'ቀዳማይ ዲግሪ ፕሮግራማት (B.Sc / B.A)',
+    pathway2Desc: 'ብኢንጂነሪንግ፣ ብሶፍትዌር፣ ብሕክምና፣ ብሕጊ፣ ብኢኮኖሚክስን ብሕርሻን ትምህርትታት ዝርዝር ርኣዩ።',
+    pathway2Link: '500+ ዓውደ ትምህርትታት',
+    pathway3Title: 'ካልኣይን ሳልሳይን ዲግሪ (Master\'s & PhD)',
+    pathway3Desc: 'ናይ ካልኣይ ዲግሪ (M.Sc, MBA, MPH)ን ናይ NGAT መፈተኒ መምርሒታትን ናይ ምሸት መርሃ ግብርታትን ረክቡ።',
+    pathway3Link: 'ናይ ድሕረ ምረቓ ፖርታል',
+    pathway4Title: 'ናይ ቴክኒክን ሙያን (TVET) ኮሌጃት',
+    pathway4Desc: 'ካብ ብርኪ 1 ክሳብ 5 ተግባራዊ ናይ ቴክኖሎጂ፣ ናይ ኮንስትራክሽን፣ ናይ ኤሌክትሪክን ናይ ንግድን ዲፕሎማታት።',
+    pathway4Link: 'ናይ ቴክኒክ ዲፕሎማታት',
+
+    aiSectionTitle: 'ብዛዕባ ናይ ኢትዮጵያ ዩኒቨርሲቲታት ብቋንቋኹም ሕተቱ',
+    aiSectionDesc: 'ናይና ኤአይ ኣካዳሚክ ኣማኻሪ ብናይ ትምህርቲ ሚኒስቴር ሰነዳትን ብGoogle Gemini RAG ቴክኖሎጂን ቕልጡፍን ሓቀኛን መልሲ ይሰጥ።',
+    aiFeature1Title: 'ትግርኛ፣ አማርኛን ናይ ብዙሓት ቋንቋታት RAG ድለይ',
+    aiFeature1Desc: 'ብትግርኛ፣ በአማርኛ፣ በአፋን ኦሮሞ ወይ ብእንግሊዝኛ ብነፃነት ተመያየጡ።',
+    aiFeature2Title: 'ዝተረጋገፁ ናይ ኢትዮጵያ ሰነዳት ሓበሬታ',
+    aiFeature2Desc: 'ወጋዒ ናይ ትምህርቲ ሰነዳትን ናይ ምእታው ነጥብታትን ተኻቲቶም ኣለው።',
+    aiFeature3Title: 'ግላዊ ናይ ምእታው ነጥቢ ስሌት',
+    aiFeature3Desc: 'ንአዲስ አበባ፣ ንአዳማ፣ ንሓዋሳን ንናይ ብሕቲ ትካላትን ናይ ምእታው ብቑዕነትኩም ይሕስብ።',
+
+    // Footer
+    footerTagline: 'ንኢትዮጵያ ተማሃሮ ምስ ብቑዓት ናይ መንግስትን ናይ ብሕቲን ዩኒቨርሲቲታት፣ ናይ ትምህርቲ ፕሮግራማትን ናይ ኤአይ ኣማኻሪን ዘራኽብ ወጋዒ ናይ ላዕለዋይ ትምህርቲ ፖርታል::',
+    quickLinks: 'ቕልጡፋት መላገቢታት',
+    directContact: 'ቀጥታ ርክብ',
+    allRightsReserved: 'መብቱ ብሕጊ ዝተሓለወ እዩ።',
 
     // Filters & Universities Page
     allRegions: 'ኩሎም ክልላት',
@@ -424,6 +737,16 @@ export const translations = {
     prompt3: 'ናይ 12 ክፍሊ ESSLCE የማካሻ (Remedial) ፕሮግራም ብኸመይ ይሰርሕ?',
     prompt4: 'ብዛዕባ አዳማ ሳይንስ እና ቴክኖሎጂ ዩኒቨርሲቲ (ASTU) ሓበሬታ ሀበኒ።',
 
+    // NLP Voice Features
+    voiceInput: 'ብድምፂ ድለዩ',
+    listening: 'ይስምዕ ኣሎ... ሐዚ ተናገሩ',
+    speakResponse: 'መልሲ ስምዑ',
+    stopSpeaking: 'ድምፂ ኣቁም',
+    autoSpeakOn: 'ናይ ድምፂ ንባብ ክፍቲ',
+    autoSpeakOff: 'ናይ ድምፂ ንባብ ዕፁው',
+    speechNotSupported: 'ናይ ድምፂ ኣገልግሎት ኣብዚ ብራውዘር ኣይሰርሕን።',
+    micPermissionDenied: 'ናይ ማይክሮፎን ፈቓድ ተኸልኪሉ።',
+
     // Authentication
     loginTitle: 'እንቋዕ ብደሓን መጻእኹም',
     loginSubtitle: 'ዝተቐመጡ ዩኒቨርሲቲታትን ናይ ኤአይ ምይይጣትን ንምርካብ እተዉ።',
@@ -451,12 +774,50 @@ export const translations = {
     delete: 'ኣጥፍእ',
     edit: 'ኣስተኻኽል',
     actions: 'ስጉምትታት',
-    close: 'ዕፁው'
+    close: 'ዕፁው',
+
+    // Hub & Events
+    hubTitle: 'ማእኸል ማሕበረሰብ ላዕለዋይ ትምህርቲ ኢትዮጵያ',
+    hubSubtitle: 'መርሃ ግብርታት፣ አካዳሚክ ዎርክሾፓት፣ ኮርስታት ከምኡውን ናይ ካምፓስ ሓበሬታታት ኣካፍሉን ተራኸቡን።',
+    hubCreateEventBtn: 'ሓደስቲ መርሃ ግብሪ ለጥፍ',
+    hubFilterAll: 'ኩሎም ዓይነታት',
+    hubFilterCourse: 'ኮርሳት',
+    hubFilterWorkshop: 'ዎርክሾፓት',
+    hubFilterUniEvent: 'ናይ ካምፓስ መርሃ ግብርታት',
+    hubFilterSeminar: 'ሴሚናራት',
+    hubFilterConference: 'ኮንፈረንሳት',
+    hubFilterOther: 'ካልኦት',
+    hubSearchPlaceholder: 'መርሃ ግብርታት ብርእሲ፣ ብመብርሂ ወይ ብካምፓስ ድለዩ...',
+    hubEmptyEventsTitle: 'ዝተረኽበ መርሃ ግብሪ የለን',
+    hubEmptyEventsSub: 'ቀዳማይ መርሃ ግብሪ ለጣፊ ኩኑ ወይ ፍለጋኹም ኣስተኻኽሉ!',
+    hubPostModalTitle: 'ናይ ማሕበረሰብ መርሃ ግብሪ ሕተም',
+    hubFormTitle: 'ርእሲ መርሃ ግብሪ',
+    hubFormTitlePlaceholder: 'ኣብነት፡ AAU Tech & AI Workshop 2026',
+    hubFormType: 'ዓይነት መርሃ ግብሪ',
+    hubFormUniversity: 'ተዛማጅ ዩኒቨርሲቲ',
+    hubFormUniversitySelect: 'ዩኒቨርሲቲ ሓሪኻ (ምርጫ)',
+    hubFormDate: 'ዕለትን ሰዓትን መርሃ ግብሪ',
+    hubFormLocation: 'ቦታ / ኣዳራሽ',
+    hubFormLocationPlaceholder: 'ኣብነት፡ ቀንዲ ካምፓስ ኣዳራሽ / ብኦንላይን',
+    hubFormLink: 'ናይ ደገ ሊንክ / ናይ ምዝገባ URL',
+    hubFormLinkPlaceholder: 'https://example.edu.et/register',
+    hubFormDescription: 'ዝርዝር መብርሂ',
+    hubFormDescriptionPlaceholder: 'ናይቲ መርሃ ግብሪ ሰሌዳን ኣገደስቲ ሓበሬታን ግለፁ...',
+    hubFormCoverImage: 'ስእሊ መርሃ ግብሪ / ባነር',
+    hubFormImageDrag: 'ስእሊ ኣብዚ ጐትቱ ወይ ንምምራፅ ጠውቁ',
+    hubFormSubmit: 'መርሃ ግብሪ ሕተም',
+    hubFormPublishing: 'ይምዝገብ ኣሎ...',
+    hubCommentsTitle: 'ናይ ማሕበረሰብ ዘተን ርእይቶን',
+    hubAddCommentPlaceholder: 'ርእይቶ ፅሓፉ...',
+    hubPostCommentBtn: 'ርእይቶ ለጥፍ',
+    hubNoComments: 'ዝተወሃበ ርእይቶ የለን። ቀዳማይ ርእይቶ ሃቢ ኩኑ!',
+    hubLoginToPost: 'መርሃ ግብርታት ለመልጣፍን ርእይቶ ንምሃብን እተዉ।'
   },
   so: {
     // Navigation
     navHome: 'Bogga Hore',
     navUniversities: 'Jaamacadaha',
+    navHub: 'Xarunta',
     navAIAssistant: 'Kaaliyaha AI',
     navAdmin: 'Maamulaha',
     navLogin: 'Gal',
@@ -464,10 +825,11 @@ export const translations = {
     navProfile: 'Profile-kayga',
     navLogout: 'Ka bax',
     searchPlaceholderNav: 'Raadi jaamacadaha Itoobiya, barnaamijyada, goobaha...',
+    backToHome: 'U noqo Bogga Hore',
 
     // Hero & Home
     heroTitle: 'Cilmi Baadhis iyo Jaamacadaha Ugu Sareeya Itoobiya',
-    heroSubtitle: 'Sahamso jaamacadaha la aqoonsan yahay ee Itoobiya, barnaamijyada shahaadada, shuruudaha qabulka iyo kaaliyaha AI oo ku hadla luqadaada.',
+    heroSubtitle: 'Sahamso jaamacadaha la aqoonsan yahay ee Itoobiya, barnaamijyada shahaadada, shuruudaha ESSLCE fasalka 12aad iyo kaaliyaha AI.',
     heroSearchPlaceholder: 'Ku raadi magaca jaamacadda, deegaanka, ama sahanka...',
     heroSearchBtn: 'Raadi Portal-ka',
     heroStatUniversities: 'Jaamacadaha Dowladda & Kuwa Gaarka Ah',
@@ -484,6 +846,47 @@ export const translations = {
     feature2Desc: 'Weydiiso su\'aalo ku saabsan dhibcaha fasalka 12aad ESSLCE, barnaamijka Remedial iyo kaampaska.',
     feature3Title: 'Luuqadaha Kala Duwan ee Itoobiya',
     feature3Desc: 'U isticmaal Af-Somali, Amharic (አማርኛ), Afaan Oromoo, Tigrinya (ትግርኛ), ama Ingiriis.',
+
+    // Hero AI Badge
+    ragAiBadge: 'Taliyaha RAG AI',
+    ragAiLangs: 'Taageerada Af-Somali, Amharic & Ingiriis',
+    ragAiAdvisorTitle: '24/7 Taliyaha Waxbarashada AI ee Itoobiya',
+
+    // Landing Page Sections
+    publicPrivateHeadline: 'Jaamacadaha Dowladda & Kuwa Gaarka Ah ee Itoobiya',
+    publicPrivateSubtitle: 'Haddii aad hiigsaneyso jaamacadaha dowladda ama kuliyadaha gaarka ah ee la aqoonsan yahay, sahamso macluumaadka qabulka.',
+    publicUniversitiesTab: 'Jaamacadaha Dowladda',
+    privateUniversitiesTab: 'Kuliyadaha & Jaamacadaha Gaarka Ah',
+
+    pathwaysHeadline: 'Dhabada Waxbarashada Sare ee Itoobiya',
+    pathwaysSubtitle: 'Haddii aad u diyaar garoobeyso fasalka 12aad ESSLCE, jaamacadda galayso, Master\'s ama xirfada TVET.',
+    pathway1Title: 'Fasalka 12aad ESSLCE & Remedial',
+    pathway1Desc: 'Hel shuruudaha jarista MoGE, kalkuleetarka meelaynta iyo shuruudaha Remedial.',
+    pathway1Link: 'Qabulka Bachelor-ka',
+    pathway2Title: 'Barnaamijyada Bachelor (B.Sc / B.A)',
+    pathway2Desc: 'Sahamso injineernimada, software-ka, caafimaadka, sharciga, dhaqaalaha iyo beeraha.',
+    pathway2Link: '500+ Qaybaha Waxbarashada',
+    pathway3Title: 'Barnaamijyada Master\'s & PhD',
+    pathway3Desc: 'Hel barnaamijyada Master\'s (M.Sc, MBA, MPH), imtixaanka NGAT iyo jadwalka fiidkii.',
+    pathway3Link: 'Portal-ka Master-ka',
+    pathway4Title: 'Kuliyadaha TVET & Xirfadaha',
+    pathway4Desc: 'Doplomaatada heerka 1-5 ee IT-ga, dhismaha, korontada iyo ganacsiga.',
+    pathway4Link: 'Diplomaatada Xirfadaha',
+
+    aiSectionTitle: 'Waa Maxay Waxaad Ka Weydiin Kartaa Jaamacadaha Luqadaada',
+    aiSectionDesc: 'Kaaliyaha AI wuxuu isticmaalaa RAG iyo xogta Wasaaradda Waxbarashada si uu kuugu siiyo jawaabo sax ah.',
+    aiFeature1Title: 'Raadinta RAG ee Af-Somali & Luqadaha Kala Duwan',
+    aiFeature1Desc: 'U sheekeyso Af-Somali, Amharic, Afaan Oromoo, Tigrinya ama Ingiriis.',
+    aiFeature2Title: 'Xogta Dokumintiyada La Xaqiijiyay ee Itoobiya',
+    aiFeature2Desc: 'Qoraalada Wasaaradda Waxbarashada iyo dhibcaha jarista ayaa la kaydiyay.',
+    aiFeature3Title: 'Xisaabinta Dhibcaha Qabulka Personal-ka',
+    aiFeature3Desc: 'Wuxuu xisaabiyaa u haysashadaada AAU, ASTU, Hawassa iyo kuwa gaarka ah.',
+
+    // Footer
+    footerTagline: 'Portal-ka rasmiga ah ee waxbarashada sare ee ku xira ardayda Itoobiya jaamacadaha dowladda & kuwa gaarka ah.',
+    quickLinks: 'Linkiyada Dhaqsaha Ah',
+    directContact: 'Xiriirka Tooska Ah',
+    allRightsReserved: 'Hantida dhowran.',
 
     // Filters & Universities Page
     allRegions: 'Dhammaan Deegaanada',
@@ -532,6 +935,16 @@ export const translations = {
     prompt2: 'Waa kuwee jaamacadaha dowladda ee lagu yaqaano Injineernimada iyo Tiknoolajiyada?',
     prompt3: 'Sida uu u shaqeeyo barnaamijka Remedial ee fasalka 12aad ESSLCE?',
     prompt4: 'Iiga waran Jaamacadda Sayniska iyo Tiknoolajiyada ee Adama (ASTU).',
+
+    // NLP Voice Features
+    voiceInput: 'Raadinta Codka',
+    listening: 'Waa dhunteysanayaa... Hada labad',
+    speakResponse: 'Dhageyso jawaabta',
+    stopSpeaking: 'Jooji codka',
+    autoSpeakOn: 'Akhriska Codka On',
+    autoSpeakOff: 'Akhriska Codka Off',
+    speechNotSupported: 'Nidaamka codka laguma taageero browser-kan.',
+    micPermissionDenied: 'Ruhsadda makarafoonka waa la diiday.',
 
     // Authentication
     loginTitle: 'Kusoo Dhawoow',

@@ -4,7 +4,7 @@
  */
 
 import axios, { AxiosRequestConfig } from 'axios';
-import type { AuditLog, User, University } from '../types';
+import type { AuditLog, User, University, EventItem, EventComment } from '../types';
 
 const CSRF_COOKIE = 'ethiouni_csrf';
 const CSRF_HEADER = 'x-csrf-token';
@@ -279,4 +279,49 @@ export const api = {
       formData
     );
   },
+
+  // Hub & Events APIs
+  getEvents: (params: { eventType?: string; universityId?: string; search?: string; page?: number; limit?: number } = {}) => {
+    const query = new URLSearchParams();
+    if (params.eventType && params.eventType !== 'all') query.append('eventType', params.eventType);
+    if (params.universityId && params.universityId !== 'all') query.append('universityId', params.universityId);
+    if (params.search) query.append('search', params.search);
+    if (params.page) query.append('page', String(params.page));
+    if (params.limit) query.append('limit', String(params.limit));
+
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return request<{ events: EventItem[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(
+      `/api/events${queryString}`,
+      { method: 'GET' }
+    );
+  },
+
+  getEventById: (id: string) =>
+    request<{ event: EventItem }>(`/api/events/${id}`, { method: 'GET' }),
+
+  createEvent: (formData: FormData) =>
+    uploadRequest<{ message: string; event: EventItem }>('/api/events', formData),
+
+  deleteEvent: (id: string) =>
+    request<{ message: string }>(`/api/events/${id}`, { method: 'DELETE', requireAuth: true }),
+
+  toggleLikeEvent: (id: string) =>
+    request<{ likesCount: number; isLiked: boolean }>(`/api/events/${id}/like`, { method: 'POST', requireAuth: true }),
+
+  getEventComments: (id: string) =>
+    request<{ comments: EventComment[] }>(`/api/events/${id}/comments`, { method: 'GET' }),
+
+  createEventComment: (id: string, content: string) =>
+    request<{ message: string; comment: EventComment }>(`/api/events/${id}/comments`, {
+      method: 'POST',
+      data: { content },
+      requireAuth: true,
+    }),
+
+  deleteEventComment: (id: string, commentId: string) =>
+    request<{ message: string }>(`/api/events/${id}/comments/${commentId}`, {
+      method: 'DELETE',
+      requireAuth: true,
+    }),
 };
+

@@ -12,6 +12,7 @@ import Admin from './pages/Admin';
 import UniversityEdit from './pages/admin/UniversityEdit';
 import UserProfileModal from './components/UserProfileModal';
 import Profile from './pages/Profile';
+import Hub from './pages/Hub';
 import { LanguageProvider } from './context/LanguageContext';
 import { User, KnowledgeDoc, University } from './types';
 import { api } from './services/api';
@@ -170,6 +171,8 @@ const App: React.FC = () => {
               />
 
               <Route path="/universities" element={<Universities />} />
+
+              <Route path="/hub" element={<Hub user={user} universities={universities} />} />
 
               <Route
                 path="/university/:slug"

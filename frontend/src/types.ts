@@ -171,3 +171,38 @@ export interface Conversation {
   messages: ChatMessage[];
   lastUpdated: string;
 }
+
+export type EventCategoryType = 'course' | 'workshop' | 'university_event' | 'seminar' | 'conference' | 'other';
+
+export interface EventItem {
+  id: string;
+  title: string;
+  description: string;
+  eventType: EventCategoryType;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  universityId?: string | null;
+  universityName?: string;
+  eventDate?: string | null;
+  location?: string;
+  link?: string;
+  imageUrl?: string;
+  imagePublicId?: string;
+  likesCount: number;
+  isLiked?: boolean;
+  commentsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventComment {
+  id: string;
+  eventId: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  content: string;
+  createdAt: string;
+}
+
