@@ -124,6 +124,9 @@ export const api = {
       requireAuth: true,
     }),
 
+  uploadAvatar: (formData: FormData) =>
+    uploadRequest<{ message: string; avatarUrl: string }>('/api/auth/upload-avatar', formData),
+
   postChat: (body: { prompt: string }) =>
     request<{ text: string }>('/api/chat', {
       method: 'POST',
