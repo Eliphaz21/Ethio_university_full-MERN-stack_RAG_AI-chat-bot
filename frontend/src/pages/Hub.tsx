@@ -24,6 +24,8 @@ import {
 import { User, University, EventItem, EventComment, EventCategoryType } from '../types';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import CustomSelect from '../components/CustomSelect';
+import AuthRequiredModal from '../components/AuthRequiredModal';
 
 interface HubProps {
   user: User | null;
@@ -42,6 +44,10 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedUniversity, setSelectedUniversity] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Auth modal state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [authModalActionText, setAuthModalActionText] = useState<string>('post community events');
 
   // Create Modal state
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
@@ -101,7 +107,8 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
   // Handle Like Toggle
   const handleToggleLike = async (eventId: string) => {
     if (!user) {
-      alert(t('hubLoginToPost'));
+      setAuthModalActionText('like community events');
+      setIsAuthModalOpen(true);
       return;
     }
     try {
@@ -332,7 +339,8 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
           <button
             onClick={() => {
               if (!user) {
-                alert(t('hubLoginToPost'));
+                setAuthModalActionText('post community events');
+                setIsAuthModalOpen(true);
                 return;
               }
               setIsCreateOpen(true);
@@ -372,18 +380,16 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
 
             {/* University Filter Select */}
             <div className="w-full md:w-72">
-              <select
+              <CustomSelect
+                options={[
+                  { value: 'all', label: t('hubFormUniversitySelect') },
+                  ...universities.map((u) => ({ value: u.id, label: u.name, sublabel: `${u.location?.city || ''}, ${u.location?.region || ''}` })),
+                ]}
                 value={selectedUniversity}
-                onChange={(e) => setSelectedUniversity(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-[#059669]/30 cursor-pointer"
-              >
-                <option value="all">{t('hubFormUniversitySelect')}</option>
-                {universities.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedUniversity}
+                placeholder={t('hubFormUniversitySelect')}
+                icon={<GraduationCap className="w-4 h-4 text-emerald-600" />}
+              />
             </div>
           </div>
 
@@ -695,22 +701,20 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
                   <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
                     {t('hubFormUniversity')}
                   </label>
-                  <select
+                  <CustomSelect
+                    options={[
+                      { value: '', label: t('hubFormUniversitySelect') },
+                      ...universities.map((u) => ({ value: u.id, label: u.name, sublabel: u.location?.city })),
+                    ]}
                     value={universityId}
-                    onChange={(e) => {
-                      setUniversityId(e.target.value);
-                      const uni = universities.find((u) => u.id === e.target.value);
+                    onChange={(val) => {
+                      setUniversityId(val);
+                      const uni = universities.find((u) => u.id === val);
                       if (uni) setUniversityName(uni.name);
                     }}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-[#059669]/30"
-                  >
-                    <option value="">{t('hubFormUniversitySelect')}</option>
-                    {universities.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder={t('hubFormUniversitySelect')}
+                    icon={<GraduationCap className="w-4 h-4 text-emerald-600" />}
+                  />
                 </div>
               </div>
 
@@ -934,13 +938,28 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
                 </form>
               ) : (
                 <div className="text-center py-2">
-                  <p className="text-xs font-bold text-slate-500">{t('hubLoginToPost')}</p>
+                  <button
+                    onClick={() => {
+                      setAuthModalActionText('leave comments');
+                      setIsAuthModalOpen(true);
+                    }}
+                    className="text-xs font-bold text-[#059669] hover:underline cursor-pointer bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 transition-colors"
+                  >
+                    {t('hubLoginToPost')}
+                  </button>
                 </div>
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Authentication Prompt Modal */}
+      <AuthRequiredModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        actionText={authModalActionText}
+      />
     </div>
   );
 };

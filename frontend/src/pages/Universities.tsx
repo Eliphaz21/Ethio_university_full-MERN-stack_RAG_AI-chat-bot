@@ -8,6 +8,7 @@ import { getOptimizedImageUrl } from '../utils/imageUtils';
 import { useLanguage } from '../context/LanguageContext';
 import { getLocalizedUniversityContent } from '../i18n/universityLocalization';
 import { SEO, buildWebSiteSchema, buildFAQSchema } from '../components/SEO';
+import CustomSelect from '../components/CustomSelect';
 
 const Universities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,6 +37,20 @@ const Universities: React.FC = () => {
   const regions = useMemo(() => ['All', ...new Set(universities.map(u => u.location.region))], [universities]);
   const types = useMemo(() => ['All', ...new Set(universities.map(u => u.type))], [universities]);
 
+  const regionOptions = useMemo(() => {
+    return regions.map((r) => ({
+      value: r,
+      label: r === 'All' ? t('allRegions') : r,
+    }));
+  }, [regions, t]);
+
+  const typeOptions = useMemo(() => {
+    return types.map((item) => ({
+      value: item,
+      label: item === 'All' ? t('allTypes') : item === 'Public' ? t('publicUni') : item === 'Private' ? t('privateUni') : item,
+    }));
+  }, [types, t]);
+
   const filteredUnis = universities.filter(u => {
     const localized = getLocalizedUniversityContent(u, language);
     const matchesSearch = localized.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,7 +75,7 @@ const Universities: React.FC = () => {
               answer: 'Admissions are managed through the Ministry of Education (MoGE) placement based on Grade 12 ESSLCE examination cut-off scores, choice options, and institution capacities.'
             },
             {
-              question: 'What languages are supported on EthioUni Portal?',
+              question: 'What languages are supported on Ethio University Portal?',
               answer: 'The portal supports Amharic (አማርኛ), Afaan Oromoo, Tigrinya (ትግርኛ), Somali (Af-Somali), and English.'
             }
           ])
@@ -79,7 +94,7 @@ const Universities: React.FC = () => {
       {/* Filter & Search Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
         <div className="bg-white rounded-[2rem] shadow-xl border border-slate-200 p-6 md:p-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
             <div className="md:col-span-2 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
@@ -87,36 +102,28 @@ const Universities: React.FC = () => {
                 placeholder={t('heroSearchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-6 text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-12 pr-6 text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all font-medium"
               />
             </div>
 
-            <div className="relative">
-              <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <select
+            <div>
+              <CustomSelect
+                options={regionOptions}
                 value={selectedRegion}
-                onChange={(e) => setSelectedRegion(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-11 pr-4 text-slate-700 outline-none appearance-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
-              >
-                <option value="All">{t('allRegions')}</option>
-                {regions.filter(r => r !== 'All').map(r => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </select>
+                onChange={setSelectedRegion}
+                icon={<Filter className="w-4 h-4 text-emerald-600" />}
+                placeholder={t('allRegions')}
+              />
             </div>
 
-            <div className="relative">
-              <School className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <select
+            <div>
+              <CustomSelect
+                options={typeOptions}
                 value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-11 pr-4 text-slate-700 outline-none appearance-none focus:ring-2 focus:ring-emerald-500/30 transition-all cursor-pointer"
-              >
-                <option value="All">{t('allTypes')}</option>
-                {types.filter(item => item !== 'All').map(item => (
-                  <option key={item} value={item}>{item === 'Public' ? t('publicUni') : item === 'Private' ? t('privateUni') : item}</option>
-                ))}
-              </select>
+                onChange={setSelectedType}
+                icon={<School className="w-4 h-4 text-emerald-600" />}
+                placeholder={t('allTypes')}
+              />
             </div>
           </div>
         </div>
