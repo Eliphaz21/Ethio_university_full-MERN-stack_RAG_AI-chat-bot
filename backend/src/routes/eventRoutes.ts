@@ -9,6 +9,7 @@ import { University } from '../models/university.js';
 import { requireAuth } from '../middleware/auth.js';
 import { uploadBufferToCloudinary, deleteFromCloudinary, isCloudinaryConfigured } from '../services/cloudinary.js';
 import { sanitizeText, isValidHttpUrl } from '../middleware/errorHandler.js';
+import { recordAudit } from '../services/audit.js';
 
 const router = Router();
 
@@ -247,6 +248,14 @@ router.post('/events', requireAuth, (req: Request, res: Response) => {
 
       await newEvent.save();
 
+      await recordAudit(req, {
+        action: 'event.create',
+        resourceType: 'event',
+        resourceId: String(newEvent._id),
+        resourceLabel: newEvent.title,
+        status: 'success',
+      });
+
       res.status(201).json({
         message: 'Event published successfully',
         event: serializeEvent(newEvent, String(user._id)),
@@ -286,6 +295,14 @@ router.delete('/events/:id', requireAuth, async (req: Request, res: Response) =>
     // Delete associated comments
     await EventCommentModel.deleteMany({ event: event._id });
     await EventModel.findByIdAndDelete(id);
+
+    await recordAudit(req, {
+      action: 'event.delete',
+      resourceType: 'event',
+      resourceId: id,
+      resourceLabel: event.title,
+      status: 'success',
+    });
 
     res.json({ message: 'Event deleted successfully' });
   } catch (error) {
@@ -391,6 +408,14 @@ router.post('/events/:id/comments', requireAuth, async (req: Request, res: Respo
     // Increment event comments count
     event.commentsCount += 1;
     await event.save();
+
+    await recordAudit(req, {
+      action: 'event.comment',
+      resourceType: 'event',
+      resourceId: String(event._id),
+      resourceLabel: cleanContent.substring(0, 40),
+      status: 'success',
+    });
 
     res.status(201).json({
       message: 'Comment posted successfully',

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuditLog, User, KnowledgeDoc, University } from '../types';
 import { api } from '../services/api';
-import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin, Search, ShieldCheck, UserPlus } from 'lucide-react';
+import { Users, FileText, Upload, Trash2, Activity, Link, FileUp, School, Image as ImageIcon, Edit3, Plus, CheckCircle2, AlertCircle, X, ExternalLink, MapPin, Search, ShieldCheck, UserPlus, Eye, Code, Key } from 'lucide-react';
 import { getOptimizedImageUrl } from '../utils/imageUtils';
 import UniversityEditorModal from '../components/admin/UniversityEditorModal';
 import UserEditorModal, { UserEditorDraft } from '../components/admin/UserEditorModal';
+import UserDetailModal from '../components/admin/UserDetailModal';
 import KnowledgeDetailsModal from '../components/admin/KnowledgeDetailsModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import NotificationToast, { NotificationMessage } from '../components/NotificationToast';
@@ -54,6 +55,9 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   const [savingUni, setSavingUni] = useState(false);
   const [isUniversityEditorOpen, setIsUniversityEditorOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null | undefined>(undefined);
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
+  const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLog | null>(null);
+  const [auditCategoryFilter, setAuditCategoryFilter] = useState<'all' | 'auth' | 'event' | 'university' | 'knowledge' | 'user'>('all');
   const [savingUser, setSavingUser] = useState(false);
   const [userSearch, setUserSearch] = useState('');
   const [userFormError, setUserFormError] = useState<string | null>(null);
@@ -372,19 +376,24 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
   return (
     <div className="min-h-screen bg-[#f4f1e9]">
       <SEO title="Administration" noIndex description="Private administration workspace." />
-      <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 lg:py-10">
-        <div className="relative mb-6 overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-8 text-white shadow-xl sm:px-9 sm:py-10">
-          <div className="absolute -right-20 -top-28 h-72 w-72 rounded-full border-[45px] border-emerald-400/10" />
-          <div className="absolute bottom-0 right-24 h-24 w-48 bg-[radial-gradient(circle,#34d399_1px,transparent_1px)] bg-[size:12px_12px] opacity-20" />
-          <div className="relative max-w-3xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300"><ShieldCheck className="h-3.5 w-3.5" />Protected administration</div>
-            <h1 className="text-3xl font-black tracking-tight sm:text-4xl">EthioUni operations workspace</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">Manage the university directory, registered users, and RAG knowledge sources with accountable, auditable workflows.</p>
-            <div className="mt-6 flex flex-wrap gap-2 text-xs font-bold text-slate-300">
-              <span className="rounded-lg bg-white/10 px-3 py-2">{universities.length} universities</span>
-              <span className="rounded-lg bg-white/10 px-3 py-2">{users.length} users</span>
-              <span className="rounded-lg bg-white/10 px-3 py-2">{knowledgeDocs.length} knowledge sources</span>
+      <div className="mx-auto max-w-7xl px-3 py-6 sm:px-6 lg:py-8">
+        
+        {/* Modern Studio Top Bar Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-300/60">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-slate-900 to-emerald-900 text-emerald-400 flex items-center justify-center font-black shadow-md border border-emerald-500/20">
+              <ShieldCheck className="w-6 h-6" />
             </div>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950">Ethio University Administration Workspace</h1>
+              <p className="text-xs text-slate-600 font-medium">Full directory control, scholar accounts, RAG knowledge sources, and step-by-step audit logs</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-white/90 backdrop-blur px-3 py-2 rounded-2xl border border-slate-200 shadow-sm shrink-0">
+            <span className="bg-emerald-50 text-emerald-800 px-3 py-1 rounded-xl border border-emerald-200">{universities.length} Universities</span>
+            <span className="bg-slate-100 text-slate-800 px-3 py-1 rounded-xl border border-slate-200">{users.length} Users</span>
+            <span className="bg-teal-50 text-teal-800 px-3 py-1 rounded-xl border border-teal-200">{knowledgeDocs.length} Knowledge Docs</span>
           </div>
         </div>
 
@@ -437,41 +446,114 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
           </nav>
         </div>
 
-        {/* Tab Content */}
+        {/* Tab Content: Deep Audit Log */}
         {activeTab === 'audit' && (
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm space-y-4 p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5 text-emerald-700" />
-                  <h2 className="text-lg font-black text-slate-900">Audit Log</h2>
+                  <Activity className="h-5 w-5 text-emerald-700" />
+                  <h2 className="text-lg font-black text-slate-900">Comprehensive System Audit Log</h2>
                 </div>
-                <p className="mt-1 text-sm text-slate-500">{auditTotal} recorded administrative actions</p>
+                <p className="mt-1 text-xs text-slate-500 font-medium">Step-by-step history of login attempts, user updates, event posts, and administrative actions ({auditTotal} events recorded)</p>
               </div>
-              <form className="relative w-full sm:max-w-sm" onSubmit={(event) => { event.preventDefault(); void refreshAuditLogs(); }}>
+              <form className="relative w-full sm:max-w-xs" onSubmit={(event) => { event.preventDefault(); void refreshAuditLogs(); }}>
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input value={auditSearch} onChange={(event) => setAuditSearch(event.target.value)} placeholder="Search actor, action, or resource" className="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-3 text-sm outline-none focus:border-emerald-600" />
+                <input value={auditSearch} onChange={(event) => setAuditSearch(event.target.value)} placeholder="Search actor, action, or payload" className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-xs font-medium outline-none focus:border-emerald-600" />
               </form>
             </div>
-            <div className="overflow-x-auto">
+
+            {/* Audit Category Filter Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {[
+                { key: 'all', label: 'All Events' },
+                { key: 'auth', label: 'Auth & Logins' },
+                { key: 'event', label: 'Community Events' },
+                { key: 'user', label: 'Users & Roles' },
+                { key: 'university', label: 'Universities' },
+                { key: 'knowledge', label: 'Knowledge Base' },
+              ].map((filterItem) => (
+                <button
+                  key={filterItem.key}
+                  onClick={() => setAuditCategoryFilter(filterItem.key as any)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
+                    auditCategoryFilter === filterItem.key
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {filterItem.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Audit Table */}
+            <div className="overflow-x-auto border border-slate-200/80 rounded-2xl">
               <table className="min-w-full divide-y divide-slate-200">
                 <thead className="bg-slate-50">
                   <tr>
-                    {['Time', 'Actor', 'Action', 'Resource', 'Status', 'IP address'].map((heading) => <th key={heading} className="px-5 py-3 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">{heading}</th>)}
+                    {['Timestamp', 'Actor / User', 'Action Event', 'Target Resource', 'Status', 'IP Address', 'Step Details'].map((heading) => (
+                      <th key={heading} className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">{heading}</th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {auditLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-50">
-                      <td className="whitespace-nowrap px-5 py-4 text-xs text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
-                      <td className="px-5 py-4 text-sm font-bold text-slate-800">{log.actorEmail || 'System'}</td>
-                      <td className="px-5 py-4"><span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">{log.action.replaceAll('.', ' ')}</span></td>
-                      <td className="px-5 py-4"><p className="text-xs font-black uppercase text-emerald-700">{log.resourceType}</p><p className="mt-1 text-sm text-slate-700">{log.resourceLabel || log.resourceId || 'Not specified'}</p></td>
-                      <td className="px-5 py-4"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase ${log.status === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>{log.status}</span></td>
-                      <td className="whitespace-nowrap px-5 py-4 text-xs text-slate-500">{log.ipAddress || 'Unknown'}</td>
+                <tbody className="divide-y divide-slate-100 bg-white text-xs">
+                  {auditLogs
+                    .filter((log) => {
+                      if (auditCategoryFilter === 'all') return true;
+                      if (auditCategoryFilter === 'auth') return log.action.startsWith('auth');
+                      if (auditCategoryFilter === 'event') return log.action.startsWith('event');
+                      if (auditCategoryFilter === 'university') return log.action.startsWith('university');
+                      if (auditCategoryFilter === 'knowledge') return log.action.startsWith('knowledge');
+                      if (auditCategoryFilter === 'user') return log.action.startsWith('user') || log.resourceType === 'user';
+                      return true;
+                    })
+                    .map((log) => (
+                      <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="whitespace-nowrap px-4 py-3.5 text-slate-500 font-medium">
+                          {new Date(log.createdAt).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'medium' })}
+                        </td>
+                        <td className="px-4 py-3.5 font-bold text-slate-900">
+                          {log.actorEmail || 'System / Anonymous'}
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <span className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold uppercase ${
+                            log.action.includes('login')
+                              ? log.status === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                              : log.action.includes('delete')
+                              ? 'bg-rose-100 text-rose-800'
+                              : 'bg-slate-100 text-slate-800'
+                          }`}>
+                            {log.action.replaceAll('.', ' ')}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 max-w-xs truncate">
+                          <p className="text-[10px] font-black uppercase text-emerald-700">{log.resourceType}</p>
+                          <p className="text-xs text-slate-800 font-semibold truncate">{log.resourceLabel || log.resourceId || 'N/A'}</p>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <span className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase ${log.status === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                            {log.status}
+                          </span>
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3.5 text-slate-500 font-mono text-[11px]">
+                          {log.ipAddress || '127.0.0.1'}
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <button
+                            onClick={() => setSelectedAuditLog(log)}
+                            className="px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 rounded-xl font-bold text-[11px] transition flex items-center gap-1.5"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> Details
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  {!auditLogs.length && (
+                    <tr>
+                      <td colSpan={7} className="px-5 py-14 text-center text-sm text-slate-500">No audit events match this search.</td>
                     </tr>
-                  ))}
-                  {!auditLogs.length && <tr><td colSpan={6} className="px-5 py-14 text-center text-sm text-slate-500">No audit events match this search.</td></tr>}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -602,8 +684,8 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                   {visibleUsers.map((u) => (
                     <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-xl bg-[#059669] text-white flex items-center justify-center shadow-sm overflow-hidden shrink-0">
+                        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setViewingUser(u)}>
+                          <div className="h-10 w-10 rounded-xl bg-[#059669] text-white flex items-center justify-center shadow-sm overflow-hidden shrink-0 group-hover:ring-2 group-hover:ring-emerald-500 transition">
                             {u.avatarUrl ? (
                               <img src={u.avatarUrl} alt={u.username} className="w-full h-full object-cover" />
                             ) : (
@@ -611,7 +693,7 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                             )}
                           </div>
                           <div>
-                            <div className="text-sm font-bold text-slate-900">{u.username}</div>
+                            <div className="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition">{u.username}</div>
                             <div className="text-xs text-slate-500">{u.email}</div>
                           </div>
                         </div>
@@ -638,7 +720,8 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-xs font-medium">
-                        <button onClick={() => setSelectedUser(u)} className="mr-1 p-2 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="View and edit user"><Edit3 className="h-4 w-4" /></button>
+                        <button onClick={() => setViewingUser(u)} className="mr-1 p-2 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="View full scholar profile"><Eye className="h-4 w-4" /></button>
+                        <button onClick={() => setSelectedUser(u)} className="mr-1 p-2 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit user account"><Edit3 className="h-4 w-4" /></button>
                         <button
                           onClick={() => handleDeleteUser(u.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -826,6 +909,73 @@ const Admin: React.FC<AdminProps> = ({ user, onUniversitiesChange }) => {
       </div>
       {selectedUser !== undefined && (
         <UserEditorModal initialUser={selectedUser} saving={savingUser} error={userFormError} onClose={() => { setSelectedUser(undefined); setUserFormError(null); }} onSave={handleSaveUser} />
+      )}
+      <UserDetailModal
+        user={viewingUser}
+        isOpen={Boolean(viewingUser)}
+        onClose={() => setViewingUser(null)}
+        onEdit={(u) => setSelectedUser(u)}
+        onDelete={(id) => handleDeleteUser(id)}
+        userLogs={auditLogs}
+      />
+      {selectedAuditLog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 overflow-hidden space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="w-5 h-5 text-emerald-700" />
+                <h3 className="text-base font-black text-slate-900">Audit Step Details</h3>
+              </div>
+              <button onClick={() => setSelectedAuditLog(null)} className="p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Action Name</span>
+                  <p className="font-extrabold text-slate-900 mt-0.5">{selectedAuditLog.action}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Status</span>
+                  <p className={`font-extrabold mt-0.5 ${selectedAuditLog.status === 'success' ? 'text-emerald-700' : 'text-red-700'}`}>{selectedAuditLog.status.toUpperCase()}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Actor Email</span>
+                  <p className="font-bold text-slate-800 mt-0.5">{selectedAuditLog.actorEmail || 'System / Anonymous'}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">IP Address</span>
+                  <p className="font-mono text-slate-700 mt-0.5">{selectedAuditLog.ipAddress || '127.0.0.1'}</p>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Timestamp</span>
+                  <p className="font-medium text-slate-800 mt-0.5">{new Date(selectedAuditLog.createdAt).toLocaleString()}</p>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Target Resource</span>
+                  <p className="font-bold text-emerald-800 mt-0.5">{selectedAuditLog.resourceType}: {selectedAuditLog.resourceLabel || selectedAuditLog.resourceId || 'N/A'}</p>
+                </div>
+              </div>
+
+              {selectedAuditLog.details && (
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Technical Payload / Details</span>
+                  <pre className="p-3 bg-slate-900 text-emerald-400 rounded-2xl text-[11px] font-mono overflow-x-auto max-h-48">
+                    {JSON.stringify(selectedAuditLog.details, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
+              <button onClick={() => setSelectedAuditLog(null)} className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">
+                Close Inspector
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       {selectedKnowledge && (
         <KnowledgeDetailsModal document={selectedKnowledge} saving={savingKnowledge} onClose={() => setSelectedKnowledge(null)} onSave={saveKnowledgeMetadata} />
