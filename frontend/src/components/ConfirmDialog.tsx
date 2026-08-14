@@ -33,7 +33,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <header className="flex items-start justify-between gap-4 border-b border-slate-100 p-6">
           <div className="flex gap-4">
             <div className={`rounded-2xl p-3 ${tone === 'danger' ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-700'}`}><AlertTriangle className="h-5 w-5" /></div>
-            <div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">EthioUni confirmation</p><h2 id="confirm-dialog-title" className="mt-1 text-xl font-black text-slate-950">{title}</h2></div>
+            <div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Ethio University confirmation</p><h2 id="confirm-dialog-title" className="mt-1 text-xl font-black text-slate-950">{title}</h2></div>
           </div>
           <button disabled={busy} onClick={onCancel} className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50" aria-label="Close confirmation"><X className="h-5 w-5" /></button>
         </header>
