@@ -227,7 +227,7 @@ router.post('/upload-avatar', requireAuth, avatarUpload.single('avatar'), async 
 
     let avatarUrl = '';
     if (isCloudinaryConfigured()) {
-      const result = await uploadBufferToCloudinary(req.file.buffer, 'ethio_university_avatars');
+      const result = await uploadBufferToCloudinary(req.file.buffer, { folder: 'ethio_university_avatars' });
       avatarUrl = result.secure_url;
     } else {
       const base64 = req.file.buffer.toString('base64');
