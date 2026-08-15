@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import multer from 'multer';
 import { User } from '../models/user.js';
 import { ADMIN_EMAILS } from '../config/env.js';
 import { requireAuth } from '../middleware/auth.js';
@@ -11,10 +12,22 @@ import {
   createCsrfToken,
 } from '../utils/authTokens.js';
 import { sanitizeText, validatePassword } from '../middleware/errorHandler.js';
-
 import { recordAudit } from '../services/audit.js';
+import { uploadBufferToCloudinary, isCloudinaryConfigured } from '../services/cloudinary.js';
 
 const router = Router();
+
+const avatarUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files (JPEG, PNG, WebP) are allowed for avatar!'));
+    }
+  },
+});
 
 function serializeUser(user: InstanceType<typeof User>) {
   return {
@@ -202,6 +215,31 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
     });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+// POST /api/auth/upload-avatar - Upload profile avatar image to Cloudinary or base64
+router.post('/upload-avatar', requireAuth, avatarUpload.single('avatar'), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file uploaded' });
+    }
+
+    let avatarUrl = '';
+    if (isCloudinaryConfigured()) {
+      const result = await uploadBufferToCloudinary(req.file.buffer, { folder: 'ethio_university_avatars' });
+      avatarUrl = result.secure_url;
+    } else {
+      const base64 = req.file.buffer.toString('base64');
+      avatarUrl = `data:${req.file.mimetype};base64,${base64}`;
+    }
+
+    res.json({
+      message: 'Avatar uploaded successfully',
+      avatarUrl,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Avatar upload failed' });
   }
 });
 

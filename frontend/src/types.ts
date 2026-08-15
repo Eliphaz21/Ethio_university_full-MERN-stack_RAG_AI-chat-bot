@@ -91,6 +91,17 @@ export interface UniversityVideo {
   description?: string;
 }
 
+export interface UniversityReviewItem {
+  id: string;
+  universitySlug: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 export interface University {
   id: string;
   name: string;

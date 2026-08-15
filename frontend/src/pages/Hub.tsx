@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Calendar,
   MapPin,
@@ -19,11 +20,14 @@ import {
   Send,
   AlertCircle,
   CheckCircle2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ArrowLeft
 } from 'lucide-react';
 import { User, University, EventItem, EventComment, EventCategoryType } from '../types';
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
+import CustomSelect from '../components/CustomSelect';
+import AuthRequiredModal from '../components/AuthRequiredModal';
 
 interface HubProps {
   user: User | null;
@@ -42,6 +46,10 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedUniversity, setSelectedUniversity] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Auth modal state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [authModalActionText, setAuthModalActionText] = useState<string>('post community events');
 
   // Create Modal state
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
@@ -101,7 +109,8 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
   // Handle Like Toggle
   const handleToggleLike = async (eventId: string) => {
     if (!user) {
-      alert(t('hubLoginToPost'));
+      setAuthModalActionText('like community events');
+      setIsAuthModalOpen(true);
       return;
     }
     try {
@@ -310,43 +319,45 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FBF7F1] pb-24">
-      {/* Dynamic Header Banner */}
-      <header className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white overflow-hidden py-14 px-4 sm:px-6 lg:px-8 border-b border-slate-800 shadow-xl">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(5,150,105,0.18),transparent_50%)]"></div>
-        <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Community & Events</span>
+    <div className="min-h-screen, bg-[#FBF7F1] pb-24">
+      {/* Main Container shifted upward */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        
+        {/* Header Row with Back Button & Title */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200/80">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-xs font-bold text-[#059669] hover:underline bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm shrink-0"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+            </Link>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+                {t('hubTitle')}
+              </h1>
+              <p className="text-xs text-slate-500 font-medium">
+                {t('hubSubtitle')}
+              </p>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight text-white">
-              {t('hubTitle')}
-            </h1>
-            <p className="text-slate-300 text-sm sm:text-base font-medium max-w-2xl leading-relaxed">
-              {t('hubSubtitle')}
-            </p>
           </div>
 
-          {/* Create Event CTA */}
           <button
             onClick={() => {
               if (!user) {
-                alert(t('hubLoginToPost'));
+                setAuthModalActionText('post community events');
+                setIsAuthModalOpen(true);
                 return;
               }
               setIsCreateOpen(true);
             }}
-            className="group relative inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-[#059669] to-emerald-500 hover:from-[#047857] hover:to-emerald-600 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-900/40 hover:shadow-emerald-900/60 transition-all duration-300 active:scale-95 shrink-0 cursor-pointer"
+            className="group relative inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#059669] to-emerald-500 hover:from-[#047857] hover:to-emerald-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 shrink-0 cursor-pointer"
           >
-            <Plus className="w-5 h-5 transition-transform group-hover:rotate-90 duration-300" />
+            <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
             <span>{t('hubCreateEventBtn')}</span>
           </button>
         </div>
-      </header>
 
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Filter & Toolbar Row */}
         <div className="bg-white/80 backdrop-blur-md rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-sm mb-8 space-y-4">
           <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
@@ -372,18 +383,16 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
 
             {/* University Filter Select */}
             <div className="w-full md:w-72">
-              <select
+              <CustomSelect
+                options={[
+                  { value: 'all', label: t('hubFormUniversitySelect') },
+                  ...universities.map((u) => ({ value: u.id, label: u.name, sublabel: `${u.location?.city || ''}, ${u.location?.region || ''}` })),
+                ]}
                 value={selectedUniversity}
-                onChange={(e) => setSelectedUniversity(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200/80 rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-[#059669]/30 cursor-pointer"
-              >
-                <option value="all">{t('hubFormUniversitySelect')}</option>
-                {universities.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedUniversity}
+                placeholder={t('hubFormUniversitySelect')}
+                icon={<GraduationCap className="w-4 h-4 text-emerald-600" />}
+              />
             </div>
           </div>
 
@@ -695,22 +704,20 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
                   <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1.5">
                     {t('hubFormUniversity')}
                   </label>
-                  <select
+                  <CustomSelect
+                    options={[
+                      { value: '', label: t('hubFormUniversitySelect') },
+                      ...universities.map((u) => ({ value: u.id, label: u.name, sublabel: u.location?.city })),
+                    ]}
                     value={universityId}
-                    onChange={(e) => {
-                      setUniversityId(e.target.value);
-                      const uni = universities.find((u) => u.id === e.target.value);
+                    onChange={(val) => {
+                      setUniversityId(val);
+                      const uni = universities.find((u) => u.id === val);
                       if (uni) setUniversityName(uni.name);
                     }}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-[#059669]/30"
-                  >
-                    <option value="">{t('hubFormUniversitySelect')}</option>
-                    {universities.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder={t('hubFormUniversitySelect')}
+                    icon={<GraduationCap className="w-4 h-4 text-emerald-600" />}
+                  />
                 </div>
               </div>
 
@@ -934,13 +941,28 @@ export const Hub: React.FC<HubProps> = ({ user, universities = [] }) => {
                 </form>
               ) : (
                 <div className="text-center py-2">
-                  <p className="text-xs font-bold text-slate-500">{t('hubLoginToPost')}</p>
+                  <button
+                    onClick={() => {
+                      setAuthModalActionText('leave comments');
+                      setIsAuthModalOpen(true);
+                    }}
+                    className="text-xs font-bold text-[#059669] hover:underline cursor-pointer bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 transition-colors"
+                  >
+                    {t('hubLoginToPost')}
+                  </button>
                 </div>
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Authentication Prompt Modal */}
+      <AuthRequiredModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        actionText={authModalActionText}
+      />
     </div>
   );
 };

@@ -397,7 +397,7 @@ export const ScrollAnimatedSections: React.FC = () => {
               <div className="bg-[#1C2541] px-5 py-4 flex items-center justify-between border-b border-slate-700/60">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <img src="/assets/ai_bot_avatar.svg" alt="EthioUni Bot" className="w-10 h-10 object-contain rounded-full shadow-lg" />
+                    <img src="/assets/ai_bot_avatar.svg" alt="Ethio University Bot" className="w-10 h-10 object-contain rounded-full shadow-lg" />
                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1C2541] rounded-full"></span>
                   </div>
                   <div>
@@ -407,10 +407,6 @@ export const ScrollAnimatedSections: React.FC = () => {
                       <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">{t('ragAiLangs')}</span>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-emerald-950 text-emerald-300 px-3 py-1 rounded-full border border-emerald-800 font-bold">RAG Live</span>
                 </div>
               </div>
 
@@ -437,10 +433,10 @@ export const ScrollAnimatedSections: React.FC = () => {
 
                 {/* 3. AI Assistant Response (Left Aligned with Avatar) */}
                 <div className="flex items-start gap-3">
-                  <img src="/assets/ai_bot_avatar.svg" alt="EthioUni Bot" className="w-8 h-8 object-contain shrink-0 mt-1 shadow-md" />
+                  <img src="/assets/ai_bot_avatar.svg" alt="Ethio University Bot" className="w-8 h-8 object-contain shrink-0 mt-1 shadow-md" />
                   <div className="bg-[#059669]/20 border border-[#059669]/50 text-emerald-100 p-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-inner">
                     <div className="flex items-center gap-2 mb-1.5 text-xs text-emerald-400 font-bold">
-                      <span>EthioUni AI Assistant:</span>
+                      <span>Ethio University AI Assistant:</span>
                     </div>
                     <p className="leading-relaxed text-xs sm:text-sm">
                       በ2016/17 የትምህርት ዘመን የትምህርት ሚኒስቴር (MoGE) መስፈርት መሠረት ለአዲስ አበባ ዩኒቨርሲቲ የሶፍትዌር ኢንጂነሪንግ ፕሮግራም የመግቢያ ነጥብ እንደ ተፈጥሮ ሳይንስ ተማሪነቶ እና እንደ ክልሎ ይለያያል። አጠቃላይ የተፈጥሮ ሳይንስ ወንዶች 415+፣ ሴቶች 395+፣ እና ለታዳጊ ክልሎች ልዩ ነጥብ ተቀምጧል...

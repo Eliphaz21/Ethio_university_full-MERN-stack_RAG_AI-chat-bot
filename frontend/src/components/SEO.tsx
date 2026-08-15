@@ -46,7 +46,7 @@ export const SEO: React.FC<SEOProps> = ({
   noIndex = false
 }) => {
   const { language } = useLanguage();
-  const siteName = 'EthioUni Portal';
+  const siteName = 'Ethio University Portal';
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://ethiouni.portal.et';
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
 
@@ -91,7 +91,7 @@ export const SEO: React.FC<SEOProps> = ({
     updateMetaTag('meta[name="description"]', 'content', metaDescription);
     updateMetaTag('meta[name="keywords"]', 'content', pageKeywords);
     updateMetaTag('meta[name="robots"]', 'content', noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
-    updateMetaTag('meta[name="author"]', 'content', 'EthioUni Portal Team');
+    updateMetaTag('meta[name="author"]', 'content', 'Ethio University Portal Team');
 
     // Open Graph / Facebook / LinkedIn
     updateMetaTag('meta[property="og:site_name"]', 'content', siteName);
@@ -109,7 +109,7 @@ export const SEO: React.FC<SEOProps> = ({
     updateMetaTag('meta[name="twitter:image"]', 'content', pageImage);
 
     // AI & GEO (Generative Engine Optimization) Specific Metadata Tags
-    updateMetaTag('meta[name="citation_publisher"]', 'content', 'EthioUni Portal Higher Education Data Service');
+    updateMetaTag('meta[name="citation_publisher"]', 'content', 'Ethio University Portal Higher Education Data Service');
     updateMetaTag('meta[name="coverage"]', 'content', 'Ethiopia');
     updateMetaTag('meta[name="target_country"]', 'content', 'ET');
 
@@ -177,8 +177,8 @@ export function buildWebSiteSchema() {
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      'name': 'EthioUni Portal',
-      'alternateName': ['Ethio University Portal', 'ኢትዮ-ዩኒ ፖርታል'],
+      'name': 'Ethio University Portal',
+      'alternateName': ['Ethio University Directory', 'ኢትዮ ዩኒቨርሲቲ ፖርታል'],
       'url': baseUrl,
       'potentialAction': {
         '@type': 'SearchAction',
@@ -189,7 +189,7 @@ export function buildWebSiteSchema() {
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      'name': 'EthioUni RAG AI Assistant',
+      'name': 'Ethio University RAG AI Assistant',
       'applicationCategory': 'EducationalApplication',
       'operatingSystem': 'Web',
       'description': 'RAG AI Assistant providing real-time higher education guidance on Ethiopian Grade 12 ESSLCE cut-offs, remedial entry programs, and university admissions in Amharic, Oromo, Tigrinya, Somali, and English.'

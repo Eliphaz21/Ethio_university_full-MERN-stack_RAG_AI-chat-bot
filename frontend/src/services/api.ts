@@ -124,6 +124,9 @@ export const api = {
       requireAuth: true,
     }),
 
+  uploadAvatar: (formData: FormData) =>
+    uploadRequest<{ message: string; avatarUrl: string }>('/api/auth/upload-avatar', formData),
+
   postChat: (body: { prompt: string }) =>
     request<{ text: string }>('/api/chat', {
       method: 'POST',
@@ -321,6 +324,16 @@ export const api = {
   deleteEventComment: (id: string, commentId: string) =>
     request<{ message: string }>(`/api/events/${id}/comments/${commentId}`, {
       method: 'DELETE',
+      requireAuth: true,
+    }),
+
+  getUniversityReviews: (slug: string) =>
+    request<{ reviews: any[] }>(`/api/universities/${slug}/reviews`, { method: 'GET' }),
+
+  createUniversityReview: (slug: string, body: { rating: number; comment: string }) =>
+    request<{ message: string; review: any }>(`/api/universities/${slug}/reviews`, {
+      method: 'POST',
+      data: body,
       requireAuth: true,
     }),
 };

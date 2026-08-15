@@ -15,7 +15,9 @@ import {
   ShieldCheck,
   Calendar,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  Upload,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
@@ -39,8 +41,33 @@ const Profile: React.FC<ProfilePageProps> = ({ user, onUpdateUser }) => {
 
   const [fetching, setFetching] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarMode, setAvatarMode] = useState<'upload' | 'link'>('upload');
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file (JPEG, PNG, WebP)');
+      return;
+    }
+    try {
+      setUploadingAvatar(true);
+      setError(null);
+      const fd = new FormData();
+      fd.append('avatar', file);
+      const res = await api.uploadAvatar(fd);
+      setFormData((prev) => ({ ...prev, avatarUrl: res.avatarUrl }));
+      setSuccessMsg('Avatar picture uploaded successfully!');
+      setTimeout(() => setSuccessMsg(null), 3000);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to upload avatar picture');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -217,16 +244,71 @@ const Profile: React.FC<ProfilePageProps> = ({ user, onUpdateUser }) => {
                   </div>
                 </div>
 
-                {/* Avatar Image URL */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Avatar Image Link (Optional)</label>
-                  <input
-                    type="url"
-                    placeholder="https://example.com/avatar.jpg"
-                    value={formData.avatarUrl}
-                    onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-900 text-sm font-medium outline-none focus:bg-white focus:border-[#059669] focus:ring-4 focus:ring-[#059669]/10 transition"
-                  />
+                {/* Profile Avatar Picture */}
+                <div className="space-y-2 sm:col-span-2 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-[#059669]" />
+                      <span>Profile Avatar Picture</span>
+                    </label>
+                    <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold">
+                      <button
+                        type="button"
+                        onClick={() => setAvatarMode('upload')}
+                        className={`px-3 py-1 rounded-lg transition ${
+                          avatarMode === 'upload'
+                            ? 'bg-[#059669] text-white shadow-xs'
+                            : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Upload Photo
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAvatarMode('link')}
+                        className={`px-3 py-1 rounded-lg transition ${
+                          avatarMode === 'link'
+                            ? 'bg-[#059669] text-white shadow-xs'
+                            : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        Image Link
+                      </button>
+                    </div>
+                  </div>
+
+                  {avatarMode === 'upload' ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
+                      <label className="w-full sm:flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white hover:bg-slate-100/80 border border-dashed border-emerald-400 rounded-xl text-xs font-bold text-emerald-800 cursor-pointer transition shadow-xs">
+                        {uploadingAvatar ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin text-[#059669]" />
+                            <span>Uploading to Cloudinary...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 text-[#059669]" />
+                            <span>Choose Photo from Device / Drive</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarFileChange}
+                          disabled={uploadingAvatar}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    <input
+                      type="url"
+                      placeholder="https://images.cloudinary.com/your-avatar.jpg"
+                      value={formData.avatarUrl}
+                      onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
+                      className="w-full bg-white border border-slate-200 rounded-xl py-3 px-4 text-slate-900 text-sm font-medium outline-none focus:border-[#059669] focus:ring-4 focus:ring-[#059669]/10 transition"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -305,8 +387,7 @@ const Profile: React.FC<ProfilePageProps> = ({ user, onUpdateUser }) => {
             </div>
 
             {/* Save Button */}
-            <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-medium">All profile edits persist automatically to MongoDB.</span>
+            <div className="pt-6 border-t border-slate-100 flex items-center justify-end">
               <button
                 type="submit"
                 disabled={isLoading}
@@ -315,7 +396,7 @@ const Profile: React.FC<ProfilePageProps> = ({ user, onUpdateUser }) => {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Saving to DB...</span>
+                    <span>Saving Profile...</span>
                   </>
                 ) : (
                   <>

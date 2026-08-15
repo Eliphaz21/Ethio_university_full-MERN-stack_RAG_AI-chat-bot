@@ -3,7 +3,7 @@
  * Set VITE_SITE_URL in production (e.g. https://ethiouni.portal.et).
  */
 
-export const SITE_NAME = 'EthioUni Portal';
+export const SITE_NAME = 'Ethio University Portal';
 
 export const SITE_TAGLINE = 'Ethiopian University Directory & AI Assistant';
 
