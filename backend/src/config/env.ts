@@ -16,8 +16,9 @@ export const IS_PRODUCTION = NODE_ENV === 'production';
 export const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true' || IS_PRODUCTION;
 export const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || '';
 
-const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
-export const CORS_ORIGINS = (process.env.CORS_ORIGIN || '')
+const defaultOrigins = ['http://localhost', 'http://localhost:80', 'http://localhost:3000', 'http://127.0.0.1:3000'];
+const rawOrigins = `${process.env.CORS_ORIGIN || ''},${process.env.CORS_ORIGINS || ''}`;
+export const CORS_ORIGINS = rawOrigins
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean)
