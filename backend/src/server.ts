@@ -58,6 +58,8 @@ async function start() {
 
   try {
     await connectDB();
+    const { seedDatabaseIfEmpty } = await import('./config/seed.js');
+    await seedDatabaseIfEmpty();
   } catch (error) {
     console.warn('[WARN] Database initialization failed:', error);
   }
