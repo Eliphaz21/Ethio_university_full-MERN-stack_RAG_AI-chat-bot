@@ -11,7 +11,7 @@ import eventRoutes from '../routes/eventRoutes.js';
 import seoRoutes from '../routes/seoRoutes.js';
 import knowledgeRoutes from '../routes/knowledgeRoutes.js';
 import chatRoutes from '../routes/chatRoutes.js';
-import { signAuthToken, createCsrfToken } from '../utils/authTokens.js';
+import { signAuthToken, createCsrfToken, AUTH_COOKIE, CSRF_COOKIE } from '../utils/authTokens.js';
 
 export function createTestApp() {
   const app = express();
@@ -46,6 +46,6 @@ export function generateTestAuth(user: { id: string; role: 'user' | 'agent' | 'a
   return {
     token,
     csrfToken,
-    cookieHeader: `ethio_uni_session=${token}; ethio_uni_csrf=${csrfToken}`,
+    cookieHeader: `${AUTH_COOKIE}=${token}; ${CSRF_COOKIE}=${csrfToken}`,
   };
 }
