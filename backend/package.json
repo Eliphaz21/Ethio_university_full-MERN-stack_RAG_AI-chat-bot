@@ -9,7 +9,7 @@
     "dev": "tsx watch src/server.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run --pool=threads",
     "test": "npm run typecheck && npm run test:unit"
   },
   "dependencies": {
