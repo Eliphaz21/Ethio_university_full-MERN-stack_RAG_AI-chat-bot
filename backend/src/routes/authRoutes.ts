@@ -14,6 +14,8 @@ import {
 import { sanitizeText, validatePassword } from '../middleware/errorHandler.js';
 import { recordAudit } from '../services/audit.js';
 import { uploadBufferToCloudinary, isCloudinaryConfigured } from '../services/cloudinary.js';
+import { validateRequest } from '../middleware/validate.js';
+import { registerSchema, loginSchema, updateProfileSchema } from '../validators/authValidator.js';
 
 const router = Router();
 
@@ -50,7 +52,7 @@ function resolveRoleForEmail(email: string): 'user' | 'admin' {
 }
 
 // POST /api/auth/register
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', validateRequest({ body: registerSchema }), async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
     const normalizedUsername = typeof username === 'string' ? username.trim() : '';
@@ -96,7 +98,7 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 // POST /api/auth/login — issues httpOnly session cookie (token never returned to JS)
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', validateRequest({ body: loginSchema }), async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
