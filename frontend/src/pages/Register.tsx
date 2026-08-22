@@ -4,6 +4,7 @@ import { Shield, User as UserIcon, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 import { SEO } from '../components/SEO';
+import { frontendRegisterSchema } from '../schemas/authSchemas';
 
 interface RegisterProps {
   onRegister: (user: any) => void;
@@ -25,29 +26,22 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match!');
-      return;
-    }
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      return;
-    }
-    if (!/[A-Za-z]/.test(formData.password) || !/[0-9]/.test(formData.password)) {
-      setError('Password must include at least one letter and one number.');
+    const validationResult = frontendRegisterSchema.safeParse(formData);
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0]?.message || 'Please fill in all required fields accurately.';
+      setError(firstError);
       return;
     }
 
     setIsLoading(true);
-    setError(null);
 
     try {
-      const email = formData.email.trim().toLowerCase();
       await api.postRegister({
-        username: formData.username.trim(),
-        email,
-        password: formData.password,
+        username: validationResult.data.username,
+        email: validationResult.data.email,
+        password: validationResult.data.password,
       });
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1800);

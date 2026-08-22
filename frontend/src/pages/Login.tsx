@@ -4,6 +4,7 @@ import { Shield, User as UserIcon, Lock, Eye, EyeOff, Loader2, AlertCircle, Arro
 import { api } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 import { SEO } from '../components/SEO';
+import { frontendLoginSchema } from '../schemas/authSchemas';
 
 interface LoginProps {
   onLogin: (user: any) => void;
@@ -24,12 +25,16 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setError(null);
 
     try {
-      const lowerEmail = email.trim().toLowerCase();
-      if (!lowerEmail || !password) {
-        throw new Error('Please enter both email address and password.');
+      const validationResult = frontendLoginSchema.safeParse({ email, password });
+      if (!validationResult.success) {
+        const firstError = validationResult.error.issues[0]?.message || 'Invalid email or password input.';
+        throw new Error(firstError);
       }
 
-      const res = await api.postLogin({ email: lowerEmail, password });
+      const lowerEmail = validationResult.data.email;
+      const validPassword = validationResult.data.password;
+
+      const res = await api.postLogin({ email: lowerEmail, password: validPassword });
       const { user: backendUser } = res;
       const role = ['admin', 'agent'].includes(backendUser.role) ? backendUser.role : 'user';
       onLogin({
