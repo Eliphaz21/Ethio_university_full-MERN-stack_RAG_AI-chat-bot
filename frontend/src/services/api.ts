@@ -30,6 +30,43 @@ const apiClient = axios.create({
   },
 });
 
+// Axios Request Interceptor: Attach CSRF Token for mutating requests
+apiClient.interceptors.request.use((config) => {
+  const method = (config.method || 'GET').toUpperCase();
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken && config.headers) {
+      config.headers[CSRF_HEADER] = csrfToken;
+    }
+  }
+  return config;
+}, (error) => Promise.reject(error));
+
+// Axios Response Interceptor: Standardize API error extraction
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    let message = 'An unexpected error occurred';
+    if (error.response) {
+      const data = error.response.data;
+      if (Array.isArray(data?.details) && data.details.length > 0) {
+        message = data.details.join(', ');
+      } else if (data?.error) {
+        message = data.error;
+      } else if (error.response.status === 401) {
+        message = 'Authentication required';
+      } else if (error.response.status === 403) {
+        message = 'Permission denied';
+      } else if (error.response.status === 429) {
+        message = 'Too many requests. Please slow down.';
+      }
+    } else if (error.request) {
+      message = 'Network error. Unable to reach server.';
+    }
+    return Promise.reject(new Error(message));
+  }
+);
+
 export interface ApiError {
   error: string;
 }
@@ -42,53 +79,25 @@ async function request<T>(
     requireAuth?: boolean;
   } = {}
 ): Promise<T> {
-  const { method = 'GET', data, requireAuth = false } = options;
-  const isMutating = !['GET', 'HEAD', 'OPTIONS'].includes(method.toUpperCase());
+  const { method = 'GET', data } = options;
+  const config: AxiosRequestConfig = {
+    url: path,
+    method: method as any,
+    data,
+  };
 
-  try {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    if (isMutating) {
-      const csrfToken = getCsrfToken();
-      if (csrfToken) headers[CSRF_HEADER] = csrfToken;
-    }
-
-    const config: AxiosRequestConfig = {
-      url: path,
-      method: method as any,
-      data,
-      headers,
-      withCredentials: true,
-    };
-
-    const response = await apiClient.request(config);
-    return response.data;
-  } catch (error: any) {
-    if (requireAuth && error.response?.status === 401) {
-      throw new Error(error.response?.data?.error || 'Authentication required');
-    }
-    const message = error.response?.data?.error || error.message || 'Request failed';
-    throw new Error(message);
-  }
+  const response = await apiClient.request<T>(config);
+  return response.data;
 }
 
 function uploadRequest<T>(path: string, formData: FormData): Promise<T> {
-  const csrfToken = getCsrfToken();
-  return axios
-    .post<T>(`${getBaseUrl()}${path}`, formData, {
-      withCredentials: true,
+  return apiClient
+    .post<T>(path, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        ...(csrfToken ? { [CSRF_HEADER]: csrfToken } : {}),
       },
     })
-    .then((res) => res.data)
-    .catch((error) => {
-      const message = error.response?.data?.error || error.message || 'Upload failed';
-      throw new Error(message);
-    });
+    .then((res) => res.data);
 }
 
 export const api = {
