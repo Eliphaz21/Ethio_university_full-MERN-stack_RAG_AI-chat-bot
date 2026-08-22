@@ -12,10 +12,10 @@ export function validateRequest(schemas: {
         req.body = await schemas.body.parseAsync(req.body);
       }
       if (schemas.query) {
-        req.query = await schemas.query.parseAsync(req.query);
+        req.query = (await schemas.query.parseAsync(req.query)) as any;
       }
       if (schemas.params) {
-        req.params = await schemas.params.parseAsync(req.params);
+        req.params = (await schemas.params.parseAsync(req.params)) as any;
       }
       next();
     } catch (error) {
@@ -23,8 +23,9 @@ export function validateRequest(schemas: {
         const issueMessages = error.issues.map(
           (issue) => `${issue.path.join('.') || 'field'}: ${issue.message}`
         );
+        const primaryError = error.issues[0]?.message || 'Validation failed';
         return res.status(400).json({
-          error: 'Validation failed',
+          error: primaryError,
           details: issueMessages,
         });
       }

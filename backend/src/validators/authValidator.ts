@@ -2,29 +2,29 @@ import { z } from 'zod';
 
 export const registerSchema = z.object({
   username: z
-    .string()
+    .string({ message: 'Name, email, and password are required' })
     .min(3, 'Username must be at least 3 characters')
     .max(40, 'Username must not exceed 40 characters')
     .trim(),
   email: z
-    .string()
+    .string({ message: 'Name, email, and password are required' })
     .email('Invalid email address')
     .toLowerCase()
     .trim(),
   password: z
-    .string()
+    .string({ message: 'Name, email, and password are required' })
     .min(6, 'Password must be at least 6 characters')
     .max(100, 'Password is too long'),
 });
 
 export const loginSchema = z.object({
   email: z
-    .string()
+    .string({ message: 'Email and password are required' })
     .email('Invalid email address')
     .toLowerCase()
     .trim(),
   password: z
-    .string()
+    .string({ message: 'Email and password are required' })
     .min(1, 'Password is required'),
 });
 
